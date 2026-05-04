@@ -7,3 +7,7 @@
 - `./external_libs/`: External libraries, these are added as Git submodules.
 - `./src/`: The main project C/C++ source code, shared between all platforms.
 - `./resources/`: Static resources such as images, sounds, text files, etc that are loaded in by main project code.
+
+## Setup Guides from raylib
+- [Linux](https://github.com/raysan5/raylib/wiki/Working-on-GNU-Linux) setup guide
+- [Android on Linux](https://github.com/raysan5/raylib/wiki/Working-for-Android-(on-Linux)) build/compilation guide
