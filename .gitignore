@@ -35,5 +35,7 @@
 
 # --- Project-specific ignores ---
 
-# Ignore build directory
+# Ignore build directory (Cmake output)
 /build/
+# Ignore build output directory (executables, apks, etc.)
+/build_output/
