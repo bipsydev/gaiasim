@@ -4,7 +4,8 @@
 ## File Structure
 - `./android/`: Android project, bundles native C/C++ code into an .apk file.
 - `./assets/`: Static resources such as images, sounds, text files, etc that are loaded in by main project code.
-- `./build/`: Build directories for all platforms. This is where executables are output to.
+- `./build/`: CMake build directory, mostly just intermediate build files.
+- `./build_output/`: Contains the final built executable or apk file, in the corresponding platform subdirectory.
 - `./external_libs/`: External libraries, these are added as Git submodules.
 - `./include/`: The main project C/C++ header files.
 - `./src/`: The main project C/C++ source code, shared between all platforms.
