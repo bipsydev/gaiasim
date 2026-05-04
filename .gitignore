@@ -34,5 +34,6 @@
 *.app
 
 # --- Project-specific ignores ---
+
 # Ignore build directory
 /build/
