@@ -1,3 +1,5 @@
+# --- C++ generated .gitignore ---
+
 # Prerequisites
 *.d
 
@@ -30,3 +32,7 @@
 *.exe
 *.out
 *.app
+
+# --- Project-specific ignores ---
+# Ignore build directory
+/build/
