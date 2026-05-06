@@ -2,7 +2,7 @@
 > A fantasy-realism life simulation game using [raylib](https://github.com/raysan5/raylib) for desktop, mobile, and web.
 
 ## File Structure
-- `./android/`: Android project, bundles native C/C++ code into an .apk file.
+- `./android-project/`: Android project, bundles native C/C++ code into an .apk file. This is a symlink into `external_libs/SDL/android-project`.
 - `./assets/`: Static resources such as images, sounds, text files, etc that are loaded in by main project code.
 - `./build/`: CMake build directory, mostly just intermediate build files.
 - `./build_output/`: Contains the final built executable or apk file, in the corresponding platform subdirectory.
