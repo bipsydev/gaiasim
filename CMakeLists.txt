@@ -9,9 +9,20 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
+# Force debug symbols and disable optimizations for Debug builds
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  if(MSVC)
+    # For Visual Studio, use /Zi for debug symbols and disable optimizations
+    add_compile_options("/Zi /Od")
+  else()
+    # For other compilers, use -g for debug symbols and disable optimizations
+    add_compile_options("-g -O0")
+  endif()
+endif()
+
 # Sets the output for the executable runtime binary and for shared libraries (.so or .dll files)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/../build_output/$<CONFIGURATION>")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/../build_output/$<CONFIGURATION>")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/../build_output/$<CONFIGURATION>/libs/")
 
 # Compile the SDL libraries as CMake submodules
 # EXCULDE_FROM_ALL should help so it only compiles when necessary
@@ -29,12 +40,12 @@ file(GLOB_RECURSE ASSET_FILES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/assets/*")
 # Create the executable build target using the found C++ sources.
 # If no .cpp files were found, fall back to example.c
 if(PROJECT_SOURCES)
-    # WIN32 tells the windows build it's a GUI application without the need for a command prompt window
-    add_executable(${PROJECT_NAME} WIN32 ${PROJECT_SOURCES})
-    target_include_directories(${PROJECT_NAME} PRIVATE ./include)
+  # WIN32 tells the windows build it's a GUI application without the need for a command prompt window
+  add_executable(${PROJECT_NAME} WIN32 ${PROJECT_SOURCES})
+  target_include_directories(${PROJECT_NAME} PRIVATE ./include)
 else()
-    message(WARNING "No .cpp sources found in ${CMAKE_SOURCE_DIR}/src; falling back to example.c")
-    add_executable(${PROJECT_NAME} WIN32 example.c)
+  message(WARNING "No .cpp sources found in ${CMAKE_SOURCE_DIR}/src; falling back to example.c")
+  add_executable(${PROJECT_NAME} WIN32 example.c)
 endif()
 
 # Link to the actual SDL3 libraries
@@ -49,11 +60,11 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 # Copy assets folder to the output directory
 # ALL allows this to run every time, even if sources are untouched
 add_custom_target(force_copy_config ALL
-    COMMAND ${CMAKE_COMMAND} -E rm -rf "$<TARGET_FILE_DIR:${PROJECT_NAME}>/assets"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-    "${CMAKE_SOURCE_DIR}/assets"
-    "$<TARGET_FILE_DIR:${PROJECT_NAME}>/assets"
-    COMMENT "Copying assets folder to executable target directory"
+  COMMAND ${CMAKE_COMMAND} -E rm -rf "$<TARGET_FILE_DIR:${PROJECT_NAME}>/assets"
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+  "${CMAKE_SOURCE_DIR}/assets"
+  "$<TARGET_FILE_DIR:${PROJECT_NAME}>/assets"
+  COMMENT "Copying assets folder to executable target directory"
 )
 
 
