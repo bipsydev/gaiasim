@@ -1,10 +1,7 @@
 #!/bin/bash
 
-# Get the directory where the script is located
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
 # Change to the Gradle project directory
-cd "$SCRIPT_DIR/SDL/android" || exit 1
+cd android-project/ || exit 1
 
 # Build the APK
 echo "Building APK..."
