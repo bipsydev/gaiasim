@@ -1,13 +1,17 @@
 cmake_minimum_required(VERSION 3.16)
-project(pvzascii LANGUAGES C CXX)
+project(gaiasim LANGUAGES C CXX)
 
 # Set C++ standard to C++23
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Set C standard to C23
+set(CMAKE_C_STANDARD 23)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+
 # Sets the output for the executable runtime binary and for shared libraries (.so or .dll files)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/../build_output/$<CONFIGURATION>")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/../build_output/$<CONFIGURATION>")
 
 # Compile the SDL libraries as CMake submodules
 # EXCULDE_FROM_ALL should help so it only compiles when necessary
@@ -26,15 +30,15 @@ file(GLOB_RECURSE ASSET_FILES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/assets/*")
 # If no .cpp files were found, fall back to example.c
 if(PROJECT_SOURCES)
     # WIN32 tells the windows build it's a GUI application without the need for a command prompt window
-    add_executable(pvzascii WIN32 ${PROJECT_SOURCES})
-    target_include_directories(pvzascii PRIVATE ./include)
+    add_executable(${PROJECT_NAME} WIN32 ${PROJECT_SOURCES})
+    target_include_directories(${PROJECT_NAME} PRIVATE ./include)
 else()
     message(WARNING "No .cpp sources found in ${CMAKE_SOURCE_DIR}/src; falling back to example.c")
-    add_executable(pvzascii WIN32 example.c)
+    add_executable(${PROJECT_NAME} WIN32 example.c)
 endif()
 
 # Link to the actual SDL3 libraries
-target_link_libraries(pvzascii PRIVATE
+target_link_libraries(${PROJECT_NAME} PRIVATE
     SDL3::SDL3
     SDL3_image::SDL3_image
     SDL3_mixer::SDL3_mixer
@@ -45,10 +49,10 @@ target_link_libraries(pvzascii PRIVATE
 # Copy assets folder to the output directory
 # ALL allows this to run every time, even if sources are untouched
 add_custom_target(force_copy_config ALL
-    COMMAND ${CMAKE_COMMAND} -E rm -rf "$<TARGET_FILE_DIR:pvzascii>/assets"
+    COMMAND ${CMAKE_COMMAND} -E rm -rf "$<TARGET_FILE_DIR:${PROJECT_NAME}>/assets"
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     "${CMAKE_SOURCE_DIR}/assets"
-    "$<TARGET_FILE_DIR:pvzascii>/assets"
+    "$<TARGET_FILE_DIR:${PROJECT_NAME}>/assets"
     COMMENT "Copying assets folder to executable target directory"
 )
 
