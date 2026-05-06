@@ -1,5 +1,5 @@
 # gaiasim
-> A fantasy-realism life simulation game using [raylib](https://github.com/raysan5/raylib) for desktop, mobile, and web.
+> A fantasy-realism life simulation game using [SDL3](https://github.com/libsdl-org/SDL) for desktop, mobile, and web.
 
 ## File Structure
 - `./android-project/`: Android project, bundles native C/C++ code into an .apk file. This is a symlink into `external_libs/SDL/android-project`.
@@ -10,6 +10,7 @@
 - `./include/`: The main project C/C++ header files.
 - `./src/`: The main project C/C++ source code, shared between all platforms.
 
-## Setup Guides from raylib
-- [Linux](https://github.com/raysan5/raylib/wiki/Working-on-GNU-Linux) setup guide
-- [Android on Linux](https://github.com/raysan5/raylib/wiki/Working-for-Android-(on-Linux)) build/compilation guide
+## SDL3 Guides and Examples
+- [SDL with CMake](https://github.com/libsdl-org/SDL/blob/main/docs/INTRO-cmake.md)
+- [Android build guide](https://github.com/libsdl-org/SDL/blob/main/docs/README-android.md)
+- [Ravbug/sdl3-sample](https://github.com/Ravbug/sdl3-sample)
