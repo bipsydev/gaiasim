@@ -1,6 +1,28 @@
 # gaiasim
 > A fantasy-realism life simulation game using [SDL3](https://github.com/libsdl-org/SDL) for desktop, mobile, and web.
 
+## Building & Debugging
+### Desktop
+Clone the repo, then configure and build a debug version with CMake and run with your debugger:
+```sh
+# Clone the repo
+git clone https://github.com/bipsydev/gaiasim
+cd gaiasim
+# Configure
+cmake -S . -B build
+# Build a debug executable
+cmake --build build --config Debug --traget all
+# Run with GNU debugger
+gdb ./build_output/Debug/gaiasim
+```
+
+Or just load the project into VS Code and use the CMake plugin to automatically configure the project, and run a debug build with `shift+F5`.
+
+### Android
+Our `CMakeLists.txt` contains configuration for Android builds, along with other platforms. The `android_debug.sh` script file will create an APK with Gradle (which calls our CMake config) and attempt to install and run it on a connected `adb` device, showing `adb logcat` output until the app terminates.
+
+Refer to [SDL's `README-android.md`](https://github.com/libsdl-org/SDL/blob/main/docs/README-android.md) for more information on how debugging on Android could work.
+
 ## File Structure
 - `./android-project/`: Android project, bundles native C/C++ code into an .apk file and sets some Android specific settings. This was forked from the SDL provided template at `external_libs/SDL/android-project`.
 - `./assets/`: Static resources such as images, sounds, text files, etc that are loaded in by main project code.
