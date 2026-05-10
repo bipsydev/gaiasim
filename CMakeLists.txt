@@ -65,14 +65,16 @@ if(PROJECT_SOURCES)
   if (ANDROID)
     # The SDL java code is hardcoded to load libmain.so on android, so we need to change EXECUTABLE_NAME
     set(EXECUTABLE_NAME main)
-    add_library(${EXECUTABLE_NAME} SHARED)
+    add_library(${EXECUTABLE_NAME} SHARED ${PROJECT_SOURCES})
   else()
 
     # WIN32 tells the windows build it's a GUI application without the need for a command prompt window
     add_executable(${EXECUTABLE_NAME} WIN32 ${PROJECT_SOURCES})
-    target_include_directories(${PROJECT_NAME} PRIVATE ./include)
   
   endif()
+
+  # Add include directories for all platforms
+  target_include_directories(${EXECUTABLE_NAME} PRIVATE ./include)
 
 else()
   message(WARNING "No .cpp sources found in ${CMAKE_SOURCE_DIR}/src; falling back to example.c")
@@ -81,7 +83,7 @@ endif()
 
 
 # Specify C++23 standard (ensures it's applied to the target)
-target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_23)
+target_compile_features(${EXECUTABLE_NAME} PUBLIC cxx_std_23)
 
 # on Web targets, we need CMake to generate a HTML webpage. 
 if(EMSCRIPTEN)
@@ -124,7 +126,7 @@ set(SDLIMAGE_WEBP OFF)
 add_subdirectory(external_libs/SDL_image EXCLUDE_FROM_ALL)
 
 # Link to the actual SDL3 libraries
-target_link_libraries(${PROJECT_NAME} PUBLIC
+target_link_libraries(${EXECUTABLE_NAME} PUBLIC
     SDL3_image::SDL3_image
     SDL3_mixer::SDL3_mixer
     SDL3_ttf::SDL3_ttf
