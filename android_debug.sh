@@ -17,7 +17,7 @@ adb shell am start -n org.libsdl.app/.SDLActivity || exit 1
 
 # Wait for app to fully start
 echo "Waiting for app to start..."
-sleep 2
+sleep 1
 
 # Get PID and start logcat
 echo "Starting logcat..."
