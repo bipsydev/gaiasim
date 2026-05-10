@@ -14,3 +14,7 @@
 - [SDL with CMake](https://github.com/libsdl-org/SDL/blob/main/docs/INTRO-cmake.md)
 - [Android build guide](https://github.com/libsdl-org/SDL/blob/main/docs/README-android.md)
 - [Ravbug/sdl3-sample](https://github.com/Ravbug/sdl3-sample)
+
+
+## Asset Credits
+`PixelCode.ttf` - PixelCode Font v2.2 - [qwerasd205/PixelCode](https://github.com/qwerasd205/PixelCode)
