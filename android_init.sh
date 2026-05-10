@@ -17,4 +17,4 @@ ln -srf -t android-project/app/jni/ external_libs/SDL*
 # copy my project's build.gradle into android-project/app/ to replace it
 # This adds the asset directory and enables CMake building
 # refer to this for more info: https://github.com/libsdl-org/SDL/blob/main/docs/README-android.md
-cp build.gradle android-project/app/build.gradle
+cp android_build.gradle android-project/app/build.gradle
