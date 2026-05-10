@@ -57,7 +57,9 @@ struct AppState
   */
   static const int VERTEX_COUNT = 6;
   SDL_Vertex polygon1[VERTEX_COUNT]; // Vertices for gradient rectangle 1
+#if not __ANDROID__
   SDL_Vertex polygon2[VERTEX_COUNT]; // Vertices for gradient rectangle 2
+#endif // __ANDROID__
 
   // Here we use 4 triangles (12 vertices) to render a rectangle
   // with a better looking gradient effect
@@ -171,6 +173,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv)
   app->polygon1[5].color      = {0, 0, 1.0, 1.0};   // blue (same as vertex 2)
 
 
+#if not __ANDROID__
   // Polygon 2
   // Triangle 1
   app->polygon2[0].position   = {400, 100};         // top-left vertex
@@ -187,6 +190,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv)
   app->polygon2[4].color      = {0, 0, 1.0, 1.0};   // blue
   app->polygon2[5].position   = {600, 100};         // top-right vertex (same as vertex 2)
   app->polygon2[5].color      = {0, 1.0, 0, 1.0};   // green (same as vertex 2
+#endif // __ANDROID__
 
 
 
@@ -213,36 +217,6 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv)
   {
     app->gradient_rect[i].position.y += 300;
   }
-
-  /*
-  app->vertices[0].position.x = 400;
-  app->vertices[0].position.y = 150;
-  app->vertices[0].color.r    = 1.0f;
-  app->vertices[0].color.g    = 0.0f;
-  app->vertices[0].color.b    = 0.0f;
-  app->vertices[0].color.a    = 1.0f;
-
-  app->vertices[1].position.x = 200;
-  app->vertices[1].position.y = 450;
-  app->vertices[1].color.r    = 0.0f;
-  app->vertices[1].color.g    = 1.0f;
-  app->vertices[1].color.b    = 0.0f;
-  app->vertices[1].color.a    = 1.0f;
-
-  app->vertices[2].position.x = 600;
-  app->vertices[2].position.y = 450;
-  app->vertices[2].color.r    = 0.0f;
-  app->vertices[2].color.g    = 0.0f;
-  app->vertices[2].color.b    = 1.0f;
-  app->vertices[2].color.a    = 1.0f;
-
-  app->vertices[3].position.x = 800;
-  app->vertices[3].position.y = 150;
-  app->vertices[3].color.r    = 1.0f;
-  app->vertices[3].color.g    = 1.0f;
-  app->vertices[3].color.b    = 0.0f;
-  app->vertices[3].color.a    = 1.0f;
-  */
 
   // Everything loaded correctly, valid app state
   *appstate = app;
@@ -326,6 +300,7 @@ SDL_AppResult draw(AppState *app)
       return SDL_APP_FAILURE; // Return failure result if rendering failed
     }
 
+#if not __ANDROID__
     if (not SDL_RenderGeometry(app->renderer, NULL,
       app->polygon2 ,app->VERTEX_COUNT, NULL, 0))
     {
@@ -334,6 +309,7 @@ SDL_AppResult draw(AppState *app)
         "Failed to render geometry polygon2: %s", SDL_GetError());
       return SDL_APP_FAILURE; // Return failure result if rendering failed
     }
+#endif // __ANDROID__
 
     if (not SDL_RenderGeometry(app->renderer, NULL,
       app->gradient_rect ,app->GRADIENT_RECT_VERTEX_COUNT, NULL, 0))
