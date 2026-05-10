@@ -42,3 +42,6 @@
 
 # Ignore vs code settings
 /.vscode/
+
+# Ignore android-project as we have an init script that copies it for us
+/android-project/
