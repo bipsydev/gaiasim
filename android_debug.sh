@@ -20,6 +20,10 @@ adb install -r ./app/build/outputs/apk/debug/app-debug.apk || (echo "APK install
 echo "Starting app..."
 adb shell am start -n org.libsdl.app/.SDLActivity || exit 1
 
+# Configure adb
+adb logcat --buffer-size=64M
+adb logcat --clear
+
 # Wait a sec for app to fully start
 echo "Waiting for app to start..."
 sleep 1
