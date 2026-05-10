@@ -18,7 +18,7 @@
 
 // Use SDL callback entrypoints instead of `main` function
 #define SDL_MAIN_USE_CALLBACKS
-#include <SDL3/SDL_main.h>
+#include "SDL3/SDL_main.h"
 
 // Include SDL and extension libraries
 #include "SDL3/SDL.h"
@@ -47,10 +47,25 @@ struct AppState
   SDL_Window   *window   = nullptr; // Window object
   SDL_Renderer *renderer = nullptr; // Rendering context to window
 
+  /*
+   * -- Vertex data for 2D shape rendering --
+   * `SDL_RenderGeometry` uses an array of `SDL_Vertex` objects to specify
+   * the vertices of the shape to be rendered.
+   * It requires the vertex count to be in multiples of 3 as it renders
+   * each group of 3 vertices as a triangle. So for example, to render a rectangle
+   * using 2 triangles, we need 6 vertices (3 for each triangle).
+  */
   static const int VERTEX_COUNT = 6;
   SDL_Vertex polygon1[VERTEX_COUNT]; // Vertices for gradient rectangle 1
   SDL_Vertex polygon2[VERTEX_COUNT]; // Vertices for gradient rectangle 2
 
+  // Here we use 4 triangles (12 vertices) to render a rectangle
+  // with a better looking gradient effect
+  static const int GRADIENT_RECT_TRIANGLE_COUNT = 4;
+  static const int GRADIENT_RECT_VERTEX_COUNT = GRADIENT_RECT_TRIANGLE_COUNT * 3;
+  SDL_Vertex gradient_rect[GRADIENT_RECT_VERTEX_COUNT];
+
+  // -- Time-related variables --
   int frame = 0;      // Frame count
   Uint64 time_ns = 0; // Time (nanoseconds) since SDL initialization
                       // (updated at the beginning of each frame)
@@ -138,7 +153,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv)
   // Enable adaptive vsync for the renderer
   SDL_SetRenderVSync(app->renderer, SDL_RENDERER_VSYNC_ADAPTIVE);
 
-  // initialize vertices for gradient rectangle
+  // --- Initialize vertex data ---
+  // Polygon 1
   // Triangle 1
   app->polygon1[0].position   = {100, 100};         // top-left vertex
   app->polygon1[0].color      = {1.0, 0, 0, 1.0};   // red
@@ -146,7 +162,6 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv)
   app->polygon1[1].color      = {0, 1.0, 0, 1.0};   // green
   app->polygon1[2].position   = {300, 300};         // bottom-right vertex
   app->polygon1[2].color      = {0, 0, 1.0, 1.0};   // blue
-
   // Triangle 2 (shares top-left and bottom-right vertices with triangle 1)
   app->polygon1[3].position   = {100, 100};         // top-left vertex (same as vertex 0)
   app->polygon1[3].color      = {1.0, 0, 0, 1.0};   // red (same as vertex 0)
@@ -156,7 +171,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv)
   app->polygon1[5].color      = {0, 0, 1.0, 1.0};   // blue (same as vertex 2)
 
 
-  // Polygon 2 (gradient rectangle with bottom-left to top-right seam across the diagonal)
+  // Polygon 2
+  // Triangle 1
   app->polygon2[0].position   = {400, 100};         // top-left vertex
   app->polygon2[0].color      = {1.0, 0, 0, 1.0};   // red
   app->polygon2[1].position   = {400, 300};         // bottom-left vertex
@@ -171,6 +187,32 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv)
   app->polygon2[4].color      = {0, 0, 1.0, 1.0};   // blue
   app->polygon2[5].position   = {600, 100};         // top-right vertex (same as vertex 2)
   app->polygon2[5].color      = {0, 1.0, 0, 1.0};   // green (same as vertex 2
+
+
+
+  // Gradient rectangle (4 triangles, 3 vertices each)
+  // Triangle 1 (left side)
+  app->gradient_rect[0]  = {{100, 100}, {1.0f,0.0f,1.0f,1.0f}, {0.0f,0.0f}}; // top-left vertex (magenta)
+  app->gradient_rect[1]  = {{100, 300}, {1.0f,0.0f,0.0f,1.0f}, {0.0f,1.0f}}; // bottom-left vertex (red)
+  app->gradient_rect[2]  = {{200, 200}, {0.5f,0.5f,0.5f,1.0f}, {0.5f,0.5f}}; // center vertex (gray)
+  // Triangle 2 (right side)
+  app->gradient_rect[3]  = {{300, 100}, {0.0f,1.0f,1.0f,1.0f}, {1.0f,0.0f}}; // top-right vertex (cyan)
+  app->gradient_rect[4]  = {{300, 300}, {0.0f,1.0f,0.0f,1.0f}, {1.0f,1.0f}}; // bottom-right vertex (green)
+  app->gradient_rect[5]  = {{200, 200}, {0.5f,0.5f,0.5f,1.0f}, {0.5f,0.5f}}; // center vertex (gray)
+  // Triangle 3 (top side)
+  app->gradient_rect[6]  = {{100, 100}, {1.0f,0.0f,1.0f,1.0f}, {0.0f,0.0f}}; // top-left vertex (magenta)
+  app->gradient_rect[7]  = {{300, 100}, {0.0f,1.0f,1.0f,1.0f}, {1.0f,0.0f}}; // top-right vertex (cyan)
+  app->gradient_rect[8]  = {{200, 200}, {0.5f,0.5f,0.5f,1.0f}, {0.5f,0.5f}}; // center vertex (gray)
+  // Triangle 4 (bottom side)
+  app->gradient_rect[9]  = {{100, 300}, {1.0f,0.0f,0.0f,1.0f}, {0.0f,1.0f}}; // bottom-left vertex (red)
+  app->gradient_rect[10] = {{300, 300}, {0.0f,1.0f,0.0f,1.0f}, {1.0f,1.0f}}; // bottom-right vertex (green)
+  app->gradient_rect[11] = {{200, 200}, {0.5f,0.5f,0.5f,1.0f}, {0.5f,0.5f}}; // center vertex (gray)
+
+  // Move gradient_rect down 300 px
+  for (int i = 0; i < AppState::GRADIENT_RECT_VERTEX_COUNT; i++)
+  {
+    app->gradient_rect[i].position.y += 300;
+  }
 
   /*
   app->vertices[0].position.x = 400;
@@ -280,7 +322,7 @@ SDL_AppResult draw(AppState *app)
     {
       SDL_Log("num_verticies: app->VERTEX_COUNT = %d", app->VERTEX_COUNT);
       SDL_LogError(SDL_LOG_CATEGORY_ERROR,
-        "Failed to render geometry: %s", SDL_GetError());
+        "Failed to render geometry polygon1: %s", SDL_GetError());
       return SDL_APP_FAILURE; // Return failure result if rendering failed
     }
 
@@ -289,7 +331,16 @@ SDL_AppResult draw(AppState *app)
     {
       SDL_Log("num_verticies: app->VERTEX_COUNT = %d", app->VERTEX_COUNT);
       SDL_LogError(SDL_LOG_CATEGORY_ERROR,
-        "Failed to render geometry: %s", SDL_GetError());
+        "Failed to render geometry polygon2: %s", SDL_GetError());
+      return SDL_APP_FAILURE; // Return failure result if rendering failed
+    }
+
+    if (not SDL_RenderGeometry(app->renderer, NULL,
+      app->gradient_rect ,app->GRADIENT_RECT_VERTEX_COUNT, NULL, 0))
+    {
+      SDL_Log("num_verticies: app->GRADIENT_RECT_VERTEX_COUNT = %d", app->GRADIENT_RECT_VERTEX_COUNT);
+      SDL_LogError(SDL_LOG_CATEGORY_ERROR,
+        "Failed to render geometry gradient_rect: %s", SDL_GetError());
       return SDL_APP_FAILURE; // Return failure result if rendering failed
     }
   }
