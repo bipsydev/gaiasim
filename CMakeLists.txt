@@ -252,10 +252,10 @@ endif()
 # Copy assets folder to the output directory
 # ALL allows this to run every time, even if sources are untouched
 add_custom_target(force_copy_config ALL
-  COMMAND ${CMAKE_COMMAND} -E rm -rf "$<TARGET_FILE_DIR:${PROJECT_NAME}>/assets"
+  COMMAND ${CMAKE_COMMAND} -E rm -rf "$<TARGET_FILE_DIR:${EXECUTABLE_NAME}>/assets"
   COMMAND ${CMAKE_COMMAND} -E copy_directory
   "${CMAKE_SOURCE_DIR}/assets"
-  "$<TARGET_FILE_DIR:${PROJECT_NAME}>/assets"
+  "$<TARGET_FILE_DIR:${EXECUTABLE_NAME}>/assets"
   COMMENT "Copying assets folder to executable target directory"
 )
 
