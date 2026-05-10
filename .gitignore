@@ -39,3 +39,6 @@
 /build/
 # Ignore build output directory (executables, apks, etc.)
 /build_output/
+
+# Ignore vs code settings
+/.vscode/
