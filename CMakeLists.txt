@@ -54,12 +54,14 @@ file(GLOB_RECURSE PROJECT_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.c
 # TODO test if this is necessary for both adding & removing asset files without source file modification
 file(GLOB_RECURSE ASSET_FILES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/assets/*")
 
+
+# Set the name of the executable
+set(EXECUTABLE_NAME ${PROJECT_NAME})
+
+
 # Create the executable build target using the found C++ sources.
 # If no .cpp files were found, fall back to example.c
 if(PROJECT_SOURCES)
-
-  # Set the name of the executable
-  set(EXECUTABLE_NAME ${PROJECT_NAME})
 
   # Create an executable or a shared library based on the platform and add our sources to it
   if (ANDROID)
@@ -126,7 +128,7 @@ set(SDLIMAGE_WEBP OFF)
 add_subdirectory(external_libs/SDL_image EXCLUDE_FROM_ALL)
 
 # Link to the actual SDL3 libraries
-target_link_libraries(${EXECUTABLE_NAME} PUBLIC
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE
     SDL3_image::SDL3_image
     SDL3_mixer::SDL3_mixer
     SDL3_ttf::SDL3_ttf
