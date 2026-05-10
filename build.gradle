@@ -45,7 +45,7 @@ android {
         sourceSets.main {
             jniLibs.srcDir 'libs'
             // Add the assets directory to the source sets
-            assets.srcDir '../../../../assets'
+            assets.srcDir '../../assets'
         }
         externalNativeBuild {
             if (buildWithCMake) {
@@ -53,7 +53,7 @@ android {
                     // Don't use default CMakeLists.txt
                     //path 'jni/CMakeLists.txt'
                     // Use our top level CMakeLists.txt
-                    path '../../../../CMakeLists.txt'
+                    path '../../CMakeLists.txt'
                 }
             } else {
                 ndkBuild {
