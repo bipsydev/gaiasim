@@ -4,10 +4,12 @@
 
 
 #include "SDL_indent.hpp"
+#include "Screen.hpp"
 
 #include "SDL3/SDL.h"
 
 #include <string>
+#include <vector>
 
 
 namespace bipsy
@@ -51,6 +53,11 @@ namespace gaiasim
  */
 class Game
 {
+  // List of all allocated screens (may or may not be active)
+  std::vector<Screen *> screens;
+  // Index of the currently active screen in `screens`
+  Uint8 active_screen_index = 0;
+
 public:
 
   SDL_Window   *window   = nullptr; // Window object
