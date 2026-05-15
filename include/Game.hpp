@@ -127,8 +127,10 @@ public:
   SDL_AppResult init_game_state();
 
   SDL_AppResult event(SDL_Event *event);
+  SDL_AppResult iterate();
   SDL_AppResult update();
   SDL_AppResult render();
+  SDL_AppResult post_render_update();
 
 
   ~Game();

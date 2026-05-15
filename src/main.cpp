@@ -52,7 +52,6 @@ using namespace bipsy::sdlutils;  // log_info, log_error_init, etc
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv)
 {
-
   log_info("------ AppInit: Initializing ------");
   // Initialize Game (starts SDL systems and loads initial game state)
   Game *game = new Game();
@@ -68,102 +67,25 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv)
 
 SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
 {
-  if (event->type == SDL_EVENT_QUIT)
+  GetGame;
+  if (SDL_AppResult result = game->event(event))
   {
-    log_info("Quit event received, terminating...");
-    return SDL_APP_SUCCESS; // Request game termination on quit event
+    return result;
   }
 
-  return SDL_APP_CONTINUE; // Continue processing events
+  return SDL_APP_CONTINUE; // Continue processing events, or next callback
 }
-
-
-SDL_AppResult draw(Game *game);
 
 
 SDL_AppResult SDL_AppIterate(void *appstate)
 {
   GetGame; // Get typed `game` from `appstate` void pointer
-
-  // update frame time
-  game->time_ns = SDL_GetTicksNS();
-
-  // log frame count (with padding)
-  auto frame_count = std::to_string(game->frame);
-  frame_count.resize(5, ' '); // Pad frame count to 5 characters for better readability
-  log_info(("--- frame: " + frame_count + " ---").c_str());
-  log_info(("Frame time (s): " + std::to_string(game->time_ns / 1000000000.0)).c_str());
-  
-  // Make window visible on first frame (after initialization)
-  if (game->frame == 0)
+  if (SDL_AppResult result = game->iterate())
   {
-    SDL_ShowWindow(game->window);
-    log_info("Window shown");
+    return result;
   }
 
-  // draw the frame, and return anything but SDL_APP_CONTINUE
-  if (SDL_AppResult result = draw(game))
-  {
-    return result; // Return failure result if drawing failed
-  }
-
-  // increment frame count and return (continue running to next callback)
-  game->frame++;
   return SDL_APP_CONTINUE;
-}
-
-
-SDL_AppResult draw(Game *game)
-{
-  // Clear the screen with a solid color
-  SDL_SetRenderDrawColor(game->renderer, 0, 128, 255, 255);
-  SDL_RenderClear(game->renderer);
-  // --- Drawing block ---
-  {
-    // draw gradient rectangle
-    SDL_SetRenderDrawColor(game->renderer, 0, 0, 0, 255);
-    if (not SDL_RenderGeometry(game->renderer, NULL,
-      game->polygon1
-      // (SDL_Vertex[]){
-      //   {{100, 100}, {1,0,0,1}, {0,0}}, // top-left vertex (red)
-      //   {{300, 100}, {0,1,0,1}, {1,0}}, // top-right vertex (green)
-      //   {{300, 300}, {0,0,1,1}, {1,1}}, // bottom-right vertex (blue)
-      //   {{100, 300}, {1,1,0,1}, {0,1}}  // bottom-left vertex (yellow)
-      // }
-      ,game->VERTEX_COUNT,
-    NULL, 0)
-    )
-    {
-      SDL_Log("num_verticies: game->VERTEX_COUNT = %d", game->VERTEX_COUNT);
-      SDL_LogError(SDL_LOG_CATEGORY_ERROR,
-        "Failed to render geometry polygon1: %s", SDL_GetError());
-      return SDL_APP_FAILURE; // Return failure result if rendering failed
-    }
-
-#if not __ANDROID__
-    if (not SDL_RenderGeometry(game->renderer, NULL,
-      game->polygon2 ,game->VERTEX_COUNT, NULL, 0))
-    {
-      SDL_Log("num_verticies: game->VERTEX_COUNT = %d", game->VERTEX_COUNT);
-      SDL_LogError(SDL_LOG_CATEGORY_ERROR,
-        "Failed to render geometry polygon2: %s", SDL_GetError());
-      return SDL_APP_FAILURE; // Return failure result if rendering failed
-    }
-#endif // __ANDROID__
-
-    if (not SDL_RenderGeometry(game->renderer, NULL,
-      game->gradient_rect ,game->GRADIENT_RECT_VERTEX_COUNT, NULL, 0))
-    {
-      SDL_Log("num_verticies: game->GRADIENT_RECT_VERTEX_COUNT = %d", game->GRADIENT_RECT_VERTEX_COUNT);
-      SDL_LogError(SDL_LOG_CATEGORY_ERROR,
-        "Failed to render geometry gradient_rect: %s", SDL_GetError());
-      return SDL_APP_FAILURE; // Return failure result if rendering failed
-    }
-  }
-  // Present the rendered frame to the screen
-  SDL_RenderPresent(game->renderer);
-
-  return SDL_APP_CONTINUE; // Continue running the game
 }
 
 
