@@ -52,3 +52,4 @@
 # Ignore android-project files that aren't project-specific
 # These can be copied from external_libs/SDL/android-project
 /android-project/app/src/main/java/org/libsdl/
+/android-project/app/jni/
