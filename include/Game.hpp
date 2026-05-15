@@ -84,10 +84,10 @@ public:
   SDL_Vertex gradient_rect[GRADIENT_RECT_VERTEX_COUNT];
 
   // -- Time-related variables --
-  int frame = 0;      // Frame count
-  Uint64 time_ns = 0; // Time (nanoseconds) since SDL initialization
+  int frame;          // Frame count
+  Uint64 time_ns ;    // Time (nanoseconds) since SDL initialization
                       // (updated at the beginning of each frame)
-  Uint64 delta_time_ns = 0; // Time (nanoseconds) taken to render the previous frame
+  Uint64 delta_time_ns;   // Time (nanoseconds) taken to render the previous frame
 
   
   /**
@@ -128,6 +128,11 @@ public:
    * 
    */
   Game(InitRequest initializations = ALL);
+
+  // Delete copy constructor to prevent copying (may implement later if needed)
+  Game(const Game &) = delete;
+  // Delete copy assignment operator to prevent copying (may implement later)
+  Game &operator=(const Game &) = delete;
 
   SDL_AppResult init_libraries();
   SDL_AppResult init_system_objects();

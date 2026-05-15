@@ -23,7 +23,7 @@ class Screen
 {
 public:
   Screen();
-  ~Screen();
+  virtual ~Screen();
 
   virtual SDL_AppResult init() = 0;
 

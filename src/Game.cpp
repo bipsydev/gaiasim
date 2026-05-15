@@ -13,6 +13,18 @@ namespace bipsy::gaiasim
 
 
 Game::Game(InitRequest initializations)
+: screens{},
+  active_screen_index{0},
+  window{nullptr},
+  renderer{nullptr},
+  polygon1{},
+#if not __ANDROID__
+  polygon2{},
+#endif // __ANDROID__
+  gradient_rect{},
+  frame{0},
+  time_ns{0},
+  delta_time_ns{0}
 {
   assert(initializations <= Game::InitRequest::ALL);
 
