@@ -7,6 +7,8 @@
   - __Base systems__ inspired by Caves of Qud, Moonring, Dwarf Fortress, RimWorld, Project Zomboid, and Rogue.
   - __Game world/objectives__ inspired by games such as Vintage Story, TerraFirmaCraft, Terraria, and Don't Starve.
 
+### Game Design Document
+can be found [here](DESIGN.md)!
 
 ## Building & Debugging
 
