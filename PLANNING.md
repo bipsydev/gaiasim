@@ -12,6 +12,8 @@
 
 ## Planned Tasks
 
+- Fix the `android_init.sh` script to preserve project-specific files and only copy over the template files we don't have.
+  - Maybe give it a `--clean` option or something like that?
 - Remove system GUI (taskbar and home button, etc) from Android app.
   - use Android's Immersive Mode in a subclass of `SDLActivity.java`? probably!
 
