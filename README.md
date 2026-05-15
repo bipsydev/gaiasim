@@ -8,6 +8,7 @@
   - __Default game world/objectives__ inspired by games such as Vintage Story, TerraFirmaCraft, Terraria, and Don't Starve.
 
 ### [Living Game Design Document can be found here!](DESIGN.md)
+#### The [Task Planner](PLANNING.md) lists what I'm currently working on!
 
 ## Building & Debugging
 
