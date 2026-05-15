@@ -17,3 +17,5 @@
 
 - Create basic 3D voxel world and render basic example with some varying heights.
 
+- Create the Scenario loader and generate a World save file from a Scenario file.
+
