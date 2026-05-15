@@ -9,8 +9,33 @@
 namespace bipsy
 {
 
+
+namespace sdlutils
+{
+
+static inline SDL_AppResult log_error_init(const char *subsystem)
+{
+  SDL_LogError(SDL_LOG_CATEGORY_ERROR,
+    "Failed to initialize %s: %s", subsystem, SDL_GetError());
+  return SDL_APP_FAILURE;
+}
+
+static inline void log_info(const char *message)
+{
+  SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "%s", message);
+}
+
+static inline void log_error(const char *message)
+{
+  SDL_LogError(SDL_LOG_CATEGORY_ERROR, "%s", message);
+}
+
+} // namespace bipsy::sdlutils
+
+
 namespace gaiasim
 {
+  using namespace bipsy::sdlutils;  // log_info, log_error_init
 
 /**
  * @brief Local application running state structure.
@@ -54,7 +79,48 @@ public:
   Uint64 delta_time_ns = 0; // Time (nanoseconds) taken to render the previous frame
 
   
-  Game();
+  /**
+   * @brief Flags for requesting certain initialization steps in the constructor.
+   * 
+   * Each consecutive flag requires previous steps to also be initialized.
+   * The order is as follows:
+   * 
+   *        LIBRARIES -> SYSTEM_OBJECTS -> GAME_STATE
+   * 
+   * So for example, if you request GAME_STATE initialization, it will
+   * also initialize SYSTEM_OBJECTS and LIBRARIES in order before
+   * initializing GAME_STATE.
+   * 
+   * LIBRARIES:      SDL, it's subsystems, and any other external libraries.
+   * 
+   * SYSTEM_OBJECTS: Global SDL/system objects like window, renderer, etc that are
+   *                 allocated for the entire duration of the `Game`'s lifetime.
+   * 
+   * GAME_STATE:     The initial game state, which includes loading assets and
+   *                 starting an initial beginning scene.
+   */
+  enum InitRequest : Uint8
+  {
+    NONE            = 0U,
+    LIBRARIES       = 1U,
+    SYSTEM_OBJECTS  = 2U,
+    GAME_STATE      = 3U,
+    ALL             = 3U, // Same as GAME_STATE
+  };
+
+  /**
+   * @brief Construct a new Game object.
+   * 
+   * This also calls every `init_*` function in order by default.
+   * 
+   * @param initializations Flags for requesting certain initialization steps in the constructor.
+   * 
+   */
+  Game(InitRequest initializations = ALL);
+
+  SDL_AppResult init_libraries();
+  SDL_AppResult init_system_objects();
+  SDL_AppResult init_game_state();
 
   SDL_AppResult event(SDL_Event *event);
   SDL_AppResult update();
@@ -66,24 +132,6 @@ public:
 }; // class Game
 
 } // namespace bipsy::gaisim
-
-
-namespace sdlutils
-{
-
-static inline SDL_AppResult log_error_init(const char *subsystem)
-{
-  SDL_LogError(SDL_LOG_CATEGORY_ERROR,
-    "Failed to initialize %s: %s", subsystem, SDL_GetError());
-  return SDL_APP_FAILURE;
-}
-
-static inline void log_info(const char *message)
-{
-  SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "%s", message);
-}
-
-} // namespace bipsy::sdlutils
 
 } // namespace bipsy
 
