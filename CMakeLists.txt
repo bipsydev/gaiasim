@@ -16,7 +16,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_compile_options(/Zi /Od)
   else()
     # For other compilers, use -g for debug symbols and disable optimizations
-    add_compile_options(-g -O0)
+    add_compile_options(-g -O0 -Weffc++)
   endif()
 endif()
 
