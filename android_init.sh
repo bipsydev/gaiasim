@@ -4,6 +4,7 @@
 
 # Clean and copy over the android-project starter template from SDL
 # Good idea to clean the folder for old build files that might interfere
+# TODO: Change this so we preserve our tracked project-specific files (build.gradle, our custom java classes, etc)
 rm -rf android-project
 # Copy the template project directory
 # DO NOT try symlinking this as Ninja (from CMake) will throw a fit about symlinks
