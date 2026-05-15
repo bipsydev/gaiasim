@@ -3,11 +3,13 @@
 
 ## Current Tasks
 
-1. Create `Screen` abstract interface for loading different screens (with their own init/deinit, update/render, events, etc).
+- [x] Create `Screen` abstract interface for loading different screens (with their own init/deinit, update/render, events, etc).
 
-2. Move example screen (gradient squares) into an `ExampleScreen` class.
+- [ ] Create system for loading and presenting `Screen`s in the `Game` implementation code.
 
-3. Create an initial game screen (shows the default interaction GUI).
+- [ ] Move example screen (gradient squares) into an `ExampleScreen` class.
+
+- [ ] Create an initial game screen (shows the default interaction GUI).
 
 
 ## Planned Tasks
