@@ -2,10 +2,10 @@
 
 > A fantasy-realism life simulation survival game using [SDL3](https://github.com/libsdl-org/SDL) for desktop, mobile, and web.
 
-- __Goal__: Learn SDL3 and cross-platform graphics programming while developing my dream life simulator, with options for hardcore survival.
+- __Goal__: Learn SDL3 and cross-platform graphics programming while developing my dream modular life simulator, with options for hardcore survival.
 - __Inspirations__:
   - __Base systems__ inspired by Caves of Qud, Moonring, Dwarf Fortress, RimWorld, Project Zomboid, and Rogue.
-  - __Game world/objectives__ inspired by games such as Vintage Story, TerraFirmaCraft, Terraria, and Don't Starve.
+  - __Default game world/objectives__ inspired by games such as Vintage Story, TerraFirmaCraft, Terraria, and Don't Starve.
 
 ### [Living Game Design Document can be found here!](DESIGN.md)
 
