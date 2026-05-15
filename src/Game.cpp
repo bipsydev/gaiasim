@@ -20,7 +20,7 @@ Game::Game(InitRequest initializations)
   InitRequest inits_complete =  NONE;
   while (inits_complete < initializations)
   {
-    log_info(("  Initialization step: " + std::to_string(inits_complete + 1)).c_str());
+    log_info("Initialization step: " + std::to_string(inits_complete + 1), 1);
     switch(inits_complete)
     {
     case NONE:
@@ -29,7 +29,7 @@ Game::Game(InitRequest initializations)
         log_error("Error occured while initializing libraries, terminating...");
         return;
       }
-      log_info("  Libraries initialized successfully");
+      log_info("Libraries initialized successfully", 1);
       inits_complete = LIBRARIES;
       break;
     case LIBRARIES:
@@ -38,7 +38,7 @@ Game::Game(InitRequest initializations)
         log_error("Error occured while initializing system objects, terminating...");
         return;
       }
-      log_info("  System objects initialized successfully");
+      log_info("System objects initialized successfully", 1);
       inits_complete = SYSTEM_OBJECTS;
       break;
     case SYSTEM_OBJECTS:
@@ -47,7 +47,7 @@ Game::Game(InitRequest initializations)
         log_error("Error occured while initializing game state, terminating...");
         return;
       }
-      log_info("  Game state initialized successfully");
+      log_info("Game state initialized successfully", 1);
       inits_complete = GAME_STATE;
       break;
     }
@@ -66,7 +66,7 @@ SDL_AppResult Game::init_libraries()
   }
   else
   {
-    log_info("      SDL3 initialized successfully");
+    log_info("SDL3 initialized successfully", 2);
   }
 
   if (not TTF_Init())
@@ -75,7 +75,7 @@ SDL_AppResult Game::init_libraries()
   }
   else
   {
-    log_info("      SDL_ttf initialized successfully");
+    log_info("SDL_ttf initialized successfully", 3);
   }
 
   if (not MIX_Init())
@@ -84,10 +84,10 @@ SDL_AppResult Game::init_libraries()
   }
   else
   {
-    log_info("      SDL_mixer initialized successfully");
+    log_info("SDL_mixer initialized successfully", 3);
   }
 
-  log_info("    All subsystems initialized successfully");
+  log_info("All subsystems initialized successfully", 2);
 
   return SDL_APP_CONTINUE;  // indicate that we want to continue app execution
 }
@@ -106,7 +106,7 @@ SDL_AppResult Game::init_system_objects()
   }
   else
   {
-    log_info("    SDL_Window created successfully");
+    log_info("SDL_Window created successfully", 2);
   }
   // Center the window on the screen
   // This takes a second, so we wait to show the window
@@ -121,7 +121,7 @@ SDL_AppResult Game::init_system_objects()
   }
   else
   {
-    log_info("    SDL_Renderer created successfully");
+    log_info("SDL_Renderer created successfully", 2);
   }
   // Enable adaptive vsync for the renderer
   SDL_SetRenderVSync(renderer, SDL_RENDERER_VSYNC_ADAPTIVE);
@@ -133,7 +133,7 @@ SDL_AppResult Game::init_game_state()
 {
   // --- Initialize vertex data ---
   // Polygon 1
-  log_info("    Initializing vertex data for polygon1...");
+  log_info("Initializing vertex data for polygon1...", 2);
   // Triangle 1
   polygon1[0].position   = {100, 100};         // top-left vertex
   polygon1[0].color      = {1.0, 0, 0, 1.0};   // red
@@ -152,7 +152,7 @@ SDL_AppResult Game::init_game_state()
 
 #if not __ANDROID__
   // Polygon 2
-  log_info("    Initializing vertex data for polygon2...");
+  log_info("Initializing vertex data for polygon2...", 2);
   // Triangle 1
   polygon2[0].position   = {400, 100};         // top-left vertex
   polygon2[0].color      = {1.0, 0, 0, 1.0};   // red
@@ -173,7 +173,7 @@ SDL_AppResult Game::init_game_state()
 
 
   // Gradient rectangle (4 triangles, 3 vertices each)
-  log_info("    Initializing vertex data for gradient_rect...");
+  log_info("Initializing vertex data for gradient_rect...", 2);
   // Triangle 1 (left side)
   gradient_rect[0]  = {{100, 100}, {1.0f,0.0f,1.0f,1.0f}, {0.0f,0.0f}}; // top-left vertex (magenta)
   gradient_rect[1]  = {{100, 300}, {1.0f,0.0f,0.0f,1.0f}, {0.0f,1.0f}}; // bottom-left vertex (red)
@@ -191,14 +191,14 @@ SDL_AppResult Game::init_game_state()
   gradient_rect[10] = {{300, 300}, {0.0f,1.0f,0.0f,1.0f}, {1.0f,1.0f}}; // bottom-right vertex (green)
   gradient_rect[11] = {{200, 200}, {0.5f,0.5f,0.5f,1.0f}, {0.5f,0.5f}}; // center vertex (gray)
 
-  log_info("    Moving gradient_rect down 300 px...");
+  log_info("Moving gradient_rect down 300 px...", 2);
   // Move gradient_rect down 300 px
   for (int i = 0; i < Game::GRADIENT_RECT_VERTEX_COUNT; i++)
   {
     gradient_rect[i].position.y += 300;
   }
 
-  log_info("    Vertex data initialized successfully");
+  log_info("Vertex data initialized successfully", 2);
 
   return SDL_APP_CONTINUE;
 }
