@@ -130,12 +130,12 @@ add_subdirectory(external_libs/SDL_image EXCLUDE_FROM_ALL)
 # Zlib's CMakeLists.txt renames zconf.h to zconf.h.included to prevent CMake from
 # regenerating it. However, this modifies the vendored source tree and shows as modified
 # in git. Restore the original filename after configuration to keep the submodule clean.
-# set(ZLIB_HEADER "${CMAKE_SOURCE_DIR}/external_libs/SDL_image/external/zlib/zconf.h")
-# set(ZLIB_HEADER_INCLUDED "${CMAKE_SOURCE_DIR}/external_libs/SDL_image/external/zlib/zconf.h.included")
-# if(EXISTS "${ZLIB_HEADER_INCLUDED}" AND NOT EXISTS "${ZLIB_HEADER}")
-#     message(STATUS "Restoring zconf.h in SDL_image/zlib to keep git submodule clean")
-#     file(RENAME "${ZLIB_HEADER_INCLUDED}" "${ZLIB_HEADER}")
-# endif()
+set(ZLIB_HEADER "${CMAKE_SOURCE_DIR}/external_libs/SDL_image/external/zlib/zconf.h")
+set(ZLIB_HEADER_INCLUDED "${CMAKE_SOURCE_DIR}/external_libs/SDL_image/external/zlib/zconf.h.included")
+if(EXISTS "${ZLIB_HEADER_INCLUDED}" AND NOT EXISTS "${ZLIB_HEADER}")
+    message(STATUS "Restoring zconf.h in SDL_image/zlib to keep git submodule clean")
+    file(RENAME "${ZLIB_HEADER_INCLUDED}" "${ZLIB_HEADER}")
+endif()
 
 # Link to the actual SDL3 libraries
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE
