@@ -19,8 +19,8 @@ namespace bipsy::gaiasim
 class Screen
 {
 public:
-  Screen();
-  virtual ~Screen();
+  Screen()  { };
+  virtual ~Screen()  { };
 
   /**
    * @brief Initialize local Screen data and state.
@@ -38,7 +38,7 @@ public:
 
   virtual SDL_AppResult event(SDL_Event *event) = 0;
   virtual SDL_AppResult update() = 0;
-  virtual SDL_AppResult render() = 0;
+  virtual SDL_AppResult render(SDL_Renderer *renderer) = 0;
   virtual SDL_AppResult post_render_update()  { return SDL_APP_CONTINUE; }
 
   virtual SDL_AppResult show() { return SDL_APP_CONTINUE; }

@@ -7,7 +7,7 @@
 
 - [x] Create system for loading and presenting `Screen`s in the `Game` implementation code.
 
-- [ ] Move example screen (gradient squares) into an `ExampleScreen` class.
+- [x] Move example screen (gradient squares) into an `ScreenTest` class.
 
 - [ ] Create an initial game screen (shows the default interaction GUI).
 

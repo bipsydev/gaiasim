@@ -64,26 +64,6 @@ public:
   SDL_Window   *window   = nullptr; // Window object
   SDL_Renderer *renderer = nullptr; // Rendering context to window
 
-  /*
-   * -- Vertex data for 2D shape rendering --
-   * `SDL_RenderGeometry` uses an array of `SDL_Vertex` objects to specify
-   * the vertices of the shape to be rendered.
-   * It requires the vertex count to be in multiples of 3 as it renders
-   * each group of 3 vertices as a triangle. So for example, to render a rectangle
-   * using 2 triangles, we need 6 vertices (3 for each triangle).
-  */
-  static const int VERTEX_COUNT = 6;
-  SDL_Vertex polygon1[VERTEX_COUNT]; // Vertices for gradient rectangle 1
-#if not __ANDROID__
-  SDL_Vertex polygon2[VERTEX_COUNT]; // Vertices for gradient rectangle 2
-#endif // __ANDROID__
-
-  // Here we use 4 triangles (12 vertices) to render a rectangle
-  // with a better looking gradient effect
-  static const int GRADIENT_RECT_TRIANGLE_COUNT = 4;
-  static const int GRADIENT_RECT_VERTEX_COUNT = GRADIENT_RECT_TRIANGLE_COUNT * 3;
-  SDL_Vertex gradient_rect[GRADIENT_RECT_VERTEX_COUNT];
-
   // -- Time-related variables --
   int frame;          // Frame count
   Uint64 time_ns ;    // Time (nanoseconds) since SDL initialization
