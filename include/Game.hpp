@@ -8,6 +8,7 @@
 
 #include "SDL3/SDL.h"
 
+#include <cassert>
 #include <string>
 #include <vector>
 
@@ -143,6 +144,21 @@ public:
   SDL_AppResult update();
   SDL_AppResult render();
   SDL_AppResult post_render_update();
+
+
+  constexpr Screen * active_screen() const
+  {
+    // no screens
+    // if (screens.empty())
+    // {
+    //   log_error("No screens available! Returning nullptr from active_screen().");
+    //   return nullptr;
+    // }
+    assert(!screens.empty() && "No screens available!");
+
+    // use index to return active Screen
+    return screens[active_screen_index];
+  }
 
 
   ~Game();

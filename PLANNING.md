@@ -5,7 +5,7 @@
 
 - [x] Create `Screen` abstract interface for loading different screens (with their own init/deinit, update/render, events, etc).
 
-- [ ] Create system for loading and presenting `Screen`s in the `Game` implementation code.
+- [x] Create system for loading and presenting `Screen`s in the `Game` implementation code.
 
 - [ ] Move example screen (gradient squares) into an `ExampleScreen` class.
 

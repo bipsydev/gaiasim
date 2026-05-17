@@ -143,6 +143,8 @@ SDL_AppResult Game::init_system_objects()
 
 SDL_AppResult Game::init_game_state()
 {
+  //TODO move this to a `Screen` subclass along with member data
+  
   // --- Initialize vertex data ---
   // Polygon 1
   log_info("Initializing vertex data for polygon1...", 2);
@@ -218,10 +220,16 @@ SDL_AppResult Game::init_game_state()
 
 SDL_AppResult Game::event(SDL_Event *event)
 {
+  // catch the QUIT event (game requesting successful termination)
   if (event->type == SDL_EVENT_QUIT)
   {
     log_info("Quit event received, terminating...");
-    return SDL_APP_SUCCESS; // Request game termination on quit event
+    return SDL_APP_SUCCESS;
+  }
+  else
+  {
+    // forward to active screen
+    active_screen()->event(event);
   }
 
   return SDL_APP_CONTINUE;
@@ -230,7 +238,7 @@ SDL_AppResult Game::event(SDL_Event *event)
 
 SDL_AppResult Game::iterate()
 {
-
+  // Split `iterate` into update/render functions for organization
   if (SDL_AppResult result = update())
   {
     return result; // Return if update requested termination
@@ -266,11 +274,15 @@ SDL_AppResult Game::update()
     log_info("Window shown");
   }
 
-  return SDL_APP_CONTINUE;
+  // forward to active screen
+  return active_screen()->update();
 }
 
 SDL_AppResult Game::render()
 {
+  //TODO place everything here in a `Screen` subclass!
+  active_screen()->render();
+
   // Clear the screen with a solid color
   SDL_SetRenderDrawColor(renderer, 0, 128, 255, 255);
   SDL_RenderClear(renderer);
@@ -324,10 +336,13 @@ SDL_AppResult Game::render()
 
 SDL_AppResult Game::post_render_update()
 {
+
+  auto result = active_screen()->post_render_update();
+
   // increment frame count and return (continue running to next callback)
   frame++;
   
-  return SDL_APP_CONTINUE;
+  return result;
 }
 
 Game::~Game()

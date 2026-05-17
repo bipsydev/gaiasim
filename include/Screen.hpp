@@ -30,6 +30,7 @@ public:
   virtual SDL_AppResult event(SDL_Event *event) = 0;
   virtual SDL_AppResult update() = 0;
   virtual SDL_AppResult render() = 0;
+  virtual SDL_AppResult post_render_update()  { return SDL_APP_CONTINUE; }
 
   virtual void deinit() = 0;
 
