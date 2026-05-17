@@ -28,9 +28,7 @@ class ScreenTest : public Screen
   */
   static const int VERTEX_COUNT = 6;
   SDL_Vertex polygon1[VERTEX_COUNT]; // Vertices for gradient rectangle 1
-#if not __ANDROID__
   SDL_Vertex polygon2[VERTEX_COUNT]; // Vertices for gradient rectangle 2
-#endif // __ANDROID__
 
   // Here we use 4 triangles (12 vertices) to render a rectangle
   // with a better looking gradient effect
@@ -38,8 +36,30 @@ class ScreenTest : public Screen
   static const int GRADIENT_RECT_VERTEX_COUNT = GRADIENT_RECT_TRIANGLE_COUNT * 3;
   SDL_Vertex gradient_rect[GRADIENT_RECT_VERTEX_COUNT];
 
+  #define SYSTEM_STR inline static const char * system_str =
+  #if __ANDROID__
+  SYSTEM_STR "Android";
+  #elif __EMSCRIPTEN__
+  SYSTEM_STR "Emscripten";
+  #elif __linux__
+  SYSTEM_STR "Linux";
+  #elif _WIN32
+  SYSTEM_STR "Windows";
+  #elif __APPLE__
+  SYSTEM_STR "Apple";
+  #else
+  SYSTEM_STR "Unknown";
+  #endif
+  #undef SYSTEM_STR
+
 public:
-  ScreenTest();
+  ScreenTest()
+  : polygon1{},
+  polygon2{},
+  gradient_rect{}
+{
+}
+
   ~ScreenTest();
 
   SDL_AppResult init() override;

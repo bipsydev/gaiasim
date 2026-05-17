@@ -4,16 +4,6 @@
 
 namespace bipsy::gaiasim
 {
-  
-
-ScreenTest::ScreenTest()
-: polygon1{},
-#if not __ANDROID__
-  polygon2{},
-#endif // __ANDROID__
-  gradient_rect{}
-{
-}
 
 ScreenTest::~ScreenTest()
 {
@@ -40,8 +30,6 @@ SDL_AppResult ScreenTest::init()
   polygon1[5].position   = {300, 300};         // bottom-right vertex (same as vertex 2)
   polygon1[5].color      = {0, 0, 1.0, 1.0};   // blue (same as vertex 2)
 
-
-#if not __ANDROID__
   // Polygon 2
   log_info("Initializing vertex data for polygon2...", 2);
   // Triangle 1
@@ -59,8 +47,6 @@ SDL_AppResult ScreenTest::init()
   polygon2[4].color      = {0, 0, 1.0, 1.0};   // blue
   polygon2[5].position   = {600, 100};         // top-right vertex (same as vertex 2)
   polygon2[5].color      = {0, 1.0, 0, 1.0};   // green (same as vertex 2
-#endif // __ANDROID__
-
 
 
   // Gradient rectangle (4 triangles, 3 vertices each)
@@ -131,7 +117,6 @@ SDL_AppResult ScreenTest::render(SDL_Renderer *renderer)
     return SDL_APP_FAILURE; // Return failure result if rendering failed
   }
 
-#if not __ANDROID__
   if (not SDL_RenderGeometry(renderer, NULL,
     polygon2 ,VERTEX_COUNT, NULL, 0))
   {
@@ -140,7 +125,6 @@ SDL_AppResult ScreenTest::render(SDL_Renderer *renderer)
       "Failed to render geometry polygon2: %s", SDL_GetError());
     return SDL_APP_FAILURE; // Return failure result if rendering failed
   }
-#endif // __ANDROID__
 
   if (not SDL_RenderGeometry(renderer, NULL,
     gradient_rect ,GRADIENT_RECT_VERTEX_COUNT, NULL, 0))
