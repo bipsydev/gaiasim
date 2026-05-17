@@ -4,10 +4,7 @@
 
 #include "SDL3/SDL.h"
 
-namespace bipsy
-{
-
-namespace gaiasim
+namespace bipsy::gaiasim
 {
 
 /**
@@ -25,6 +22,18 @@ public:
   Screen();
   virtual ~Screen();
 
+  /**
+   * @brief Initialize local Screen data and state.
+   * 
+   * This is called when the Screen is allocated. It is called only once
+   * per instantiation. Any code that is meant to run when the Screen is
+   * shown (but not allocated) should go in the `show()` function instead.
+   * 
+   * @return SDL_AppResult SDL_APP_CONTINUE if initialization succeeded
+   *                                        and the app should continue,
+   *                       SDL_APP_FAILURE if initialization failed and
+   *                                       the app should terminate with an error.
+   */
   virtual SDL_AppResult init() = 0;
 
   virtual SDL_AppResult event(SDL_Event *event) = 0;
@@ -32,12 +41,13 @@ public:
   virtual SDL_AppResult render() = 0;
   virtual SDL_AppResult post_render_update()  { return SDL_APP_CONTINUE; }
 
+  virtual SDL_AppResult show() { return SDL_APP_CONTINUE; }
+  virtual SDL_AppResult hide() { return SDL_APP_CONTINUE; }
+
   virtual void deinit() = 0;
 
 }; // class Screen
 
 } // namespace bipsy::gaiasim
-
-} // namespace bipsy
 
 #endif // BIPSY_GAIASIM_SCREEN_HPP
