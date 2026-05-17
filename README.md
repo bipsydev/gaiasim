@@ -1,6 +1,6 @@
 # gaiasim
 
-> A fantasy-realism life simulation survival game using [SDL3](https://github.com/libsdl-org/SDL) for desktop, mobile, and web.
+> A (soon-to-be) fantasy-realism life simulation survival game using [SDL3](https://github.com/libsdl-org/SDL) for desktop, mobile, and web.
 
 - __Goal__: Learn SDL3 and cross-platform graphics programming while developing my dream modular life simulator, with options for hardcore survival.
 - __Inspirations__:
@@ -50,7 +50,7 @@ Refer to [SDL's `README-android.md`](https://github.com/libsdl-org/SDL/blob/main
 ### Scripts
 
 - `./android_init.sh/`: Initializes the android-project directory from the SDL template. This relies on our project's `android_build.gradle` file replacing the template's `app/build.gradle`.
-- `./android_debug.sh/`: runs `gradlew assembleDebug` to create the APK through CMake, then attempts to install it to a connected device via `adb` and display `adb logcat` output related to the app for debugging.
+- `./android_debug.sh/`: runs `gradlew assembleDebug` to create the APK through gradle/CMake, then attempts to install it to a connected device via `adb` and display `adb logcat` output related to the app for debugging.
 
 
 ## SDL3 Guides and Examples
