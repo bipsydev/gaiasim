@@ -3,7 +3,7 @@
 #define BIPSY_GAIASIM_GAME_HPP
 
 
-#include "SDL_indent.hpp"
+#include "SDL_utils.hpp"
 #include "Screen.hpp"
 
 #include "SDL3/SDL.h"
@@ -13,34 +13,7 @@
 #include <vector>
 
 
-namespace bipsy
-{
-
-
-namespace sdlutils
-{
-
-static inline SDL_AppResult log_error_init(std::string subsystem)
-{
-  SDL_LogError(SDL_LOG_CATEGORY_ERROR,
-    "Failed to initialize %s: %s", subsystem.c_str(), SDL_GetError());
-  return SDL_APP_FAILURE;
-}
-
-static inline void log_info(std::string message, int indent = 0)
-{
-  SDL_LogIndent(indent, message.c_str());
-}
-
-static inline void log_error(std::string message)
-{
-  SDL_LogError(SDL_LOG_CATEGORY_ERROR, "%s", message.c_str());
-}
-
-} // namespace bipsy::sdlutils
-
-
-namespace gaiasim
+namespace bipsy::gaiasim
 {
   using namespace bipsy::sdlutils;  // log_info, log_error_init
 
@@ -145,8 +118,6 @@ public:
 
 }; // class Game
 
-} // namespace bipsy::gaisim
-
-} // namespace bipsy
+} // namespace bipsy::gaiasim
 
 #endif // BIPSY_GAIASIM_GAME_HPP
