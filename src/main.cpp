@@ -165,8 +165,6 @@ void SDL_AppQuit(void *appstate, SDL_AppResult result)
   SDL_DestroyWindow(game->window);
   SDL_DestroyRenderer(game->renderer);
 
-  delete game; // Deallocate game state before quitting SDL
-
   // Deinitialize SDL and its subsystems
   MIX_Quit();
   TTF_Quit();
