@@ -43,11 +43,11 @@ public:
   int frame;          // Frame count
   Uint64 time_ns ;    // Time (nanoseconds) since SDL initialization
                       // (updated at the beginning of each frame)
-  Uint64 delta_time_ns;   // Time (nanoseconds) taken to render the previous frame
+  Uint64 delta_time_ns;   // Time (ns) taken to render the previous frame
 
   
   /**
-   * @brief Flags for requesting certain initialization steps in the constructor.
+   * @brief Flags for requesting/indicating certain initialization steps.
    * 
    * Each consecutive flag requires previous steps to also be initialized.
    * The order is as follows:
@@ -60,8 +60,9 @@ public:
    * 
    * LIBRARIES:      SDL, it's subsystems, and any other external libraries.
    * 
-   * SYSTEM_OBJECTS: Global SDL/system objects like window, renderer, etc that are
-   *                 allocated for the entire duration of the `Game`'s lifetime.
+   * SYSTEM_OBJECTS: Global SDL/system objects like window, renderer, etc
+   *                 that are allocated for the entire duration
+   *                 of the `Game`'s lifetime.
    * 
    * GAME_STATE:     The initial game state, which includes loading assets and
    *                 starting an initial beginning scene.
@@ -73,14 +74,16 @@ public:
     SYSTEM_OBJECTS  = 2U,
     GAME_STATE      = 3U,
     ALL             = 3U, // Same as GAME_STATE
-  };
+  }
+  inits_complete; // This tracks which initialization steps have been completed
 
   /**
    * @brief Construct a new Game object.
    * 
    * This also calls every `init_*` function in order by default.
    * 
-   * @param initializations Flags for requesting certain initialization steps in the constructor.
+   * @param initializations Flags for requesting certain initialization
+   *                        steps in the constructor.
    * 
    */
   Game(InitRequest initializations = ALL);
