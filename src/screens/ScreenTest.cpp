@@ -7,7 +7,6 @@ namespace bipsy::gaiasim
 
 SDL_AppResult ScreenTest::init()
 {
-
   // --- Initialize vertex data ---
   // Polygon 1
   log_info("Initializing vertex data for polygon1...", 2);
@@ -72,6 +71,28 @@ SDL_AppResult ScreenTest::init()
   }
 
   log_info("Vertex data initialized successfully", 2);
+
+
+  log_info("Initializing texture for rendered text...", 2);
+  // Create a surface with rendered text using the loaded font
+  // This loads the image data into an `SDL_Surface` in RAM using the CPU.
+  SDL_Surface * text_surface = TTF_RenderText_Blended(
+    game()->font, ("Hello from " + std::string(system_str)).c_str(),
+    0, {255, 255, 255, 255} // white color
+  );
+  if (text_surface == nullptr)
+  {
+    return log_error_init("text_surface");
+  }
+  // Create a texture from the surface
+  // This uploads the image data to the GPU for efficient rendering.
+  SDL_Texture * text_texture = SDL_CreateTextureFromSurface(game()->renderer, text_surface);
+  SDL_DestroySurface(text_surface); // We can free the surface after creating the texture
+  if (text_texture == nullptr)
+  {
+    return log_error_init("text_texture");
+  }
+
 
   return SDL_APP_CONTINUE;
 }
