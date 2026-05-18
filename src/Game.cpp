@@ -126,6 +126,7 @@ SDL_AppResult Game::init_libraries()
   return SDL_APP_CONTINUE;  // indicate that we want to continue app execution
 }
 
+
 SDL_AppResult Game::init_system_objects()
 {
 
@@ -172,6 +173,7 @@ SDL_AppResult Game::init_system_objects()
   return SDL_APP_CONTINUE;
 }
 
+
 SDL_AppResult Game::init_game_state()
 {
   // check initialization stage to avoid re-initialization
@@ -195,6 +197,56 @@ SDL_AppResult Game::init_game_state()
   inits_complete = GAME_STATE;
   return SDL_APP_CONTINUE;
 }
+
+
+
+Game::~Game()
+{
+  log_info("Deinitializing `Game` object...");
+
+  // Deinitialization Stage 3: Game state
+  if (inits_complete >= GAME_STATE)
+  {
+    log_info("Deinitializing game state...", 1);
+    // ScreenTest needs to be deallocated
+    // Deallocate all screens we have active
+    for (Screen *screen : screens)
+    {
+      log_info("Deallocating screen \"" + screen->name() + "\"...", 2);
+      delete screen;
+    }
+    // clear out the pointer vector
+    screens.clear();
+  }
+
+  // Deinitialization Stage 2: System objects
+  if (inits_complete >= SYSTEM_OBJECTS)
+  {
+    log_info("Deinitializing system objects...", 1);
+    if (renderer)
+    {
+      SDL_DestroyRenderer(renderer);
+      renderer = nullptr;
+    }
+    if (window)
+    {
+      SDL_DestroyWindow(window);
+      window = nullptr;
+    }
+  }
+
+  // Deinitialization Stage 1: Libraries
+  if (inits_complete >= LIBRARIES)
+  {
+    log_info("Deinitializing libraries...", 1);
+    MIX_Quit();
+    TTF_Quit();
+    SDL_Quit();
+  }
+
+  log_info("`Game` object deinitialized successfully!");
+}
+
 
 
 SDL_AppResult Game::event(SDL_Event *event)
@@ -283,11 +335,6 @@ SDL_AppResult Game::post_render_update()
   frame++;
   
   return result;
-}
-
-Game::~Game()
-{
-
 }
 
 } // namespace bipsy::gaiasim
