@@ -5,6 +5,8 @@
 
 - [x] Move example screen (gradient squares) into an `ScreenTest` class.
 
+- [ ] Add sample text to `ScreenTest` that shows system info
+
 - [ ] Create an initial game screen (shows the default interaction GUI).
 
 - [ ] Create basic 3D voxel world and render basic example with some varying heights.
