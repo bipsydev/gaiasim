@@ -16,7 +16,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_compile_options(/Zi /Od)
   else()
     # For other compilers, use -g for debug symbols and disable optimizations
-    add_compile_options(-g -O0 -Weffc++)
+    add_compile_options(-g -O0)
   endif()
 endif()
 
@@ -77,6 +77,11 @@ if(PROJECT_SOURCES)
 
   # Add include directories for all platforms
   target_include_directories(${EXECUTABLE_NAME} PRIVATE ./include)
+
+  # Apply -Weffc++ only to our source files, not external libraries
+  if(NOT MSVC)
+    target_compile_options(${EXECUTABLE_NAME} PRIVATE -Weffc++)
+  endif()
 
 else()
   message(WARNING "No .cpp sources found in ${CMAKE_SOURCE_DIR}/src; falling back to example.c")
