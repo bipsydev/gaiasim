@@ -55,10 +55,10 @@ public:
   { };
 
 
-  constexpr Game * const get_game() const
+  constexpr Game * const game() const
   { return game; }
 
-  const std::string &name() const
+  constexpr const std::string &name() const
   { return name_str; }
 
   /**
