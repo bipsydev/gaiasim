@@ -4,8 +4,9 @@
 
 #include "tab.hpp"
 
-#include <SDL3/SDL.h>
+#include "SDL3/SDL.h"
 
+#include <string>
 
 
 namespace bipsy::sdlutils
@@ -52,14 +53,35 @@ inline SDL_AppResult log_error_init(std::string subsystem)
 }
 
 /**
+ * @brief Global flag to enable or disable info logging.
+ * 
+ */
+static bool log_info_enabled = true;
+
+/**
+ * @brief Enables or disables info logging.
+ */
+inline constexpr void log_info_enable(bool enable = true)
+{ log_info_enabled = enable; }
+
+inline constexpr void log_info_disable()
+{ log_info_enable(false); }
+
+/**
  * @brief Logs an SDL info message with optional indentation level.
+ * 
+ * Only prints if `log_info_enabled` is true.
+ * Uses `SDL_LogIndent` to log the message with the specified indentation level.
  * 
  * @param message The message to log.
  * @param indent The number of indentation levels to apply.
  */
 inline void log_info(std::string message, int indent = 0)
 {
-  SDL_LogIndent(indent, message.c_str());
+  if (log_info_enabled)
+  {
+    SDL_LogIndent(indent, message.c_str());
+  }
 }
 
 /**
@@ -70,6 +92,18 @@ inline void log_info(std::string message, int indent = 0)
 inline void log_error(std::string message)
 {
   SDL_LogError(SDL_LOG_CATEGORY_ERROR, "%s", message.c_str());
+}
+
+
+inline constexpr std::string asset_dir(std::string asset_name)
+{
+  // get the asset directory
+  return
+#if not __ANDROID__
+  std::string(SDL_GetBasePath()) + "assets/";
+#else
+  ""; // On Android, we can just use the asset name directly
+#endif // __ANDROID__
 }
 
 

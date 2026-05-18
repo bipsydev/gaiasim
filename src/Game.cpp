@@ -171,9 +171,7 @@ SDL_AppResult Game::init_system_objects()
   
   // Create a TTF font from PixelCode.ttf in our ./assets/ directory
   std::string font_name = "PixelCode.ttf";
-  // get the asset directory
-  std::string asset_dir = std::string(SDL_GetBasePath()) + "assets/";
-  if (not (font = TTF_OpenFont((asset_dir + font_name).c_str(), 24)))
+  if (not (font = TTF_OpenFont((asset_dir(font_name) + font_name).c_str(), 24)))
   {
     return log_error_init("TTF_Font *font");
   }
@@ -309,6 +307,20 @@ SDL_AppResult Game::update()
   // log frame count (with padding)
   auto frame_count = std::to_string(frame);
   frame_count.resize(5, ' '); // Pad frame count to 5 characters for better readability
+
+  // For Android, just log every 60th frame
+  // to avoid spamming the logcat with too many messages
+  #if __ANDROID__
+  if (frame % 60 == 0)
+  {
+    log_info_enable(true);
+  }
+  else if (frame % 60 == 1)
+  {
+    log_info_enable(false);
+  }
+#endif // __ANDROID__
+
   log_info(("--- frame: " + frame_count + " ---").c_str());
   log_info(("Frame time (s): " + std::to_string(time_ns / 1000000000.0)).c_str());
   
