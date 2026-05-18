@@ -41,10 +41,10 @@ public:
   virtual SDL_AppResult render(SDL_Renderer *renderer) = 0;
   virtual SDL_AppResult post_render_update()  { return SDL_APP_CONTINUE; }
 
-  virtual SDL_AppResult show() { return SDL_APP_CONTINUE; }
-  virtual SDL_AppResult hide() { return SDL_APP_CONTINUE; }
+  virtual SDL_AppResult show()  { return SDL_APP_CONTINUE; }
+  virtual SDL_AppResult hide()  { return SDL_APP_CONTINUE; }
 
-  virtual void deinit() = 0;
+  virtual void deinit()  { };
 
 }; // class Screen
 

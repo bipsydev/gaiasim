@@ -19,15 +19,10 @@ public:
   ~ScreenMain();
 
   SDL_AppResult init() override;
-  void deinit() override;
 
   SDL_AppResult event(SDL_Event *event) override;
   SDL_AppResult update() override;
   SDL_AppResult render(SDL_Renderer *renderer) override;
-  SDL_AppResult post_render_update() override;
-
-  SDL_AppResult show() override;
-  SDL_AppResult hide() override;
 };
 
 } // namespace bipsy::gaiasim

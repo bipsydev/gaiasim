@@ -100,14 +100,7 @@ SDL_AppResult ScreenTest::render(SDL_Renderer *renderer)
   // draw gradient rectangle
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   if (not SDL_RenderGeometry(renderer, NULL,
-    polygon1
-    // (SDL_Vertex[]){
-    //   {{100, 100}, {1,0,0,1}, {0,0}}, // top-left vertex (red)
-    //   {{300, 100}, {0,1,0,1}, {1,0}}, // top-right vertex (green)
-    //   {{300, 300}, {0,0,1,1}, {1,1}}, // bottom-right vertex (blue)
-    //   {{100, 300}, {1,1,0,1}, {0,1}}  // bottom-left vertex (yellow)
-    // }
-    ,VERTEX_COUNT,
+    polygon1 ,VERTEX_COUNT,
   NULL, 0)
   )
   {
