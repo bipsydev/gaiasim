@@ -36,6 +36,9 @@ class ScreenTest : public Screen
   static const int GRADIENT_RECT_VERTEX_COUNT = GRADIENT_RECT_TRIANGLE_COUNT * 3;
   SDL_Vertex gradient_rect[GRADIENT_RECT_VERTEX_COUNT];
 
+  /**
+   * @brief C String that holds the system name.
+   */
   #define SYSTEM_STR inline static const char * system_str =
   #if __ANDROID__
   SYSTEM_STR "Android";
@@ -56,12 +59,12 @@ public:
   ScreenTest()
   : Screen("ScreenTest"),
     polygon1{},
-  polygon2{},
-  gradient_rect{}
-{
-}
+    polygon2{},
+    gradient_rect{}
+  { }
 
-  ~ScreenTest();
+  ~ScreenTest()
+  { };
 
   SDL_AppResult init() override;
   void deinit() override;

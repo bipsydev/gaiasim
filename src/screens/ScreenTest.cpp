@@ -5,10 +5,6 @@
 namespace bipsy::gaiasim
 {
 
-ScreenTest::~ScreenTest()
-{
-}
-
 SDL_AppResult ScreenTest::init()
 {
 

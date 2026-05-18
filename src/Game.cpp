@@ -140,7 +140,7 @@ SDL_AppResult Game::init_system_objects()
 
   // Create a window
   if (not (window = SDL_CreateWindow(
-    "gaiasim (SDL3)",
+    "gaiasim engine",
     1280, 720,
     // SDL_WINDOW_VULKAN | 
     SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN)))
@@ -203,6 +203,7 @@ SDL_AppResult Game::init_game_state()
     return result;
   }
   screens.push_back(screen_test);
+  SDL_SetWindowTitle(window, ("gaiasim - " + screen_test->name()).c_str());
   // `active_screen_index` is already 0, so `screen_test` is the active screen
 
   // Initialization complete, update stage and return
