@@ -196,7 +196,7 @@ SDL_AppResult Game::init_game_state()
   }
 
   // Create a `ScreenTest` and add it to the list of screens
-  Screen *screen_test = new ScreenTest();
+  Screen *screen_test = new ScreenTest(this);
   if (SDL_AppResult result = screen_test->init())
   {
     log_error("Error occured while initializing `ScreenTest`, terminating...");

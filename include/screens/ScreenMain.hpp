@@ -5,6 +5,8 @@
 
 #include "Screen.hpp"
 
+#include "Game.hpp"
+
 #include "SDL3/SDL.h"
 
 
@@ -15,7 +17,7 @@ class ScreenMain : public Screen
 {
   
 public:
-  ScreenMain() : Screen("ScreenMain") { };
+  ScreenMain(Game * game) : Screen(game, "ScreenMain") { };
   ~ScreenMain();
 
   SDL_AppResult init() override;

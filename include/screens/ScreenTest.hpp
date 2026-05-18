@@ -5,6 +5,8 @@
 
 #include "Screen.hpp"
 
+#include "Game.hpp"
+
 #include "SDL3/SDL.h"
 
 
@@ -56,8 +58,8 @@ class ScreenTest : public Screen
   #undef SYSTEM_STR
 
 public:
-  ScreenTest()
-  : Screen("ScreenTest"),
+  ScreenTest(Game * game)
+  : Screen(game, "ScreenTest"),
     polygon1{},
     polygon2{},
     gradient_rect{}
