@@ -160,18 +160,8 @@ SDL_AppResult SDL_AppIterate(void *appstate)
  */
 void SDL_AppQuit(void *appstate, SDL_AppResult result)
 {
-  GetGame;
-
-  // Deallocate window and renderer
-  SDL_DestroyWindow(game->window);
-  SDL_DestroyRenderer(game->renderer);
-
-  // Deinitialize SDL and its subsystems
-  MIX_Quit();
-  TTF_Quit();
-  SDL_Quit();
-
   // Deallocate game state
+  GetGame;
   delete game;
 }
 

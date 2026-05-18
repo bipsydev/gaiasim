@@ -54,7 +54,8 @@ class ScreenTest : public Screen
 
 public:
   ScreenTest()
-  : polygon1{},
+  : Screen("ScreenTest"),
+    polygon1{},
   polygon2{},
   gradient_rect{}
 {

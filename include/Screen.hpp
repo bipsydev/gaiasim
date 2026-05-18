@@ -4,6 +4,9 @@
 
 #include "SDL3/SDL.h"
 
+#include <string>
+
+
 namespace bipsy::gaiasim
 {
 
@@ -18,9 +21,16 @@ namespace bipsy::gaiasim
  */
 class Screen
 {
+  std::string name_str;
+
 public:
-  Screen()  { };
+  Screen(const std::string &name) : name_str(name)  { };
   virtual ~Screen()  { };
+
+  const std::string &name() const
+  {
+    return name_str;
+  }
 
   /**
    * @brief Initialize local Screen data and state.

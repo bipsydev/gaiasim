@@ -15,7 +15,7 @@ class ScreenMain : public Screen
 {
   
 public:
-  ScreenMain();
+  ScreenMain() : Screen("ScreenMain") { };
   ~ScreenMain();
 
   SDL_AppResult init() override;
