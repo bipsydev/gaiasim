@@ -17,6 +17,7 @@ namespace bipsy::gaiasim
 Game::Game(InitRequest initializations)
 : screens{},
   active_screen_index{0},
+  clear_color{0, 128, 255, 255},
   window{nullptr},
   renderer{nullptr},
   frame{0},
@@ -222,7 +223,9 @@ SDL_AppResult Game::update()
 SDL_AppResult Game::render()
 {
   // Clear the screen with a solid color
-  SDL_SetRenderDrawColor(renderer, 0, 128, 255, 255);
+  SDL_SetRenderDrawColor(renderer,
+      clear_color.r, clear_color.g, clear_color.b, clear_color.a);
+      
   SDL_RenderClear(renderer);
   // --- Drawing block ---
   {

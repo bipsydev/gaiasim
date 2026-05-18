@@ -30,7 +30,9 @@ class Game
   // List of all allocated screens (may or may not be active)
   std::vector<Screen *> screens;
   // Index of the currently active screen in `screens`
-  Uint8 active_screen_index = 0;
+  Uint8 active_screen_index;
+
+  SDL_Color clear_color; // Clear/bg color for the renderer
 
 public:
 
@@ -101,12 +103,6 @@ public:
 
   constexpr Screen * active_screen() const
   {
-    // no screens
-    // if (screens.empty())
-    // {
-    //   log_error("No screens available! Returning nullptr from active_screen().");
-    //   return nullptr;
-    // }
     assert(!screens.empty() && "No screens available!");
 
     // use index to return active Screen
