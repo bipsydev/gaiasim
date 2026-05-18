@@ -89,10 +89,11 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv)
 {
   log_info("------ AppInit: Initializing ------");
   // Initialize Game (starts SDL systems and loads initial game state)
-  *appstate = new Game();
+  Game *game = new Game();
+  *appstate = game;
   log_info("------ AppInit: Initialization complete ------");
 
-  return SDL_APP_CONTINUE;
+  return game->init();
 }
 
 

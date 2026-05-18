@@ -22,46 +22,55 @@ Game::Game(InitRequest initializations)
   renderer{nullptr},
   frame{0},
   time_ns{0},
-  delta_time_ns{0}
+  delta_time_ns{0},
+  inits_complete{NONE}
 {
+  init(initializations);  // throws away return value `SDL_AppResult`
+}
+
+
+SDL_AppResult Game::init(InitRequest initializations)
+{
+
   assert(initializations <= Game::InitRequest::ALL);
 
   // Perform requested initializations in order
-  InitRequest inits_complete =  NONE;
   while (inits_complete < initializations)
   {
     log_info("Initialization step: " + std::to_string(inits_complete + 1), 1);
+    // the `init_` functions will update `inits_complete` if successful,
+    // or return an error result if failed, which will break the loop.
     switch(inits_complete)
     {
     case NONE:
+      // Initialization Stage 1: Libraries (SDL_Init)
       if (SDL_AppResult result = init_libraries())
       {
         log_error("Error occured while initializing libraries, terminating...");
-        return;
+        return result;
       }
       log_info("Libraries initialized successfully", 1);
-      inits_complete = LIBRARIES;
       break;
     case LIBRARIES:
+      // Initialization Stage 2: System objects (window, renderer, etc)
       if (SDL_AppResult result = init_system_objects())
       {
         log_error("Error occured while initializing system objects, terminating...");
-        return;
+        return result;
       }
       log_info("System objects initialized successfully", 1);
-      inits_complete = SYSTEM_OBJECTS;
       break;
     case SYSTEM_OBJECTS:
+      // Initialization Stage 3: Game state (initial screen, asset allocation)
       if (SDL_AppResult result = init_game_state())
       {
         log_error("Error occured while initializing game state, terminating...");
-        return;
+        return result;
       }
       log_info("Game state initialized successfully", 1);
-      inits_complete = GAME_STATE;
       break;
     case GAME_STATE:
-      // code should never reach here
+      // error state, code should never reach here
       assert(false && "Invalid initialization state reached in Game constructor!");
       // GAME_STATE should be the last initialization step, unless we modified it
       static_assert(GAME_STATE == ALL, "Did we add a new initialization step without updating the constructor?");
@@ -69,11 +78,19 @@ Game::Game(InitRequest initializations)
   }
 
   log_info("`Game` object constructed successfully!");
+  return SDL_APP_CONTINUE;
 }
 
 
 SDL_AppResult Game::init_libraries()
 {
+  // check initialization stage to avoid re-initialization
+  if (inits_complete >= LIBRARIES)
+  {
+    log_error("Libraries already initialized!");
+    return SDL_APP_FAILURE;
+  }
+
   // Initialize SDL and its subsystems
   if (not SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO))
   {
@@ -104,11 +121,20 @@ SDL_AppResult Game::init_libraries()
 
   log_info("All subsystems initialized successfully", 2);
 
+  // Initialization complete, update stage and return
+  inits_complete = LIBRARIES;
   return SDL_APP_CONTINUE;  // indicate that we want to continue app execution
 }
 
 SDL_AppResult Game::init_system_objects()
 {
+
+  // check initialization stage to avoid re-initialization
+  if (inits_complete >= SYSTEM_OBJECTS)
+  {
+    log_error("System objects already initialized!");
+    return SDL_APP_FAILURE;
+  }
 
   // Create a window
   if (not (window = SDL_CreateWindow(
@@ -141,11 +167,20 @@ SDL_AppResult Game::init_system_objects()
   // Enable adaptive vsync for the renderer
   SDL_SetRenderVSync(renderer, SDL_RENDERER_VSYNC_ADAPTIVE);
   
+  // Initialization complete, update stage and return
+  inits_complete = SYSTEM_OBJECTS;
   return SDL_APP_CONTINUE;
 }
 
 SDL_AppResult Game::init_game_state()
 {
+  // check initialization stage to avoid re-initialization
+  if (inits_complete >= GAME_STATE)
+  {
+    log_error("Game state already initialized!");
+    return SDL_APP_FAILURE;
+  }
+
   // Create a `ScreenTest` and add it to the list of screens
   Screen *screen_test = new ScreenTest();
   if (SDL_AppResult result = screen_test->init())
@@ -156,6 +191,8 @@ SDL_AppResult Game::init_game_state()
   screens.push_back(screen_test);
   // `active_screen_index` is already 0, so `screen_test` is the active screen
 
+  // Initialization complete, update stage and return
+  inits_complete = GAME_STATE;
   return SDL_APP_CONTINUE;
 }
 

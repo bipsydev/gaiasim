@@ -93,6 +93,8 @@ public:
   // Delete copy assignment operator to prevent copying (may implement later)
   Game &operator=(const Game &) = delete;
 
+  SDL_AppResult init(InitRequest initializations = ALL);
+
   SDL_AppResult init_libraries();
   SDL_AppResult init_system_objects();
   SDL_AppResult init_game_state();
