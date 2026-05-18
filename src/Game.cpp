@@ -20,6 +20,7 @@ Game::Game(InitRequest initializations)
   clear_color{0, 128, 255, 255},
   window{nullptr},
   renderer{nullptr},
+  font{nullptr},
   frame{0},
   time_ns{0},
   delta_time_ns{0},
@@ -168,6 +169,19 @@ SDL_AppResult Game::init_system_objects()
   // Enable adaptive vsync for the renderer
   SDL_SetRenderVSync(renderer, SDL_RENDERER_VSYNC_ADAPTIVE);
   
+  // Create a TTF font from PixelCode.ttf in our ./assets/ directory
+  std::string font_name = "PixelCode.ttf";
+  // get the asset directory
+  std::string asset_dir = std::string(SDL_GetBasePath()) + "assets/";
+  if (not (font = TTF_OpenFont((asset_dir + font_name).c_str(), 24)))
+  {
+    return log_error_init("TTF_Font *font");
+  }
+  else
+  {
+    log_info("TTF_Font \"" + std::string(font_name) + "\" loaded successfully", 2);
+  }
+
   // Initialization complete, update stage and return
   inits_complete = SYSTEM_OBJECTS;
   return SDL_APP_CONTINUE;

@@ -7,6 +7,7 @@
 #include "Screen.hpp"
 
 #include "SDL3/SDL.h"
+#include "SDL3_ttf/SDL_ttf.h"
 
 #include <cassert>
 #include <string>
@@ -38,6 +39,8 @@ public:
 
   SDL_Window   *window   = nullptr; // Window object
   SDL_Renderer *renderer = nullptr; // Rendering context to window
+
+  TTF_Font *font = nullptr; // Global font
 
   // -- Time-related variables --
   int frame;          // Frame count
