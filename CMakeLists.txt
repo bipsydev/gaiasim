@@ -151,7 +151,6 @@ target_link_libraries(${EXECUTABLE_NAME} PRIVATE
 )
 
 
-# --- Copied ---
 
 # SDL_Image bug: https://github.com/libsdl-org/SDL_image/issues/506
 if (APPLE AND NOT BUILD_SHARED_LIBS)
@@ -209,9 +208,6 @@ else()
 		    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_LIST_DIR}/src/${filename}" "${outname}"
 	    )
     endmacro()
-    #copy_helper("Inter-VariableFont.ttf")
-    #copy_helper("the_entertainer.ogg")
-    #copy_helper("gs_tiger.svg")
 endif()
 
 # set some extra configs for each platform
@@ -260,9 +256,6 @@ if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 endif()
 
 
-# --- End of copied ---
-
-
 
 # Copy assets folder to the output directory
 # ALL allows this to run every time, even if sources are untouched
@@ -273,41 +266,3 @@ add_custom_target(force_copy_config ALL
   "$<TARGET_FILE_DIR:${EXECUTABLE_NAME}>/assets"
   COMMENT "Copying assets folder to executable target directory"
 )
-
-
-#[[
-cmake_minimum_required(VERSION 3.20)
-project(gaiasim)
-
-# Set C++ standard
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-# Set C standard
-set(CMAKE_C_STANDARD 99)
-set(CMAKE_C_STANDARD_REQUIRED ON)
-
-# Set output directories
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../build_output/desktop)
-
-# Add include directory
-include_directories(${CMAKE_SOURCE_DIR}/include)
-
-# Add raylib subdirectory
-add_subdirectory(external_libs/raylib)
-
-# Collect all source files
-file(GLOB SOURCES
-    "${CMAKE_SOURCE_DIR}/src/*.c"
-    "${CMAKE_SOURCE_DIR}/src/*.cpp"
-)
-
-# Create executable
-add_executable(${PROJECT_NAME} ${SOURCES})
-
-# Link raylib
-target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
-
-# Include raylib headers
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/external_libs/raylib/src)
-#]]
