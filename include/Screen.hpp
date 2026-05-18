@@ -28,6 +28,9 @@ public:
    * This is called when the Screen is allocated. It is called only once
    * per instantiation. Any code that is meant to run when the Screen is
    * shown (but not allocated) should go in the `show()` function instead.
+   * When the Screen is allocated it is considered active, even if not currently
+   * shown on the screen. It's still allocated, and could still even be running
+   * and updating/catching events in the background.
    * 
    * @return SDL_AppResult SDL_APP_CONTINUE if initialization succeeded
    *                                        and the app should continue,
