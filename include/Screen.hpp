@@ -19,8 +19,6 @@
 #ifndef BIPSY_GAIASIM_SCREEN_HPP
 #define BIPSY_GAIASIM_SCREEN_HPP
 
-#include "Game.hpp"
-
 #include "SDL3/SDL.h"
 
 #include <string>
@@ -28,6 +26,9 @@
 
 namespace bipsy::gaiasim
 {
+
+  // Forward declaration of `Game` class to avoid circular dependency
+  class Game;
 
 /**
  * @brief Abstract base interface for a game screen.
@@ -41,14 +42,14 @@ namespace bipsy::gaiasim
 class Screen
 {
   // Parent Game instance that owns this Screen.
-  Game * game;
+  Game * game_ptr;
   // Name of the screen, for display purposes.
   std::string name_str;
 
 public:
 
   Screen(Game * game, const std::string &name)
-  : game(game), name_str(name)
+  : game_ptr(game), name_str(name)
   { };
 
   virtual ~Screen()
@@ -56,7 +57,7 @@ public:
 
 
   constexpr Game * const game() const
-  { return game; }
+  { return game_ptr; }
 
   constexpr const std::string &name() const
   { return name_str; }
