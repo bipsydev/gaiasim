@@ -1,6 +1,25 @@
+/**
+ * @file Screen.hpp
+ * @author bipsydev (bipsydev@gmail.com)
+ * @brief Abstract base interface for a game "screen" (e.g. main menu, settings, gameplay, etc).
+ * @version 0.1
+ * @date 2026-05-15
+ * 
+ * @copyright Copyright (c) 2026
+ * 
+ * @section License
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ */
+
 #pragma once
 #ifndef BIPSY_GAIASIM_SCREEN_HPP
 #define BIPSY_GAIASIM_SCREEN_HPP
+
+#include "Game.hpp"
 
 #include "SDL3/SDL.h"
 
@@ -21,16 +40,26 @@ namespace bipsy::gaiasim
  */
 class Screen
 {
+  // Parent Game instance that owns this Screen.
+  Game * game;
+  // Name of the screen, for display purposes.
   std::string name_str;
 
 public:
-  Screen(const std::string &name) : name_str(name)  { };
-  virtual ~Screen()  { };
+
+  Screen(Game * game, const std::string &name)
+  : game(game), name_str(name)
+  { };
+
+  virtual ~Screen()
+  { };
+
+
+  constexpr Game * const get_game() const
+  { return game; }
 
   const std::string &name() const
-  {
-    return name_str;
-  }
+  { return name_str; }
 
   /**
    * @brief Initialize local Screen data and state.
