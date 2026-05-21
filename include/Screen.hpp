@@ -52,6 +52,11 @@ public:
   : game_ptr(game), name_str(name)
   { };
 
+  // Prevent copying (for now) because of pointer data members
+  // May implement later if the need arises
+  Screen(const Screen &) = delete;
+  Screen &operator=(const Screen &) = delete;
+
   virtual ~Screen()
   { };
 
