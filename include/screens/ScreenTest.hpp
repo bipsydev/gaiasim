@@ -38,6 +38,9 @@ class ScreenTest : public Screen
   static const int GRADIENT_RECT_VERTEX_COUNT = GRADIENT_RECT_TRIANGLE_COUNT * 3;
   SDL_Vertex gradient_rect[GRADIENT_RECT_VERTEX_COUNT];
 
+  // texture for holding rendered text
+  SDL_Texture *text_texture = nullptr;
+
   /**
    * @brief C String that holds the system name.
    */
@@ -62,7 +65,8 @@ public:
   : Screen(game, "ScreenTest"),
     polygon1{},
     polygon2{},
-    gradient_rect{}
+    gradient_rect{},
+    text_texture{nullptr}
   { }
 
   ~ScreenTest()

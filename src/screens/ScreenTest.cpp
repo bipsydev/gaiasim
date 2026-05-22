@@ -76,9 +76,18 @@ SDL_AppResult ScreenTest::init()
   log_info("Initializing texture for rendered text...", 2);
   // Create a surface with rendered text using the loaded font
   // This loads the image data into an `SDL_Surface` in RAM using the CPU.
-  SDL_Surface * text_surface = TTF_RenderText_Blended(
-    game()->font, ("Hello from " + std::string(system_str)).c_str(),
-    0, {255, 255, 255, 255} // white color
+  SDL_Surface * text_surface = TTF_RenderText_Blended_Wrapped(
+    game()->font, (
+      // Message box:
+      "System: " + std::string(system_str) + "\n" +
+      //"FPS: " + std::to_string(game()->fps) + "\n" +
+      "Game Time: " + std::to_string(game()->time_ns / 1000000.0) + " ms\n" +
+      "Delta Time: " + std::to_string(game()->delta_time_ns / 1000000.0) + " ms\n" +
+      "Active Screen: " + name() //+ "\n" +
+      //"Number of Running Screens: " + std::to_string(game()->get_num_screens())
+    ).c_str(),
+    0, {255, 255, 255, 255}, // white color
+    0 // Wrap length is 0, so only wrap on newline characters
   );
   if (text_surface == nullptr)
   {
@@ -86,7 +95,7 @@ SDL_AppResult ScreenTest::init()
   }
   // Create a texture from the surface
   // This uploads the image data to the GPU for efficient rendering.
-  SDL_Texture * text_texture = SDL_CreateTextureFromSurface(game()->renderer, text_surface);
+  text_texture = SDL_CreateTextureFromSurface(game()->renderer, text_surface);
   SDL_DestroySurface(text_surface); // We can free the surface after creating the texture
   if (text_texture == nullptr)
   {
@@ -99,6 +108,17 @@ SDL_AppResult ScreenTest::init()
 
 void ScreenTest::deinit()
 {
+  // Clean up text texture
+  if (text_texture != nullptr)
+  {
+    SDL_DestroyTexture(text_texture);
+    text_texture = nullptr;
+    log_info("Destroyed text texture");
+  }
+  else
+  {
+    log_info("text_texture was not initialized, no need to destroy");
+  }
 }
 
 SDL_AppResult ScreenTest::event(SDL_Event *event)
@@ -108,12 +128,14 @@ SDL_AppResult ScreenTest::event(SDL_Event *event)
 
 SDL_AppResult ScreenTest::update()
 {
+  // Update text_texture with new info
+
+
   return SDL_APP_CONTINUE;
 }
 
 SDL_AppResult ScreenTest::render(SDL_Renderer *renderer)
 {
-
   // draw gradient rectangle
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   if (not SDL_RenderGeometry(renderer, NULL,
@@ -143,6 +165,18 @@ SDL_AppResult ScreenTest::render(SDL_Renderer *renderer)
     SDL_LogError(SDL_LOG_CATEGORY_ERROR,
       "Failed to render geometry gradient_rect: %s", SDL_GetError());
     return SDL_APP_FAILURE; // Return failure result if rendering failed
+  }
+
+  // Lastly, render the text texture
+  if (text_texture != nullptr)
+  {
+    SDL_FRect text_rect = {50.0f, 50.0f, 0.0f, 0.0f}; // We only set the x and y position here. The width and height will be determined by the texture
+    SDL_GetTextureSize(text_texture, &text_rect.w, &text_rect.h); // Get the width and height of the texture
+    SDL_RenderTexture(renderer, text_texture, NULL, &text_rect); // Render the texture to the screen at the specified position
+  }
+  else
+  {
+    log_info("text_texture is null, skipping rendering text");
   }
 
   return SDL_APP_CONTINUE;
