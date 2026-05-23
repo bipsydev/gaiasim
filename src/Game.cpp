@@ -330,7 +330,7 @@ SDL_AppResult Game::update()
   log_info("--- frame: " + frame_count + " ---");
   log_info(std::format("Frame time (s): {:.2f} s", m_time_ns / 1000000000.0));
   log_info(std::format("Delta time (ms): {:.4f} ms", m_delta_time_ns / 1000000.0));
-  log_info(std::format("FPS: {:.2f}", 1.0 / (m_delta_time_ns / 1000000000.0)));
+  log_info(std::format("FPS: {:.2f}", fps()));
 
   // Make window visible on first frame (after initialization)
   if (m_frame == 0)

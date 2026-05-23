@@ -223,7 +223,7 @@ SDL_AppResult ScreenTest::render(SDL_Renderer *renderer)
     // position to render text
     float x = 50.0f;
 #if __ANDROID__
-    // render text lower on Android to accomodate the status bar at the top of the screen
+    // render text lower on Android to accommodate the status bar at the top of the screen
     //TODO better handling of the status bar! extend SDLActivity in Java
     float y = 150.0f;
 #else
