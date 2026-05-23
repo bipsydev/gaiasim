@@ -196,7 +196,16 @@ SDL_AppResult ScreenTest::render(SDL_Renderer *renderer)
   // Lastly, render the text texture
   if (text_texture != nullptr)
   {
-    SDL_FRect text_rect = {50.0f, 50.0f, 0.0f, 0.0f}; // We only set the x and y position here. The width and height will be determined by the texture
+    // position to render text
+    float x = 50.0f;
+#if __ANDROID__
+    // render text lower on Android to accomodate the status bar at the top of the screen
+    //TODO better handling of the status bar! extend SDLActivity in Java
+    float y = 150.0f
+#else
+    float y = 50.0f;
+#endif
+    SDL_FRect text_rect = {x, y, 0.0f, 0.0f}; // We only set the x and y position here. The width and height will be determined by the texture
     SDL_GetTextureSize(text_texture, &text_rect.w, &text_rect.h); // Get the width and height of the texture
     SDL_RenderTexture(renderer, text_texture, NULL, &text_rect); // Render the texture to the screen at the specified position
   }
