@@ -217,10 +217,6 @@ SDL_AppResult ScreenTest::render(SDL_Renderer *renderer)
     SDL_GetTextureSize(text_texture, &text_rect.w, &text_rect.h); // Get the width and height of the texture
     SDL_RenderTexture(renderer, text_texture, NULL, &text_rect); // Render the texture to the screen at the specified position
   }
-  else
-  {
-    log_info("text_texture is null, skipping rendering text");
-  }
 
   return SDL_APP_CONTINUE;
 }
