@@ -8,6 +8,7 @@
 
 #include <cassert>
 #include <string>
+#include <format>
 
 
 namespace bipsy::gaiasim
@@ -302,6 +303,10 @@ SDL_AppResult Game::iterate()
 
 SDL_AppResult Game::update()
 {
+  // update delta time
+  // uses previous time_ns before we update in next line
+  delta_time_ns = SDL_GetTicksNS() - time_ns;
+
   // update frame time
   time_ns = SDL_GetTicksNS();
 
@@ -322,9 +327,11 @@ SDL_AppResult Game::update()
   }
 #endif // __ANDROID__
 
-  log_info(("--- frame: " + frame_count + " ---").c_str());
-  log_info(("Frame time (s): " + std::to_string(time_ns / 1000000000.0)).c_str());
-  
+  log_info("--- frame: " + frame_count + " ---");
+  log_info(std::format("Frame time (s): {:.2f} s", time_ns / 1000000000.0));
+  log_info(std::format("Delta time (ms): {:.4f} ms", delta_time_ns / 1000000.0));
+  log_info(std::format("FPS: {:.2f}", 1.0 / (delta_time_ns / 1000000000.0)));
+
   // Make window visible on first frame (after initialization)
   if (frame == 0)
   {
