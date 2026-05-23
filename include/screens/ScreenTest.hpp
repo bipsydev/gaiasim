@@ -69,6 +69,11 @@ public:
     text_texture{nullptr}
   { }
 
+  // Delete copy constructor and copy assignment operator to prevent copying
+  // May implement later if needed
+  ScreenTest(const ScreenTest &) = delete;
+  ScreenTest &operator=(const ScreenTest &) = delete;
+
   ~ScreenTest()
   { };
 
