@@ -9,7 +9,7 @@
 
 ### [Living Game Design Document can be found here!](../../wiki/Game-Design-Document-(GDD))
 
-### Progress to Next Milestone
+### Progress to Next Milestones
 ![GitHub milestone details](https://img.shields.io/github/milestones/progress-percent/bipsydev/gaiasim/1)
 ![GitHub milestone details](https://img.shields.io/github/milestones/progress-percent/bipsydev/gaiasim/2?color=%23f67)
 ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/bipsydev/gaiasim)
