@@ -8,7 +8,9 @@
   - __Default game world/objectives__ inspired by games such as Vintage Story, TerraFirmaCraft, Terraria, and Don't Starve.
 
 ### [Living Game Design Document can be found here!](../../wiki/Game-Design-Document-(GDD))
-#### The [Task Planner](../../wiki/Task-Planner) lists what I'm currently working on!
+
+### Progress to Next Milestone
+![GitHub milestone details](https://img.shields.io/github/milestones/progress-percent/bipsydev/gaiasim/1)
 
 ## Building & Debugging
 
