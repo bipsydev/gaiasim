@@ -11,7 +11,7 @@
 
 ### Progress to Next Milestone
 ![GitHub milestone details](https://img.shields.io/github/milestones/progress-percent/bipsydev/gaiasim/1)
-![GitHub Issues details](https://img.shields.io/github/issues/bipsydev/gaiasim?link=https%3A%2F%2Fgithub.com%2Fbipsydev%2Fgaiasim%2Fissues)
+![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/bipsydev/gaiasim)
 
 
 
