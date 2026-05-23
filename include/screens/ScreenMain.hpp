@@ -17,8 +17,15 @@ class ScreenMain : public Screen
 {
   
 public:
-  ScreenMain(Game * game) : Screen(game, "ScreenMain") { };
-  ~ScreenMain();
+  ScreenMain(Game * game)
+  : Screen(game, "ScreenMain")
+  { };
+
+  // Prevent copying
+  ScreenMain(const ScreenMain &) = delete;
+  ScreenMain &operator=(const ScreenMain &) = delete;
+
+  virtual ~ScreenMain()  { };
 
   SDL_AppResult init() override;
 
