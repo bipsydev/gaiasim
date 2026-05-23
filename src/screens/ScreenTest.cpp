@@ -89,10 +89,9 @@ SDL_AppResult ScreenTest::init()
 SDL_AppResult ScreenTest::init_text_texture()
 {
   log_info(std::format("{} texture for rendered text...", (text_texture == nullptr? "Initializing" : "Updating")), 2);
-  // Create a surface with rendered text using the loaded font
-  // This loads the image data into an `SDL_Surface` in RAM using the CPU.
-  SDL_Surface * text_surface = TTF_RenderText_Blended_Wrapped(
-    game()->font(), (
+  
+  // Update text string first
+  std::string new_text_str = (
       // Message box:
       std::format("System: {}\n", system_str) +
       // "FPS: " + std::to_string(game()->fps) + "\n" +
@@ -101,7 +100,24 @@ SDL_AppResult ScreenTest::init_text_texture()
       std::format("FPS: {:.2f}\n", game()->fps()) +
       std::format("Active Screen: {}\n", name()) //+ "\n" +
       // "Number of Running Screens: " + std::to_string(game()->get_num_screens())
-    ).c_str(),
+  );
+
+  // Check if texture update is necessary (new text generated this frame)
+  if (m_text_str != new_text_str)
+  {
+    log_info("Text content updated, regenerating text texture", 3);
+    m_text_str = new_text_str;
+  }
+  else
+  {
+    log_info("Text content unchanged, skipping texture update", 3);
+    return SDL_APP_CONTINUE; // No need to update texture if text hasn't changed
+  }
+
+  // Create a surface with rendered text using the loaded font
+  // This loads the image data into an `SDL_Surface` in RAM using the CPU.
+  SDL_Surface * text_surface = TTF_RenderText_Blended_Wrapped(
+    game()->font(), m_text_str.c_str(),
     0, {255, 255, 255, 255}, // white color
     0 // Wrap length is 0, so only wrap on newline characters
   );

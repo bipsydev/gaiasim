@@ -9,6 +9,8 @@
 
 #include "SDL3/SDL.h"
 
+#include <string>
+
 
 namespace bipsy::gaiasim
 {
@@ -41,6 +43,8 @@ class ScreenTest : public Screen
   // texture for holding rendered text
   SDL_Texture *text_texture = nullptr;
 
+  std::string m_text_str; // This holds the current text string that is rendered in `text_texture`. We keep track of this so we can avoid regenerating the texture if the text hasn't changed.
+
   /**
    * @brief C String that holds the system name.
    */
@@ -66,7 +70,8 @@ public:
     polygon1{},
     polygon2{},
     gradient_rect{},
-    text_texture{nullptr}
+    text_texture{nullptr},
+    m_text_str{""}
   { }
 
   // Delete copy constructor and copy assignment operator to prevent copying
