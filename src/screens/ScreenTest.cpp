@@ -2,6 +2,9 @@
 
 #include "Game.hpp" // log_info
 
+#include <format> // std::format
+
+
 namespace bipsy::gaiasim
 {
 
@@ -73,18 +76,26 @@ SDL_AppResult ScreenTest::init()
   log_info("Vertex data initialized successfully", 2);
 
 
+  init_text_texture();
+
+
+  return SDL_APP_CONTINUE;
+}
+
+SDL_AppResult ScreenTest::init_text_texture()
+{
   log_info("Initializing texture for rendered text...", 2);
   // Create a surface with rendered text using the loaded font
   // This loads the image data into an `SDL_Surface` in RAM using the CPU.
   SDL_Surface * text_surface = TTF_RenderText_Blended_Wrapped(
     game()->font, (
       // Message box:
-      "System: " + std::string(system_str) + "\n" +
-      //"FPS: " + std::to_string(game()->fps) + "\n" +
-      "Game Time: " + std::to_string(game()->time_ns / 1000000.0) + " ms\n" +
-      "Delta Time: " + std::to_string(game()->delta_time_ns / 1000000.0) + " ms\n" +
-      "Active Screen: " + name() //+ "\n" +
-      //"Number of Running Screens: " + std::to_string(game()->get_num_screens())
+      std::format("System: {}\n", system_str) +
+      // "FPS: " + std::to_string(game()->fps) + "\n" +
+      std::format("Game Time: {:.2f} s\n", game()->time_ns / 1000000000.0) +
+      std::format("Delta Time: {:.2f} s\n", game()->delta_time_ns / 1000000000.0) +
+      std::format("Active Screen: {}\n", name()) //+ "\n" +
+      // "Number of Running Screens: " + std::to_string(game()->get_num_screens())
     ).c_str(),
     0, {255, 255, 255, 255}, // white color
     0 // Wrap length is 0, so only wrap on newline characters
@@ -93,6 +104,15 @@ SDL_AppResult ScreenTest::init()
   {
     return log_error_init("text_surface");
   }
+
+  // If previous texture exists, destroy it to free up GPU memory
+  if (text_texture != nullptr)
+  {
+    SDL_DestroyTexture(text_texture);
+    text_texture = nullptr;
+    log_info("Destroyed previous text texture");
+  }
+
   // Create a texture from the surface
   // This uploads the image data to the GPU for efficient rendering.
   text_texture = SDL_CreateTextureFromSurface(game()->renderer, text_surface);
@@ -102,7 +122,7 @@ SDL_AppResult ScreenTest::init()
     return log_error_init("text_texture");
   }
 
-
+  // Successfully created text texture
   return SDL_APP_CONTINUE;
 }
 
@@ -129,6 +149,7 @@ SDL_AppResult ScreenTest::event(SDL_Event *event)
 SDL_AppResult ScreenTest::update()
 {
   // Update text_texture with new info
+  init_text_texture();
 
 
   return SDL_APP_CONTINUE;

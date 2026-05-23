@@ -82,6 +82,9 @@ public:
 
   SDL_AppResult show() override;
   SDL_AppResult hide() override;
+
+private:
+  SDL_AppResult init_text_texture();
 };
 
 } // namespace bipsy::gaiasim
