@@ -131,7 +131,7 @@ SDL_AppResult ScreenTest::init_text_texture()
   return SDL_APP_CONTINUE;
 }
 
-void ScreenTest::deinit()
+ScreenTest::~ScreenTest()
 {
   // Clean up text texture
   if (text_texture != nullptr)

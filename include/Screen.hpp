@@ -57,8 +57,7 @@ public:
   Screen(const Screen &) = delete;
   Screen &operator=(const Screen &) = delete;
 
-  virtual ~Screen()
-  { };
+  virtual ~Screen()  { game_ptr = nullptr; };
 
 
   constexpr Game * const game() const
@@ -91,8 +90,6 @@ public:
 
   virtual SDL_AppResult show()  { return SDL_APP_CONTINUE; }
   virtual SDL_AppResult hide()  { return SDL_APP_CONTINUE; }
-
-  virtual void deinit()  { };
 
 }; // class Screen
 

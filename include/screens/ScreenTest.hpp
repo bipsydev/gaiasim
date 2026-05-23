@@ -74,11 +74,9 @@ public:
   ScreenTest(const ScreenTest &) = delete;
   ScreenTest &operator=(const ScreenTest &) = delete;
 
-  ~ScreenTest()
-  { };
+  virtual ~ScreenTest();
 
   SDL_AppResult init() override;
-  void deinit() override;
 
   SDL_AppResult event(SDL_Event *event) override;
   SDL_AppResult update() override;
