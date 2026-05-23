@@ -88,12 +88,13 @@ SDL_AppResult ScreenTest::init_text_texture()
   // Create a surface with rendered text using the loaded font
   // This loads the image data into an `SDL_Surface` in RAM using the CPU.
   SDL_Surface * text_surface = TTF_RenderText_Blended_Wrapped(
-    game()->font, (
+    game()->font(), (
       // Message box:
       std::format("System: {}\n", system_str) +
       // "FPS: " + std::to_string(game()->fps) + "\n" +
-      std::format("Game Time: {:.2f} s\n", game()->time_ns / 1000000000.0) +
-      std::format("Delta Time: {:.4f} ms\n", game()->delta_time_ns / 1000000.0) +
+      std::format("Game Time: {:.2f} s\n", game()->time_ns() / 1000000000.0) +
+      std::format("Delta Time: {:.4f} ms\n", game()->delta_time_ns() / 1000000.0) +
+      std::format("FPS: {:.2f}\n", game()->fps()) +
       std::format("Active Screen: {}\n", name()) //+ "\n" +
       // "Number of Running Screens: " + std::to_string(game()->get_num_screens())
     ).c_str(),
@@ -115,7 +116,7 @@ SDL_AppResult ScreenTest::init_text_texture()
 
   // Create a texture from the surface
   // This uploads the image data to the GPU for efficient rendering.
-  text_texture = SDL_CreateTextureFromSurface(game()->renderer, text_surface);
+  text_texture = SDL_CreateTextureFromSurface(game()->renderer(), text_surface);
   SDL_DestroySurface(text_surface); // We can free the surface after creating the texture
   if (text_texture == nullptr)
   {

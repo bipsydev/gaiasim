@@ -16,16 +16,16 @@ namespace bipsy::gaiasim
 
 
 Game::Game(InitRequest initializations)
-: screens{},
-  active_screen_index{0},
-  clear_color{0, 128, 255, 255},
-  window{nullptr},
-  renderer{nullptr},
-  font{nullptr},
-  frame{0},
-  time_ns{0},
-  delta_time_ns{0},
-  inits_complete{NONE}
+: m_screens{},
+  m_active_screen_index{0},
+  m_clear_color{0, 128, 255, 255},
+  m_window{nullptr},
+  m_renderer{nullptr},
+  m_font{nullptr},
+  m_frame{0},
+  m_time_ns{0},
+  m_delta_time_ns{0},
+  m_inits_complete{NONE}
 {
   init(initializations);  // throws away return value `SDL_AppResult`
 }
@@ -37,12 +37,12 @@ SDL_AppResult Game::init(InitRequest initializations)
   assert(initializations <= Game::InitRequest::ALL);
 
   // Perform requested initializations in order
-  while (inits_complete < initializations)
+  while (m_inits_complete < initializations)
   {
-    log_info("Initialization step: " + std::to_string(inits_complete + 1), 1);
-    // the `init_` functions will update `inits_complete` if successful,
+    log_info("Initialization step: " + std::to_string(m_inits_complete + 1), 1);
+    // the `init_` functions will update `m_inits_complete` if successful,
     // or return an error result if failed, which will break the loop.
-    switch(inits_complete)
+    switch(m_inits_complete)
     {
     case NONE:
       // Initialization Stage 1: Libraries (SDL_Init)
@@ -87,7 +87,7 @@ SDL_AppResult Game::init(InitRequest initializations)
 SDL_AppResult Game::init_libraries()
 {
   // check initialization stage to avoid re-initialization
-  if (inits_complete >= LIBRARIES)
+  if (m_inits_complete >= LIBRARIES)
   {
     log_error("Libraries already initialized!");
     return SDL_APP_FAILURE;
@@ -124,7 +124,7 @@ SDL_AppResult Game::init_libraries()
   log_info("All subsystems initialized successfully", 2);
 
   // Initialization complete, update stage and return
-  inits_complete = LIBRARIES;
+  m_inits_complete = LIBRARIES;
   return SDL_APP_CONTINUE;  // indicate that we want to continue app execution
 }
 
@@ -133,14 +133,14 @@ SDL_AppResult Game::init_system_objects()
 {
 
   // check initialization stage to avoid re-initialization
-  if (inits_complete >= SYSTEM_OBJECTS)
+  if (m_inits_complete >= SYSTEM_OBJECTS)
   {
     log_error("System objects already initialized!");
     return SDL_APP_FAILURE;
   }
 
   // Create a window
-  if (not (window = SDL_CreateWindow(
+  if (not (m_window = SDL_CreateWindow(
     "gaiasim engine",
     1280, 720,
     // SDL_WINDOW_VULKAN | 
@@ -155,11 +155,11 @@ SDL_AppResult Game::init_system_objects()
   // Center the window on the screen
   // This takes a second, so we wait to show the window
   // until the first frame in SDL_AppIterate
-  SDL_SetWindowPosition(window,
+  SDL_SetWindowPosition(m_window,
     SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 
   // Create a rendering context from a window
-  if (not (renderer = SDL_CreateRenderer(window, NULL)))
+  if (not (m_renderer = SDL_CreateRenderer(m_window, NULL)))
   {
     return log_error_init("SDL_Renderer *renderer");
   }
@@ -168,11 +168,11 @@ SDL_AppResult Game::init_system_objects()
     log_info("SDL_Renderer created successfully", 2);
   }
   // Enable adaptive vsync for the renderer
-  SDL_SetRenderVSync(renderer, SDL_RENDERER_VSYNC_ADAPTIVE);
+  SDL_SetRenderVSync(m_renderer, SDL_RENDERER_VSYNC_ADAPTIVE);
   
   // Create a TTF font from PixelCode.ttf in our ./assets/ directory
   std::string font_name = "PixelCode.ttf";
-  if (not (font = TTF_OpenFont((asset_dir(font_name) + font_name).c_str(), 24)))
+  if (not (m_font = TTF_OpenFont((asset_dir(font_name) + font_name).c_str(), 24)))
   {
     return log_error_init("TTF_Font *font");
   }
@@ -182,7 +182,7 @@ SDL_AppResult Game::init_system_objects()
   }
 
   // Initialization complete, update stage and return
-  inits_complete = SYSTEM_OBJECTS;
+  m_inits_complete = SYSTEM_OBJECTS;
   return SDL_APP_CONTINUE;
 }
 
@@ -190,7 +190,7 @@ SDL_AppResult Game::init_system_objects()
 SDL_AppResult Game::init_game_state()
 {
   // check initialization stage to avoid re-initialization
-  if (inits_complete >= GAME_STATE)
+  if (m_inits_complete >= GAME_STATE)
   {
     log_error("Game state already initialized!");
     return SDL_APP_FAILURE;
@@ -203,12 +203,12 @@ SDL_AppResult Game::init_game_state()
     log_error("Error occured while initializing `ScreenTest`, terminating...");
     return result;
   }
-  screens.push_back(screen_test);
-  SDL_SetWindowTitle(window, ("gaiasim - " + screen_test->name()).c_str());
+  m_screens.push_back(screen_test);
+  SDL_SetWindowTitle(m_window, ("gaiasim - " + screen_test->name()).c_str());
   // `active_screen_index` is already 0, so `screen_test` is the active screen
 
   // Initialization complete, update stage and return
-  inits_complete = GAME_STATE;
+  m_inits_complete = GAME_STATE;
   return SDL_APP_CONTINUE;
 }
 
@@ -219,38 +219,38 @@ Game::~Game()
   log_info("Deinitializing `Game` object...");
 
   // Deinitialization Stage 3: Game state
-  if (inits_complete >= GAME_STATE)
+  if (m_inits_complete >= GAME_STATE)
   {
     log_info("Deinitializing game state...", 1);
     // ScreenTest needs to be deallocated
     // Deallocate all screens we have active
-    for (Screen *screen : screens)
+    for (Screen *screen : m_screens)
     {
       log_info("Deallocating screen \"" + screen->name() + "\"...", 2);
       delete screen;
     }
     // clear out the pointer vector
-    screens.clear();
+    m_screens.clear();
   }
 
   // Deinitialization Stage 2: System objects
-  if (inits_complete >= SYSTEM_OBJECTS)
+  if (m_inits_complete >= SYSTEM_OBJECTS)
   {
     log_info("Deinitializing system objects...", 1);
-    if (renderer)
+    if (m_renderer)
     {
-      SDL_DestroyRenderer(renderer);
-      renderer = nullptr;
+      SDL_DestroyRenderer(m_renderer);
+      m_renderer = nullptr;
     }
-    if (window)
+    if (m_window)
     {
-      SDL_DestroyWindow(window);
-      window = nullptr;
+      SDL_DestroyWindow(m_window);
+      m_window = nullptr;
     }
   }
 
   // Deinitialization Stage 1: Libraries
-  if (inits_complete >= LIBRARIES)
+  if (m_inits_complete >= LIBRARIES)
   {
     log_info("Deinitializing libraries...", 1);
     MIX_Quit();
@@ -305,37 +305,37 @@ SDL_AppResult Game::update()
 {
   // update delta time
   // uses previous time_ns before we update in next line
-  delta_time_ns = SDL_GetTicksNS() - time_ns;
+  m_delta_time_ns = SDL_GetTicksNS() - m_time_ns;
 
   // update frame time
-  time_ns = SDL_GetTicksNS();
+  m_time_ns = SDL_GetTicksNS();
 
   // log frame count (with padding)
-  auto frame_count = std::to_string(frame);
+  auto frame_count = std::to_string(m_frame);
   frame_count.resize(5, ' '); // Pad frame count to 5 characters for better readability
 
   // For Android, just log every 60th frame
   // to avoid spamming the logcat with too many messages
   #if __ANDROID__
-  if (frame % 60 == 0)
+  if (m_frame % 60 == 0)
   {
     log_info_enable(true);
   }
-  else if (frame % 60 == 1)
+  else if (m_frame % 60 == 1)
   {
     log_info_enable(false);
   }
 #endif // __ANDROID__
 
   log_info("--- frame: " + frame_count + " ---");
-  log_info(std::format("Frame time (s): {:.2f} s", time_ns / 1000000000.0));
-  log_info(std::format("Delta time (ms): {:.4f} ms", delta_time_ns / 1000000.0));
-  log_info(std::format("FPS: {:.2f}", 1.0 / (delta_time_ns / 1000000000.0)));
+  log_info(std::format("Frame time (s): {:.2f} s", m_time_ns / 1000000000.0));
+  log_info(std::format("Delta time (ms): {:.4f} ms", m_delta_time_ns / 1000000.0));
+  log_info(std::format("FPS: {:.2f}", 1.0 / (m_delta_time_ns / 1000000000.0)));
 
   // Make window visible on first frame (after initialization)
-  if (frame == 0)
+  if (m_frame == 0)
   {
-    SDL_ShowWindow(window);
+    SDL_ShowWindow(m_window);
     log_info("Window shown");
   }
 
@@ -346,16 +346,16 @@ SDL_AppResult Game::update()
 SDL_AppResult Game::render()
 {
   // Clear the screen with a solid color
-  SDL_SetRenderDrawColor(renderer,
-      clear_color.r, clear_color.g, clear_color.b, clear_color.a);
+  SDL_SetRenderDrawColor(m_renderer,
+      m_clear_color.r, m_clear_color.g, m_clear_color.b, m_clear_color.a);
       
-  SDL_RenderClear(renderer);
+  SDL_RenderClear(m_renderer);
   // --- Drawing block ---
   {
-    active_screen()->render(renderer);
+    active_screen()->render(m_renderer);
   }
   // Present the rendered frame buffer to the screen
-  SDL_RenderPresent(renderer);
+  SDL_RenderPresent(m_renderer);
 
   return SDL_APP_CONTINUE;
 }
@@ -366,7 +366,7 @@ SDL_AppResult Game::post_render_update()
   auto result = active_screen()->post_render_update();
 
   // increment frame count and return (continue running to next callback)
-  frame++;
+  m_frame++;
   
   return result;
 }

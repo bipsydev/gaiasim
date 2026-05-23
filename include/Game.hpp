@@ -28,27 +28,35 @@ namespace bipsy::gaiasim
  */
 class Game
 {
-  // List of all allocated screens (may or may not be active)
-  std::vector<Screen *> screens;
-  // Index of the currently active screen in `screens`
-  Uint8 active_screen_index;
 
-  SDL_Color clear_color; // Clear/bg color for the renderer
+  /****************
+   * DATA MEMBERS *
+   ****************/
+
+  // -- Screen management --
+  // List of all allocated screens (may or may not be active)
+  std::vector<Screen *> m_screens;
+  // Index of the currently active screen in `screens`
+  Uint8 m_active_screen_index;
+
+  // -- SDL objects --
+  SDL_Window   *m_window   = nullptr; // Window object
+  SDL_Renderer *m_renderer = nullptr; // Rendering context to window
+
+  SDL_Color m_clear_color; // Clear/bg color for the renderer
+
+  TTF_Font *m_font = nullptr; // Global font
+
+  // -- Time-related variables --
+  int m_frame;          // Frame count
+  Uint64 m_time_ns;     // Time (nanoseconds) since SDL initialization
+                      // (updated at the beginning of each frame)
+  Uint64 m_delta_time_ns;   // Time (ns) taken to render the previous frame
+
+
 
 public:
 
-  SDL_Window   *window   = nullptr; // Window object
-  SDL_Renderer *renderer = nullptr; // Rendering context to window
-
-  TTF_Font *font = nullptr; // Global font
-
-  // -- Time-related variables --
-  int frame;          // Frame count
-  Uint64 time_ns ;    // Time (nanoseconds) since SDL initialization
-                      // (updated at the beginning of each frame)
-  Uint64 delta_time_ns;   // Time (ns) taken to render the previous frame
-
-  
   /**
    * @brief Flags for requesting/indicating certain initialization steps.
    * 
@@ -77,8 +85,17 @@ public:
     SYSTEM_OBJECTS  = 2U,
     GAME_STATE      = 3U,
     ALL             = 3U, // Same as GAME_STATE
-  }
-  inits_complete; // This tracks which initialization steps have been completed
+  };
+
+private:
+  InitRequest m_inits_complete; // This tracks which initialization steps have been completed
+
+
+public: 
+
+  /***********************
+   * METHOD DECLARATIONS *
+   ***********************/
 
   /**
    * @brief Construct a new Game object.
@@ -111,11 +128,47 @@ public:
 
   constexpr Screen * active_screen() const
   {
-    assert(!screens.empty() && "No screens available!");
+    assert(!m_screens.empty() && "No screens available!");
 
     // use index to return active Screen
-    return screens[active_screen_index];
+    return m_screens[m_active_screen_index];
   }
+
+  // --- Getters for data members ---
+
+  /** 
+   * @brief Helper macro to generate getters for data members
+   * @details Each GETTER generates two functions:
+   *          - one named 'name()' that returns `m_name`
+   *          - and another named 'get_name()' that does the same thing.
+   */
+  #define GETTER(type, name) \
+    type name() const { return m_##name; } \
+    type get_##name() const { return m_##name; }
+  
+  #define GETTER_CODE(type, name, code) \
+    type name() const { code } \
+    type get_##name() const { code }
+
+  
+  // Getters for time-related variables and FPS
+  GETTER(Uint64, time_ns)
+  GETTER(Uint64, delta_time_ns)
+
+  GETTER_CODE(double, fps,
+  {
+    // Avoid division by zero, return 0 FPS if delta_time_ns is 0
+    if (m_delta_time_ns == 0)
+    {
+      return 0.0;
+    }
+    return 1e9 / static_cast<double>(m_delta_time_ns);
+  })
+
+  // Getters for SDL objects
+  GETTER(SDL_Window *const, window)
+  GETTER(SDL_Renderer *const, renderer)
+  GETTER(TTF_Font *const, font)
 
 
   ~Game();
