@@ -76,7 +76,11 @@ SDL_AppResult ScreenTest::init()
   log_info("Vertex data initialized successfully", 2);
 
 
-  init_text_texture();
+  if(auto result = init_text_texture())
+  {
+    log_error("Error occured while initializing text texture, terminating...");
+    return result;
+  }
 
 
   return SDL_APP_CONTINUE;
@@ -154,7 +158,11 @@ SDL_AppResult ScreenTest::event(SDL_Event *event)
 SDL_AppResult ScreenTest::update()
 {
   // Update text_texture with new info
-  init_text_texture();
+  if (auto result = init_text_texture())
+  {
+    log_error("Error occured while updating text texture, terminating...");
+    return result;
+  }
 
 
   return SDL_APP_CONTINUE;
