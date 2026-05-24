@@ -1,6 +1,7 @@
 #include "screens/ScreenTest.hpp"
 
 #include "Game.hpp" // log_info
+#include "screens/ScreenMain.hpp"
 
 #include <format> // std::format
 
@@ -88,7 +89,8 @@ SDL_AppResult ScreenTest::init()
 
 SDL_AppResult ScreenTest::init_text_texture()
 {
-  log_info(std::format("{} texture for rendered text...", (text_texture == nullptr? "Initializing" : "Updating")), 2);
+  log_info(std::format("{} texture for rendered text...",
+    (text_texture == nullptr? "Initializing" : "Updating")), 2);
   
   // Update text string first
   std::string new_text_str = (
@@ -168,6 +170,28 @@ ScreenTest::~ScreenTest()
 
 SDL_AppResult ScreenTest::event(SDL_Event *event)
 {
+
+  // React to 'N' key press to switch to main screen
+  if (event->type == SDL_EVENT_KEY_DOWN)
+  {
+    log_info(std::format("'{}' key pressed ('{}')",
+      SDL_GetKeyName(event->key.key),
+      SDL_GetScancodeName(event->key.scancode)));
+    if (event->key.key == SDLK_N)
+    {
+      log_info("'N' key pressed, switching to main screen...");
+      switch_to_main_screen();
+      return SDL_APP_CONTINUE;
+    }
+    if (event->key.key == SDLK_ESCAPE)
+    {
+      log_info("'ESCAPE' key pressed, quitting game...");
+      SDL_Event quit_event;
+      quit_event.type = SDL_EVENT_QUIT;
+      SDL_PushEvent(&quit_event); // Push a quit event to trigger app termination
+      return SDL_APP_CONTINUE;
+    }
+  }
   return SDL_APP_CONTINUE;
 }
 
@@ -250,6 +274,17 @@ SDL_AppResult ScreenTest::show()
 SDL_AppResult ScreenTest::hide()
 {
   return SDL_APP_CONTINUE;
+}
+
+void ScreenTest::switch_to_main_screen()
+{
+  // if we have only 1 screen, create a ScreenMain instance and add it to game
+  if (game()->screens().size() == 1)
+  {
+    game()->add_screen<ScreenMain>();
+  }
+
+  game()->switch_screen(1); // Switch to the second screen (ScreenMain)
 }
 
 } // namespace bipsy::gaiasim

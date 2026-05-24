@@ -165,10 +165,47 @@ public:
     return 1e9 / static_cast<double>(m_delta_time_ns);
   })
 
+  GETTER(std::vector<Screen *>, screens)
+
   // Getters for SDL objects
   GETTER(SDL_Window *const, window)
   GETTER(SDL_Renderer *const, renderer)
   GETTER(TTF_Font *const, font)
+
+
+  template<typename ScreenType, typename... Args>
+  SDL_AppResult add_screen(Args&&... args)
+  {
+    // Create a new screen instance with the provided arguments
+    Screen *new_screen = new ScreenType(this, std::forward<Args>(args)...);
+
+    // Initialize the new screen and check for errors
+    if (SDL_AppResult result = new_screen->init())
+    {
+      log_error("Error occurred while initializing new screen, terminating...");
+      delete new_screen; // Clean up allocated memory on failure
+      return result;
+    }
+
+    // Add the new screen to the list of screens
+    m_screens.push_back(new_screen);
+    log_info("Added new screen: " + new_screen->name());
+
+    return SDL_APP_CONTINUE;
+  }
+
+  bool switch_screen(Uint8 screen_index)
+  {
+    if (screen_index >= m_screens.size())
+    {
+      log_error("Invalid screen index: " + std::to_string(screen_index));
+      return false;
+    }
+    m_active_screen_index = screen_index;
+    SDL_SetWindowTitle(m_window, ("gaiasim - " + active_screen()->name()).c_str());
+    log_info("Switched to screen: " + active_screen()->name());
+    return true;
+  }
 
 
   ~Game();
