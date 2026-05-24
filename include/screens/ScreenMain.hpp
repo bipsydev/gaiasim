@@ -29,7 +29,7 @@ public:
   ScreenMain(const ScreenMain &) = delete;
   ScreenMain &operator=(const ScreenMain &) = delete;
 
-  virtual ~ScreenMain()  { };
+  virtual ~ScreenMain();
 
   SDL_AppResult init() override;
 
