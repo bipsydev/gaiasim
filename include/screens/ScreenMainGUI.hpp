@@ -2,7 +2,7 @@
 #ifndef BIPSY_GAIASIM_SCREEN_MAIN_GUI_HPP
 #define BIPSY_GAIASIM_SCREEN_MAIN_GUI_HPP
 
-namespace bipsy::gaiasim
+namespace bipsy::gaiasim::gui
 {
 
 class ScreenMainGUI
@@ -12,6 +12,6 @@ public:
   ~ScreenMainGUI() { };
 };
 
-} // namespace bipsy::gaiasim
+} // namespace bipsy::gaiasim::gui
 
 #endif // BIPSY_GAIASIM_SCREEN_MAIN_GUI_HPP

@@ -15,7 +15,7 @@ namespace bipsy::gaiasim
 
 class ScreenMain : public Screen
 {
-  using GUI = ScreenMainGUI;
+  using GUI = gui::ScreenMainGUI;
   GUI * gui;
   
 
