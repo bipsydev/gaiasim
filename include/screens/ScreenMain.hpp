@@ -4,7 +4,7 @@
 
 
 #include "Screen.hpp"
-
+#include "ScreenMainGUI.hpp"
 #include "Game.hpp"
 
 #include "SDL3/SDL.h"
@@ -15,10 +15,14 @@ namespace bipsy::gaiasim
 
 class ScreenMain : public Screen
 {
+  using GUI = ScreenMainGUI;
+  GUI * gui;
   
+
 public:
   ScreenMain(Game * game)
-  : Screen(game, "ScreenMain")
+  : Screen(game, "ScreenMain"),
+    gui{nullptr}
   { };
 
   // Prevent copying
