@@ -12,7 +12,8 @@
 namespace bipsy::sdlutils
 {
 
-
+  // Default clear color (Sky Blue)
+  constexpr SDL_Color GAME_CLEAR_COLOR_DEFAULT = {0, 128, 255, 255}; 
 /**
  * @brief Logs an SDL info message with specified indentation level.
  * 

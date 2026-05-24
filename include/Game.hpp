@@ -150,6 +150,9 @@ public:
     type name() const { code } \
     type get_##name() const { code }
 
+  #define SETTER(type, name) \
+    void set_##name(type value) { m_##name = value; }
+
   
   // Getters for time-related variables and FPS
   GETTER(Uint64, time_ns)
@@ -171,6 +174,9 @@ public:
   GETTER(SDL_Window *const, window)
   GETTER(SDL_Renderer *const, renderer)
   GETTER(TTF_Font *const, font)
+
+  GETTER(SDL_Color, clear_color)
+  SETTER(SDL_Color, clear_color)
 
 
   template<typename ScreenType, typename... Args>
@@ -196,13 +202,19 @@ public:
 
   bool switch_screen(Uint8 screen_index)
   {
+    // check if index is valid
     if (screen_index >= m_screens.size())
     {
       log_error("Invalid screen index: " + std::to_string(screen_index));
       return false;
     }
+    // change active index
     m_active_screen_index = screen_index;
+    // change window title to reflect active screen
     SDL_SetWindowTitle(m_window, ("gaiasim - " + active_screen()->name()).c_str());
+    // call show() method code (sets clear color, etc)
+    active_screen()->show();
+    
     log_info("Switched to screen: " + active_screen()->name());
     return true;
   }

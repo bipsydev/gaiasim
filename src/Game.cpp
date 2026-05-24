@@ -18,7 +18,7 @@ namespace bipsy::gaiasim
 Game::Game(InitRequest initializations)
 : m_screens{},
   m_active_screen_index{0},
-  m_clear_color{0, 128, 255, 255},
+  m_clear_color{GAME_CLEAR_COLOR_DEFAULT},
   m_window{nullptr},
   m_renderer{nullptr},
   m_font{nullptr},

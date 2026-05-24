@@ -268,6 +268,7 @@ SDL_AppResult ScreenTest::post_render_update()
 
 SDL_AppResult ScreenTest::show()
 {
+  Screen::show(); // Call base class show() to set clear color, etc
   return SDL_APP_CONTINUE;
 }
 

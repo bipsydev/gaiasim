@@ -19,6 +19,8 @@
 #ifndef BIPSY_GAIASIM_SCREEN_HPP
 #define BIPSY_GAIASIM_SCREEN_HPP
 
+#include "SDL_utils.hpp"
+
 #include "SDL3/SDL.h"
 
 #include <string>
@@ -46,10 +48,13 @@ class Screen
   // Name of the screen, for display purposes.
   std::string name_str;
 
+  // Clear color for this screen
+  SDL_Color clear_color;
+
 public:
 
-  Screen(Game * game, const std::string &name)
-  : game_ptr(game), name_str(name)
+  Screen(Game * game, const std::string &name, SDL_Color color = sdlutils::GAME_CLEAR_COLOR_DEFAULT)
+  : game_ptr(game), name_str(name), clear_color(color)
   { };
 
   // Prevent copying (for now) because of pointer data members
@@ -88,7 +93,7 @@ public:
   virtual SDL_AppResult render(SDL_Renderer *renderer) = 0;
   virtual SDL_AppResult post_render_update()  { return SDL_APP_CONTINUE; }
 
-  virtual SDL_AppResult show()  { return SDL_APP_CONTINUE; }
+  virtual SDL_AppResult show();
   virtual SDL_AppResult hide()  { return SDL_APP_CONTINUE; }
 
 }; // class Screen
