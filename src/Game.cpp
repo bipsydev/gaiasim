@@ -274,10 +274,8 @@ SDL_AppResult Game::event(SDL_Event *event)
   else
   {
     // forward to active screen
-    active_screen()->event(event);
+    return active_screen()->event(event);
   }
-
-  return SDL_APP_CONTINUE;
 }
 
 

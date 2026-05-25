@@ -6,7 +6,8 @@
 
 #include "SDL3/SDL.h"
 
-#include <string>
+#include <string>   // std::string
+#include <utility>  // std::forward
 
 
 namespace bipsy::sdlutils
