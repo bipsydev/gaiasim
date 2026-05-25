@@ -31,14 +31,8 @@
 #define SDL_MAIN_USE_CALLBACKS
 #include "SDL3/SDL_main.h"
 
-// Include SDL and extension libraries (C APIs)
+// For SDL_AppResult
 #include "SDL3/SDL.h"
-#include "SDL3_image/SDL_image.h"
-#include "SDL3_mixer/SDL_mixer.h"
-#include "SDL3_ttf/SDL_ttf.h"
-
-// --- C++ Standard Library Headers ---
-#include <format>
 
 
 
@@ -117,8 +111,9 @@ void init_logging()
   SDL_SetLogPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_TRACE);
 #endif
 
-  log_info(std::format("Logging initialized with priority {} for APPLICATION category.",
-    get_log_priority_name(SDL_GetLogPriority(SDL_LOG_CATEGORY_APPLICATION))));
+  log_info("Logging initialized with priority %s for APPLICATION category.",
+    get_log_priority_name(SDL_GetLogPriority(SDL_LOG_CATEGORY_APPLICATION))
+      .c_str());
 }
 
 

@@ -22,50 +22,72 @@ namespace bipsy::sdlutils
  * 
  * @param indent The number of indentation levels to apply, two spaces each.
  *               `indent * 2 == space_count`.
- * @param priority The SDL_LogPriority level for the message (e.g. SDL_LOG_PRIORITY_INFO).
+ * @param priority The SDL_LogPriority level for the message
+ *                 (e.g. SDL_LOG_PRIORITY_INFO).
  * @param message The message format string (printf-style) to log.
- * @param ... These are the format arguments for the message,
- *            used if the message string contains format specifiers (e.g. `%s`).
+ * @param args The variadic arguments to format into the message.
+ *             (parameter pack)
  */
-inline void SDL_LogIndent(int indent, SDL_LogPriority priority, const char* message, ...)
+template <typename... Args>
+inline void SDL_LogIndent(int indent, SDL_LogPriority priority,
+                          // `&&` is an rvalue reference, which allows
+                          // perfect forwarding of template arguments
+                          const char* message, Args&&... args)
 {
-  va_list args_list;
-
-  va_start(args_list, message);
-  SDL_LogMessageV(SDL_LOG_CATEGORY_APPLICATION,
-                  priority,
-                  (bipsy::tab(indent) + message).c_str(),
-                  args_list);
-  va_end(args_list);
+  SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION,
+                 priority,
+                 (bipsy::tab(indent) + message).c_str(),
+                 // forward the variadic arguments to preserve & reduce copying
+                 std::forward<Args>(args)...);
 }
 
-inline void SDL_LogTraceIndent(int indent, const char* message, ...)
+template <typename... Args>
+inline void SDL_LogTraceIndent(int indent, const char* message, Args&&... args)
 {
-  SDL_LogIndent(indent, SDL_LOG_PRIORITY_TRACE, message);
+  SDL_LogIndent(indent, SDL_LOG_PRIORITY_TRACE,
+    message, std::forward<Args>(args)...);
 }
-inline void SDL_LogVerboseIndent(int indent, const char* message, ...)
+
+template <typename... Args>
+inline void SDL_LogVerboseIndent(int indent, const char* message, Args&&... args)
 {
-  SDL_LogIndent(indent, SDL_LOG_PRIORITY_VERBOSE, message);
+  SDL_LogIndent(indent, SDL_LOG_PRIORITY_VERBOSE,
+    message, std::forward<Args>(args)...);
 }
-inline void SDL_LogDebugIndent(int indent, const char* message, ...)
+
+template <typename... Args>
+inline void SDL_LogDebugIndent(int indent, const char* message, Args&&... args)
 {
-  SDL_LogIndent(indent, SDL_LOG_PRIORITY_DEBUG, message);
+  SDL_LogIndent(indent, SDL_LOG_PRIORITY_DEBUG,
+    message, std::forward<Args>(args)...);
 }
-inline void SDL_LogInfoIndent(int indent, const char* message, ...)
+
+template <typename... Args>
+inline void SDL_LogInfoIndent(int indent, const char* message, Args&&... args)
 {
-  SDL_LogIndent(indent, SDL_LOG_PRIORITY_INFO, message);
+  SDL_LogIndent(indent, SDL_LOG_PRIORITY_INFO,
+    message, std::forward<Args>(args)...);
 }
-inline void SDL_LogWarnIndent(int indent, const char* message, ...)
+
+template <typename... Args>
+inline void SDL_LogWarnIndent(int indent, const char* message, Args&&... args)
 {
-  SDL_LogIndent(indent, SDL_LOG_PRIORITY_WARN, message);
+  SDL_LogIndent(indent, SDL_LOG_PRIORITY_WARN,
+    message, std::forward<Args>(args)...);
 }
-inline void SDL_LogErrorIndent(int indent, const char* message, ...)
+
+template <typename... Args>
+inline void SDL_LogErrorIndent(int indent, const char* message, Args&&... args)
 {
-  SDL_LogIndent(indent, SDL_LOG_PRIORITY_ERROR, message);
+  SDL_LogIndent(indent, SDL_LOG_PRIORITY_ERROR,
+    message, std::forward<Args>(args)...);
 }
-inline void SDL_LogCriticalIndent(int indent, const char* message, ...)
+
+template <typename... Args>
+inline void SDL_LogCriticalIndent(int indent, const char* message, Args&&... args)
 {
-  SDL_LogIndent(indent, SDL_LOG_PRIORITY_CRITICAL, message);
+  SDL_LogIndent(indent, SDL_LOG_PRIORITY_CRITICAL,
+    message, std::forward<Args>(args)...);
 }
 
 
@@ -78,10 +100,12 @@ inline void SDL_LogCriticalIndent(int indent, const char* message, ...)
  * 
  * @return SDL_AppResult SDL_APP_FAILURE for convenience.
  */
-inline SDL_AppResult log_error_init(std::string subsystem, int indent = 0)
+template <typename... Args>
+inline SDL_AppResult log_error_init(std::string subsystem, int indent = 0,
+  Args&&... args)
 {
   SDL_LogErrorIndent(indent, "Failed to initialize %s: %s",
-    subsystem.c_str(), SDL_GetError());
+    subsystem.c_str(), SDL_GetError(), std::forward<Args>(args)...);
   return SDL_APP_FAILURE;
 }
 
@@ -100,64 +124,156 @@ inline constexpr void log_info_enable(bool enable = true)
 inline constexpr void log_info_disable()
 { log_info_enable(false); }
 
-
-
-inline void log_trace(std::string message, int indent = 0)
+/**
+ * @brief Log a TRACE-level message, with optional indentation level.
+ * 
+ * @tparam Args Variadic template parameters for the format arguments.
+ * @param message A printf-style format string for the log message.
+ * @param indent Number of indentation levels to apply. Omit for 0 indentation.
+ * @param args Format arguments for the log message.
+ */
+template <typename... Args>
+inline void log_trace(std::string message, int indent, Args&&... args)
 {
-  SDL_LogTraceIndent(indent, message.c_str());
+  SDL_LogTraceIndent(indent, message.c_str(), std::forward<Args>(args)...);
 }
 
-inline void log_verbose(std::string message, int indent = 0)
+template <typename... Args>
+inline void log_trace(std::string message, Args&&... args)
 {
-  SDL_LogVerboseIndent(indent, message.c_str());
-}
-
-inline void log_debug(std::string message, int indent = 0)
-{
-  SDL_LogDebugIndent(indent, message.c_str());
+  log_trace(message, 0, std::forward<Args>(args)...);
 }
 
 /**
- * @brief Logs an SDL info message with optional indentation level.
+ * @brief Log a VERBOSE-level message, with optional indentation level.
  * 
- * Only prints if `log_info_enabled` is true.
- * Uses `SDL_LogIndent` to log the message with the specified indentation level.
- * 
- * @param message The message to log.
- * @param indent The number of indentation levels to apply.
+ * @tparam Args Variadic template parameters for the format arguments.
+ * @param message A printf-style format string for the log message.
+ * @param indent Number of indentation levels to apply. Omit for 0 indentation.
+ * @param args Format arguments for the log message.
  */
-inline void log_info(std::string message, int indent = 0)
+template <typename... Args>
+inline void log_verbose(std::string message, int indent, Args&&... args)
+{
+  SDL_LogVerboseIndent(indent, message.c_str(), std::forward<Args>(args)...);
+}
+
+template <typename... Args>
+inline void log_verbose(std::string message, Args&&... args)
+{
+  log_verbose(message, 0, std::forward<Args>(args)...);
+}
+
+/**
+ * @brief Log a DEBUG-level message, with optional indentation level.
+ * 
+ * @tparam Args Variadic template parameters for the format arguments.
+ * @param message A printf-style format string for the log message.
+ * @param indent Number of indentation levels to apply. Omit for 0 indentation.
+ * @param args Format arguments for the log message.
+ */
+template <typename... Args>
+inline void log_debug(std::string message, int indent, Args&&... args)
+{
+  SDL_LogDebugIndent(indent, message.c_str(), std::forward<Args>(args)...);
+}
+
+template <typename... Args>
+inline void log_debug(std::string message, Args&&... args)
+{
+  log_debug(message, 0, std::forward<Args>(args)...);
+}
+
+/**
+ * @brief Log an INFO-level message, with optional indentation level.
+ * 
+ * @tparam Args Variadic template parameters for the format arguments.
+ * @param message A printf-style format string for the log message.
+ * @param indent Number of indentation levels to apply. Omit for 0 indentation.
+ * @param args Format arguments for the log message.
+ */
+template <typename... Args>
+inline void log_info(std::string message, int indent, Args&&... args)
 {
   if (log_info_enabled)
   {
-    SDL_LogInfoIndent(indent, message.c_str());
+    SDL_LogInfoIndent(indent, message.c_str(), std::forward<Args>(args)...);
   }
 }
 
-inline SDL_AppResult log_warn(std::string message, int indent = 0)
+template <typename... Args>
+inline void log_info(std::string message, Args&&... args)
 {
-  SDL_LogWarnIndent(indent, message.c_str());
-  return SDL_APP_FAILURE;
+  log_info(message, 0, std::forward<Args>(args)...);
 }
 
 /**
- * @brief Logs an SDL error message.
+ * @brief Log a WARN-level message, with optional indentation level.
  * 
- * @param message The error message to log.
- * @param indent The number of indentation levels to apply.
+ * @tparam Args Variadic template parameters for the format arguments.
+ * @param message A printf-style format string for the log message.
+ * @param indent Number of indentation levels to apply. Omit for 0 indentation.
+ * @param args Format arguments for the log message.
  * 
- * @return SDL_AppResult SDL_APP_FAILURE for convenience in error handling.
+ * @return SDL_AppResult `SDL_APP_FAILURE` for convenience in error handling.
  */
-inline SDL_AppResult log_error(std::string message, int indent = 0)
+template <typename... Args>
+inline SDL_AppResult log_warn(std::string message, int indent, Args&&... args)
 {
-  SDL_LogErrorIndent(indent, message.c_str());
+  SDL_LogWarnIndent(indent, message.c_str(), std::forward<Args>(args)...);
   return SDL_APP_FAILURE;
 }
 
-inline SDL_AppResult log_critical(std::string message, int indent = 0)
+template <typename... Args>
+inline SDL_AppResult log_warn(std::string message, Args&&... args)
 {
-  SDL_LogCriticalIndent(indent, message.c_str());
+  return log_warn(message, 0, std::forward<Args>(args)...);
+}
+
+/**
+ * @brief Log a ERROR-level message, with optional indentation level.
+ * 
+ * @tparam Args Variadic template parameters for the format arguments.
+ * @param message A printf-style format string for the log message.
+ * @param indent Number of indentation levels to apply. Omit for 0 indentation.
+ * @param args Format arguments for the log message.
+ * 
+ * @return SDL_AppResult `SDL_APP_FAILURE` for convenience in error handling.
+ */
+template <typename... Args>
+inline SDL_AppResult log_error(std::string message, int indent, Args&&... args)
+{
+  SDL_LogErrorIndent(indent, message.c_str(), std::forward<Args>(args)...);
   return SDL_APP_FAILURE;
+}
+
+template <typename... Args>
+inline SDL_AppResult log_error(std::string message, Args&&... args)
+{
+  return log_error(message, 0, std::forward<Args>(args)...);
+}
+
+/**
+ * @brief Log a CRITICAL-level message, with optional indentation level.
+ * 
+ * @tparam Args Variadic template parameters for the format arguments.
+ * @param message A printf-style format string for the log message.
+ * @param indent Number of indentation levels to apply. Omit for 0 indentation.
+ * @param args Format arguments for the log message.
+ * 
+ * @return SDL_AppResult `SDL_APP_FAILURE` for convenience in error handling.
+ */
+template <typename... Args>
+inline SDL_AppResult log_critical(std::string message, int indent, Args&&... args)
+{
+  SDL_LogCriticalIndent(indent, message.c_str(), std::forward<Args>(args)...);
+  return SDL_APP_FAILURE;
+}
+
+template <typename... Args>
+inline SDL_AppResult log_critical(std::string message, Args&&... args)
+{
+  return log_critical(message, 0, std::forward<Args>(args)...);
 }
 
 

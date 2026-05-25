@@ -7,7 +7,6 @@
 #include "SDL3/SDL.h"
 
 #include <string>
-#include <format>
 
 
 namespace bipsy::gaiasim::gui
@@ -53,21 +52,21 @@ public:
 
   SDL_AppResult update_layout(SDL_Renderer *renderer)
   {
+    log_trace("ScreenMainGUI::update_layout called.");
+
     int window_width, window_height;
     if (not SDL_GetCurrentRenderOutputSize(
       renderer, &window_width, &window_height))
     {
       // Handle error
-      return log_error(std::format(
-        "Failed to get current render output size: {}", SDL_GetError()));
+      return log_error("Failed to get current render output size: %s",
+        SDL_GetError());
     }
-
-    log_debug(std::format(
-      "ScreenMainGUI::update_layout({}, {}) called.",
-      window_width, window_height));
     
     m_window_width = window_width;
     m_window_height = window_height;
+
+    log_debug("Updated layout with window size %dx%d", 1, m_window_width, m_window_height);
     
     return SDL_APP_CONTINUE;
   }
@@ -106,12 +105,12 @@ private:
     m_bounds.h = panel.m_partition.h * m_window_height;
     if (not SDL_RenderFillRect(renderer, &m_bounds))
     {
-      return log_error(std::format(
-        "Failed to render panel '{}': {}", panel.m_title, SDL_GetError()));
+      return log_error("Failed to render panel '%s': %s",
+        panel.m_title.c_str(), SDL_GetError());
     }
     else
     {
-      log_debug(std::format("Rendered panel '{}'", panel.m_title));
+      log_debug("Rendered panel '%s'", panel.m_title.c_str());
     }
 
     return SDL_APP_CONTINUE;
