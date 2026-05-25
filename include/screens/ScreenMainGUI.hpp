@@ -101,7 +101,7 @@ public:
     return SDL_APP_CONTINUE;
   }
 
-  SDL_AppResult render(SDL_Renderer *renderer)
+  SDL_AppResult render(SDL_Renderer *renderer, SDL_Texture *map_texture)
   {
     SDL_AppResult result;
 
@@ -111,7 +111,7 @@ public:
     if (result = render_panel(renderer, m_top_sidebar))
       return result;
       
-    if (result = render_panel(renderer, m_main_panel))
+    if (result = render_panel(renderer, m_main_panel, map_texture))
       return result;
 
     return SDL_APP_CONTINUE;
@@ -176,7 +176,7 @@ private:
     return SDL_APP_CONTINUE;
   }
 
-  SDL_AppResult render_panel(SDL_Renderer *renderer, Panel &panel)
+  SDL_AppResult render_panel(SDL_Renderer *renderer, Panel &panel, SDL_Texture *map_texture = nullptr)
   {
     // Set draw color to panel color and render filled rect
     if (not SDL_SetRenderDrawColor(renderer,
@@ -219,12 +219,12 @@ private:
       // use width & height for centering and clipping if necessary
       text_rect.x = std::min(std::max(
         m_bounds.x + padding_x,
-          m_bounds.x + (m_bounds.w/2.0f) - (text_rect.w/2.0f) - padding_x),
+          m_bounds.x + (m_bounds.w/2.0f) - (text_rect.w/2.0f)),
         m_bounds.x + m_bounds.w - padding_x);
       
       text_rect.y = std::min(std::max(
         m_bounds.y + padding_y,
-          m_bounds.y + (m_bounds.h/2.0f) - (text_rect.h/2.0f) - padding_y),
+          m_bounds.y),
         m_bounds.y + m_bounds.h - padding_y);
 
       // clip text rect to panel bounds if necessary
@@ -248,6 +248,29 @@ private:
           && m_bounds.h > panel.m_title_texture_size.h + 2*padding_y))
       {
         panel.m_use_small_font = false;
+      }
+
+      // Attempt to render map_texture if we have one
+      if (map_texture != nullptr)
+      {
+        SDL_FRect map_rect = m_bounds; // Render map to fill entire panel
+        SDL_GetTextureSize(map_texture, &map_rect.w, &map_rect.h); // Get the width and height of the texture
+        if (map_rect.w > m_bounds.w || map_rect.h > m_bounds.h)
+        {
+          // If the texture is larger than the panel, scale it down to fit while maintaining aspect ratio
+          float width_ratio = m_bounds.w / map_rect.w;
+          float height_ratio = m_bounds.h / map_rect.h;
+          float scale = std::min(width_ratio, height_ratio);
+          map_rect.w *= scale;
+          map_rect.h *= scale;
+        }
+        map_rect.x = m_bounds.x + (m_bounds.w/2.0f) - (map_rect.w/2.0f); // Center map horizontally in panel
+        map_rect.y = m_bounds.y + (m_bounds.h/2.0f) - (map_rect.h/2.0f); // Center map vertically in panel
+        if (not SDL_RenderTexture(renderer, map_texture, NULL, &map_rect))
+        {
+          return log_error("Failed to render map texture for panel '%s': %s",
+            panel.m_title.c_str(), SDL_GetError());
+        }
       }
 
       // Attempt to render the title texture

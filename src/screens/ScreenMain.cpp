@@ -9,7 +9,17 @@ SDL_AppResult ScreenMain::init()
   // Initialize GUI instance for this screen
   gui = new GUI();
 
+  //generate the map texture based on the ASCII map
+  generate_map_texture();
+
   return SDL_APP_CONTINUE;
+}
+
+void ScreenMain::generate_map_texture()
+{
+  SDL_Surface *map_surface = TTF_RenderText_Blended_Wrapped(game()->font(), map.c_str(), 0, {255, 255, 255, 255}, 0);
+  map_texture = SDL_CreateTextureFromSurface(game()->renderer(), map_surface);
+  SDL_DestroySurface(map_surface);
 }
 
 ScreenMain::~ScreenMain()
@@ -62,7 +72,7 @@ SDL_AppResult ScreenMain::update()
 SDL_AppResult ScreenMain::render(SDL_Renderer *renderer)
 {
   // Render the GUI for this screen
-  if (SDL_AppResult result = gui->render(renderer))
+  if (SDL_AppResult result = gui->render(renderer, map_texture))
     return result;
 
   return SDL_APP_CONTINUE;

@@ -9,6 +9,8 @@
 
 #include "SDL3/SDL.h"
 
+#include <string>
+
 
 namespace bipsy::gaiasim
 {
@@ -17,12 +19,28 @@ class ScreenMain : public Screen
 {
   using GUI = gui::ScreenMainGUI;
   GUI * gui;
+
+  // for now, use an ASCII array to display a "map"
+  const std::string map = {
+    "####################\n"
+    "#..................#\n"
+    "#...#####..........#\n"
+    "#...#...#..........#\n"
+    "#...#...#..........#\n"
+    "#...#####..........#\n"
+    "#..................#\n"
+    "#..................#\n"
+    "#..................#\n"
+    "####################"
+  };
+  SDL_Texture *map_texture;
   
 
 public:
   ScreenMain(Game * game)
   : Screen(game, "ScreenMain", {0, 0, 0, 255}),
-    gui{nullptr}
+    gui{nullptr},
+    map_texture{nullptr}
   { };
 
   // Prevent copying
@@ -36,6 +54,9 @@ public:
   SDL_AppResult event(SDL_Event *event) override;
   SDL_AppResult update() override;
   SDL_AppResult render(SDL_Renderer *renderer) override;
+
+private:
+  void generate_map_texture();
 };
 
 } // namespace bipsy::gaiasim
