@@ -45,7 +45,8 @@ class Game
 
   SDL_Color m_clear_color; // Clear/bg color for the renderer
 
-  TTF_Font *m_font = nullptr; // Global font
+  TTF_Font *m_font = nullptr;       // Global font
+  TTF_Font *m_font_small = nullptr; // Smaller font
 
   // -- Time-related variables --
   int m_frame;          // Frame count
@@ -174,6 +175,7 @@ public:
   GETTER(SDL_Window *const, window)
   GETTER(SDL_Renderer *const, renderer)
   GETTER(TTF_Font *const, font)
+  GETTER(TTF_Font *const, font_small)
 
   GETTER(SDL_Color, clear_color)
   SETTER(SDL_Color, clear_color)

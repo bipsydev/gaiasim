@@ -22,6 +22,7 @@ Game::Game(InitRequest initializations)
   m_window{nullptr},
   m_renderer{nullptr},
   m_font{nullptr},
+  m_font_small{nullptr},
   m_frame{0},
   m_time_ns{0},
   m_delta_time_ns{0},
@@ -175,6 +176,16 @@ SDL_AppResult Game::init_system_objects()
   if (not (m_font = TTF_OpenFont((asset_dir(font_name) + font_name).c_str(), 24)))
   {
     return log_error_init("TTF_Font *font");
+  }
+  else
+  {
+    log_info("TTF_Font \"" + std::string(font_name) + "\" loaded successfully", 2);
+  }
+
+  // Create a smaller TTF font from PixelCode.ttf in our ./assets/ directory
+  if (not (m_font_small = TTF_OpenFont((asset_dir(font_name) + font_name).c_str(), 14)))
+  {
+    return log_error_init("TTF_Font *font_small");
   }
   else
   {

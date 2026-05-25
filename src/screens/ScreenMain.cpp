@@ -1,7 +1,5 @@
 #include "screens/ScreenMain.hpp"
 
-#include <format>
-
 
 namespace bipsy::gaiasim
 {
@@ -31,16 +29,18 @@ SDL_AppResult ScreenMain::event(SDL_Event *event)
     if (event->key.key == SDLK_N ||
         event->key.key == SDLK_ESCAPE)
     {
-      log_info(std::format("'{}' key pressed, switching back to test screen...", SDL_GetKeyName(event->key.key)));
+      log_info("'%s' key pressed, switching back to test screen...",
+        SDL_GetKeyName(event->key.key));
       game()->switch_screen(0); // Switch back to the first screen (ScreenTest)
       return SDL_APP_CONTINUE;
     }
   }
   else if (not SDL_HasKeyboard() && event->type == SDL_EVENT_FINGER_DOWN)
   {
-    log_info(std::format("Touch event #{} pressed at ({:.4f}, {:.4f}) with pressure {:.4f} and type {}",
+    log_info("Touch event #%d pressed at (%.4f, %.4f) "
+      "with pressure %.4f and type %d",
       event->tfinger.fingerID, event->tfinger.x, event->tfinger.y,
-      event->tfinger.pressure, static_cast<int>(event->tfinger.type)));
+      event->tfinger.pressure, static_cast<int>(event->tfinger.type));
     game()->switch_screen(0); // Switch back to the first screen (ScreenTest)
     return SDL_APP_CONTINUE;
   }
@@ -51,7 +51,7 @@ SDL_AppResult ScreenMain::event(SDL_Event *event)
 SDL_AppResult ScreenMain::update()
 {
   // update based on game's renderer
-  if (SDL_AppResult result = gui->update_layout(game()->renderer()))
+  if (SDL_AppResult result = gui->update_layout(game()))
     return result;
 
   return SDL_APP_CONTINUE;
