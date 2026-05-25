@@ -60,7 +60,15 @@ public:
   { }
 
   ~ScreenMainGUI()
-  { }
+  {
+    // Clean up textures
+    if (m_main_panel.m_title_texture != nullptr)
+      SDL_DestroyTexture(m_main_panel.m_title_texture);
+    if (m_left_sidebar.m_title_texture != nullptr)
+      SDL_DestroyTexture(m_left_sidebar.m_title_texture);
+    if (m_top_sidebar.m_title_texture != nullptr)
+      SDL_DestroyTexture(m_top_sidebar.m_title_texture);
+  }
 
   SDL_AppResult update_layout(Game *game)
   {
