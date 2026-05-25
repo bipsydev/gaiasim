@@ -51,7 +51,7 @@ public:
   }
   ~ScreenMainGUI() { };
 
-  void render(SDL_Renderer *renderer)
+  void update_layout(SDL_Renderer *renderer)
   {
     int window_width, window_height;
     if (not SDL_GetCurrentRenderOutputSize(
@@ -62,23 +62,24 @@ public:
         "Failed to get current render output size: {}", SDL_GetError()));
       return;
     }
-    // continue rendering with window dimensions
-    update_layout(window_width, window_height);
 
+    log_info(std::format(
+      "ScreenMainGUI::update_layout({}, {}) called.",
+      window_width, window_height));
+    
+    m_window_width = window_width;
+    m_window_height = window_height;
+  }
+
+  void render(SDL_Renderer *renderer)
+  {
     render_panel(renderer, m_left_sidebar);
     render_panel(renderer, m_top_sidebar);
     render_panel(renderer, m_main_panel);
   }
 
+
 private:
-  void update_layout(int window_width, int window_height)
-  {
-    log_info(std::format(
-      "ScreenMainGUI::update_layout({}, {}) called.",
-      window_width, window_height));
-    this->m_window_width = window_width;
-    this->m_window_height = window_height;
-  }
 
   SDL_AppResult render_panel(SDL_Renderer *renderer, const Panel &panel)
   {
@@ -105,7 +106,8 @@ private:
 
     return SDL_APP_SUCCESS;
   }
-};
+
+}; // class ScreenMainGUI
 
 } // namespace bipsy::gaiasim::gui
 

@@ -50,7 +50,8 @@ SDL_AppResult ScreenMain::event(SDL_Event *event)
 
 SDL_AppResult ScreenMain::update()
 {
-  // TODO implement update logic for this screen here
+  // update based on game's renderer
+  gui->update_layout(game()->renderer());
 
   return SDL_APP_CONTINUE;
 }
