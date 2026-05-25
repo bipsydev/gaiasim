@@ -192,6 +192,14 @@ SDL_AppResult ScreenTest::event(SDL_Event *event)
       return SDL_APP_CONTINUE;
     }
   }
+  else if (not SDL_HasKeyboard() && event->type == SDL_EVENT_FINGER_DOWN)
+  {
+    log_info(std::format("Touch event #{} pressed at ({:.4f}, {:.4f}) with pressure {:.4f} and type {}",
+      event->tfinger.fingerID, event->tfinger.x, event->tfinger.y,
+      event->tfinger.pressure, static_cast<int>(event->tfinger.type)));
+    switch_to_main_screen();
+    return SDL_APP_CONTINUE;
+  }
   return SDL_APP_CONTINUE;
 }
 
