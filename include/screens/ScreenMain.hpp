@@ -56,7 +56,7 @@ public:
   SDL_AppResult render(SDL_Renderer *renderer) override;
 
 private:
-  void generate_map_texture();
+  SDL_AppResult generate_map_texture();
 };
 
 } // namespace bipsy::gaiasim

@@ -126,11 +126,20 @@ private:
 
     // free anything already allocated
     if (m_main_panel.m_title_texture != nullptr)
+    {
       SDL_DestroyTexture(m_main_panel.m_title_texture);
+      m_main_panel.m_title_texture = nullptr;
+    }
     if (m_left_sidebar.m_title_texture != nullptr)
+    {
       SDL_DestroyTexture(m_left_sidebar.m_title_texture);
+      m_left_sidebar.m_title_texture = nullptr;
+    }
     if (m_top_sidebar.m_title_texture != nullptr)
+    {
       SDL_DestroyTexture(m_top_sidebar.m_title_texture);
+      m_top_sidebar.m_title_texture = nullptr;
+    }
 
     // allocate all 3
     if (create_panel_title_texture(game, m_main_panel))
