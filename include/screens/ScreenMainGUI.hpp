@@ -51,31 +51,41 @@ public:
   }
   ~ScreenMainGUI() { };
 
-  void update_layout(SDL_Renderer *renderer)
+  SDL_AppResult update_layout(SDL_Renderer *renderer)
   {
     int window_width, window_height;
     if (not SDL_GetCurrentRenderOutputSize(
       renderer, &window_width, &window_height))
     {
       // Handle error
-      log_error(std::format(
+      return log_error(std::format(
         "Failed to get current render output size: {}", SDL_GetError()));
-      return;
     }
 
-    log_info(std::format(
+    log_debug(std::format(
       "ScreenMainGUI::update_layout({}, {}) called.",
       window_width, window_height));
     
     m_window_width = window_width;
     m_window_height = window_height;
+    
+    return SDL_APP_CONTINUE;
   }
 
-  void render(SDL_Renderer *renderer)
+  SDL_AppResult render(SDL_Renderer *renderer)
   {
-    render_panel(renderer, m_left_sidebar);
-    render_panel(renderer, m_top_sidebar);
-    render_panel(renderer, m_main_panel);
+    SDL_AppResult result;
+
+    if (result = render_panel(renderer, m_left_sidebar))
+      return result;
+
+    if (result = render_panel(renderer, m_top_sidebar))
+      return result;
+      
+    if (result = render_panel(renderer, m_main_panel))
+      return result;
+
+    return SDL_APP_CONTINUE;
   }
 
 
@@ -101,10 +111,10 @@ private:
     }
     else
     {
-      log_info(std::format("Rendered panel '{}'", panel.m_title));
+      log_debug(std::format("Rendered panel '{}'", panel.m_title));
     }
 
-    return SDL_APP_SUCCESS;
+    return SDL_APP_CONTINUE;
   }
 
 }; // class ScreenMainGUI

@@ -22,6 +22,7 @@
  ******************************************************************************/
 
 // --- Project Headers ---
+#include "SDL_utils.hpp"
 #include "Game.hpp"   // bipsy::gaiasim::Game class
 
 
@@ -36,6 +37,9 @@
 #include "SDL3_mixer/SDL_mixer.h"
 #include "SDL3_ttf/SDL_ttf.h"
 
+// --- C++ Standard Library Headers ---
+#include <format>
+
 
 
 /*******************************************************************************
@@ -43,7 +47,8 @@
  ******************************************************************************/
 
 using bipsy::gaiasim::Game,
-      bipsy::sdlutils::log_info;
+      bipsy::sdlutils::log_info,
+      bipsy::sdlutils::get_log_priority_name;
 
 
 
@@ -53,6 +58,13 @@ using bipsy::gaiasim::Game,
 
  // Helper macro to get typed `Game` object from a void* `appstate` pointer
 #define  GetGame  Game *game = static_cast<Game *>(appstate)
+
+
+/*******************************************************************************
+ *  HELPER FUNCTION DEFINITIONS                                                *
+ ******************************************************************************/
+
+void init_logging();
 
 
 /*******************************************************************************
@@ -87,6 +99,7 @@ using bipsy::gaiasim::Game,
  */
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv)
 {
+  init_logging();
   log_info("------ AppInit: Initializing ------");
   // Initialize Game (starts SDL systems and loads initial game state)
   Game *game = new Game();
@@ -94,6 +107,18 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv)
   log_info("------ AppInit: Initialization complete ------");
 
   return game->init();
+}
+
+
+void init_logging()
+{
+  // Set SDL log priority to debug for all categories
+#ifndef NDEBUG
+  SDL_SetLogPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_TRACE);
+#endif
+
+  log_info(std::format("Logging initialized with priority {} for APPLICATION category.",
+    get_log_priority_name(SDL_GetLogPriority(SDL_LOG_CATEGORY_APPLICATION))));
 }
 
 

@@ -51,7 +51,8 @@ SDL_AppResult ScreenMain::event(SDL_Event *event)
 SDL_AppResult ScreenMain::update()
 {
   // update based on game's renderer
-  gui->update_layout(game()->renderer());
+  if (SDL_AppResult result = gui->update_layout(game()->renderer()))
+    return result;
 
   return SDL_APP_CONTINUE;
 }
@@ -59,7 +60,8 @@ SDL_AppResult ScreenMain::update()
 SDL_AppResult ScreenMain::render(SDL_Renderer *renderer)
 {
   // Render the GUI for this screen
-  gui->render(renderer);
+  if (SDL_AppResult result = gui->render(renderer))
+    return result;
 
   return SDL_APP_CONTINUE;
 }
