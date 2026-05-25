@@ -21,7 +21,7 @@ class ScreenMain : public Screen
 
 public:
   ScreenMain(Game * game)
-  : Screen(game, "ScreenMain", {0, 64, 128, 255}),
+  : Screen(game, "ScreenMain", {0, 0, 0, 255}),
     gui{nullptr}
   { };
 
