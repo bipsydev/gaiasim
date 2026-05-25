@@ -9,6 +9,7 @@
 #include "SDL3_ttf/SDL_ttf.h"
 
 #include <string>
+#include <algorithm> // std::max, std::min
 
 
 namespace bipsy::gaiasim::gui
