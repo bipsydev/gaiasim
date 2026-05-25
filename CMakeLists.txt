@@ -80,7 +80,8 @@ if(PROJECT_SOURCES)
 
   # Apply -Weffc++ only to our source files, not external libraries
   if(NOT MSVC)
-    target_compile_options(${EXECUTABLE_NAME} PRIVATE -Weffc++)
+    # TODO: remove `-Wno-format-security` once the logging in `SDL_Utils.hpp` is refactored to use `std::format` instead.
+    target_compile_options(${EXECUTABLE_NAME} PRIVATE -Weffc++ -Wno-format-security)
   endif()
 
 else()
