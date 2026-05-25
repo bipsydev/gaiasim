@@ -50,7 +50,7 @@ SDL_AppResult ScreenMain::update()
 SDL_AppResult ScreenMain::render(SDL_Renderer *renderer)
 {
   // Render the GUI for this screen
-  // TODO implement GUI rendering logic here
+  gui->render(renderer);
 
   return SDL_APP_CONTINUE;
 }
