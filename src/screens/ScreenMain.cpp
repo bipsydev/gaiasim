@@ -37,10 +37,12 @@ SDL_AppResult ScreenMain::event(SDL_Event *event)
   }
   else if (not SDL_HasKeyboard() && event->type == SDL_EVENT_FINGER_DOWN)
   {
-    log_info("Touch event #%d pressed at (%.4f, %.4f) "
+    log_info("Touch event #%lld pressed at (%.4f, %.4f) "
       "with pressure %.4f and type %d",
-      event->tfinger.fingerID, event->tfinger.x, event->tfinger.y,
-      event->tfinger.pressure, static_cast<int>(event->tfinger.type));
+      static_cast<long long>(event->tfinger.fingerID),
+      event->tfinger.x, event->tfinger.y,
+      event->tfinger.pressure,
+      static_cast<int>(event->tfinger.type));
     game()->switch_screen(0); // Switch back to the first screen (ScreenTest)
     return SDL_APP_CONTINUE;
   }
