@@ -208,8 +208,13 @@ public:
       log_error("Invalid screen index: " + std::to_string(screen_index));
       return false;
     }
+
+    // call hide() method of current active screen before switching
+    active_screen()->hide();
+
     // change active index
     m_active_screen_index = screen_index;
+    
     // change window title to reflect active screen
     SDL_SetWindowTitle(m_window, ("gaiasim - " + active_screen()->name()).c_str());
     // call show() method code (sets clear color, etc)
