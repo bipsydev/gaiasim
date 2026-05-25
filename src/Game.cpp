@@ -258,6 +258,16 @@ Game::~Game()
       SDL_DestroyWindow(m_window);
       m_window = nullptr;
     }
+    if (m_font)
+    {
+      TTF_CloseFont(m_font);
+      m_font = nullptr;
+    }
+    if (m_font_small)
+    {
+      TTF_CloseFont(m_font_small);
+      m_font_small = nullptr;
+    }
   }
 
   // Deinitialization Stage 1: Libraries
