@@ -89,10 +89,13 @@ inline void log_info(std::string message, int indent = 0)
  * @brief Logs an SDL error message.
  * 
  * @param message The error message to log.
+ * 
+ * @return SDL_AppResult SDL_APP_FAILURE for convenience in error handling.
  */
-inline void log_error(std::string message)
+inline SDL_AppResult log_error(std::string message)
 {
   SDL_LogError(SDL_LOG_CATEGORY_ERROR, "%s", message.c_str());
+  return SDL_APP_FAILURE;
 }
 
 
