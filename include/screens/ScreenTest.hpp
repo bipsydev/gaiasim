@@ -93,7 +93,7 @@ public:
 
 private:
   SDL_AppResult init_text_texture();
-  void switch_to_main_screen();
+  SDL_AppResult switch_to_main_screen();
 };
 
 } // namespace bipsy::gaiasim

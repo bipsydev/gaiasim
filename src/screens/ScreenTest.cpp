@@ -180,8 +180,7 @@ SDL_AppResult ScreenTest::event(SDL_Event *event)
     if (event->key.key == SDLK_N)
     {
       log_info("'N' key pressed, switching to main screen...");
-      switch_to_main_screen();
-      return SDL_APP_CONTINUE;
+      return switch_to_main_screen();
     }
     if (event->key.key == SDLK_ESCAPE)
     {
@@ -197,8 +196,7 @@ SDL_AppResult ScreenTest::event(SDL_Event *event)
     log_info(std::format("Touch event #{} pressed at ({:.4f}, {:.4f}) with pressure {:.4f} and type {}",
       event->tfinger.fingerID, event->tfinger.x, event->tfinger.y,
       event->tfinger.pressure, static_cast<int>(event->tfinger.type)));
-    switch_to_main_screen();
-    return SDL_APP_CONTINUE;
+    return switch_to_main_screen();
   }
   return SDL_APP_CONTINUE;
 }
@@ -285,15 +283,25 @@ SDL_AppResult ScreenTest::hide()
   return SDL_APP_CONTINUE;
 }
 
-void ScreenTest::switch_to_main_screen()
+SDL_AppResult ScreenTest::switch_to_main_screen()
 {
   // if we have only 1 screen, create a ScreenMain instance and add it to game
   if (game()->screens().size() == 1)
   {
-    game()->add_screen<ScreenMain>();
+    // if result is not SDL_APP_CONTINUE, return it
+    if (SDL_AppResult result = game()->add_screen<ScreenMain>())
+      return result;
   }
 
-  game()->switch_screen(1); // Switch to the second screen (ScreenMain)
+  // Switch to the second screen (ScreenMain)
+  if (game()->switch_screen(1))
+  {
+    return SDL_APP_CONTINUE;
+  }
+  else
+  {
+    return log_error("Failed to switch to main screen: %s", SDL_GetError());
+  }
 }
 
 } // namespace bipsy::gaiasim

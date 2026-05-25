@@ -93,9 +93,13 @@ private:
   SDL_AppResult render_panel(SDL_Renderer *renderer, const Panel &panel)
   {
     // Set draw color to panel color and render filled rect
-    SDL_SetRenderDrawColor(renderer,
-        panel.m_color.r, panel.m_color.g, panel.m_color.b, panel.m_color.a);
-    
+    if (not SDL_SetRenderDrawColor(renderer,
+        panel.m_color.r, panel.m_color.g, panel.m_color.b, panel.m_color.a))
+    {
+      return log_error("Failed to set panel '%s' render draw color: %s",
+        panel.m_title.c_str(), SDL_GetError());
+    }
+
     // Convert panel partition to actual pixel bounds
     SDL_FRect m_bounds;
     // multiply partition values by window dimensions to get pixel bounds

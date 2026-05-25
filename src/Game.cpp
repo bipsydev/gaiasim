@@ -352,7 +352,8 @@ SDL_AppResult Game::render()
   SDL_RenderClear(m_renderer);
   // --- Drawing block ---
   {
-    active_screen()->render(m_renderer);
+    if (SDL_AppResult result = active_screen()->render(m_renderer))
+      return result;
   }
   // Present the rendered frame buffer to the screen
   SDL_RenderPresent(m_renderer);
