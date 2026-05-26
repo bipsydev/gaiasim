@@ -29,6 +29,56 @@ SDL_AppResult ScreenMainGUI::render(SDL_Renderer *renderer, GameWorld *world)
 }
 
 
+
+
+SDL_AppResult ScreenMainGUI::create_panel_title_texture(Game *game, Panel &panel)
+{
+  TTF_Font *panel_font = panel.m_use_small_font ?
+      game->font_small() :
+#ifndef __ANDROID__
+      game->font();
+#else
+      game->font_hidpi();
+#endif
+  // Determine title text color
+  SDL_Color text_color = {0, 0, 0, 255}; // default to black
+  
+  Uint8 brightness = (panel.m_color.r * 0.2126f) + (panel.m_color.g * 0.7152f) + (panel.m_color.b * 0.0722f);
+  if (brightness < 128)
+  {
+    text_color = {255, 255, 255, 255}; // use white 
+  }
+
+  SDL_Surface * text_surface = TTF_RenderText_Blended(
+    panel_font, panel.m_title.c_str(),
+    0, text_color
+  );
+  if (text_surface == nullptr)
+  {
+    return log_error_init("text_surface");
+  }
+
+  // Create a texture from the surface
+  // This uploads the image data to the GPU for efficient rendering.
+  panel.m_title_texture = SDL_CreateTextureFromSurface(game->renderer(), text_surface);
+  SDL_DestroySurface(text_surface); // We can free the surface after creating the texture
+  if (panel.m_title_texture == nullptr)
+  {
+    return log_error_init("panel.m_title_texture");
+  }
+
+  // Cache larger font texture dimensions for later layout calculations
+  if (panel.m_title_texture_size.w == 0 && panel.m_title_texture_size.h == 0
+    && !panel.m_use_small_font)
+  {
+    SDL_GetTextureSize(panel.m_title_texture,
+      &panel.m_title_texture_size.w, &panel.m_title_texture_size.h);
+  }
+  
+  return SDL_APP_CONTINUE;
+}
+
+
 SDL_AppResult ScreenMainGUI::render_panel(SDL_Renderer *renderer, Panel &panel, GameWorld *world)
 {
   // Set draw color to panel color and render filled rect
