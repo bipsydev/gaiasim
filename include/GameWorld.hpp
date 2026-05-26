@@ -46,6 +46,8 @@ public:
 
   SDL_AppResult init();
 
+  SDL_AppResult event(SDL_Event *event);
+  SDL_AppResult update();
   SDL_AppResult render(SDL_Renderer *renderer, SDL_FRect *bounds = nullptr);
 
   ~GameWorld();

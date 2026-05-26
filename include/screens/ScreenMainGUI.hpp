@@ -67,6 +67,7 @@ public:
 
   SDL_AppResult update_layout(Game *game);
   SDL_AppResult render(SDL_Renderer *renderer, GameWorld *world);
+  SDL_AppResult event(Game *game, SDL_Event *event);
 
 
 private:

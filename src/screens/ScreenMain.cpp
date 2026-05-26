@@ -4,6 +4,8 @@
 namespace bipsy::gaiasim
 {
 
+
+
 SDL_AppResult ScreenMain::init()
 {
   // Initialize GUI instance for this screen
@@ -15,6 +17,8 @@ SDL_AppResult ScreenMain::init()
   //generate the map texture based on the ASCII map
   return world->init();
 }
+
+
 
 ScreenMain::~ScreenMain()
 {
@@ -33,8 +37,11 @@ ScreenMain::~ScreenMain()
   }
 }
 
+
+
 SDL_AppResult ScreenMain::event(SDL_Event *event)
 {
+  // Screen-switching (N-key or tap on touch device)
   if (event->type == SDL_EVENT_KEY_DOWN)
   {
     if (event->key.key == SDLK_N ||
@@ -58,25 +65,50 @@ SDL_AppResult ScreenMain::event(SDL_Event *event)
     return SDL_APP_CONTINUE;
   }
 
+
+  // handle GUI events first
+  // TODO system to remove events from further processing (marked as "handled")
+  SDL_AppResult result;
+  if ( (result = gui->event(game(), event)) )
+    return result;
+  
+  // handle game world events next
+  if ( (result = world->event(event)) )
+    return result;
+
+
   return SDL_APP_CONTINUE;
 }
+
+
 
 SDL_AppResult ScreenMain::update()
 {
+  SDL_AppResult result;
+
+  // update the game world
+  if ( (result = world->update()) )
+    return result;
+
   // update based on game's renderer
-  if (SDL_AppResult result = gui->update_layout(game()))
+  if ( (result = gui->update_layout(game())) )
     return result;
 
   return SDL_APP_CONTINUE;
 }
+
+
 
 SDL_AppResult ScreenMain::render(SDL_Renderer *renderer)
 {
-  // Render the GUI for this screen
-  if (SDL_AppResult result = gui->render(renderer, world))
+  SDL_AppResult result;
+  // Render the GUI for this screen (includes rendering of game world texture)
+  if ( (result = gui->render(renderer, world)) )
     return result;
 
   return SDL_APP_CONTINUE;
 }
+
+
 
 } // namespace bipsy::gaiasim

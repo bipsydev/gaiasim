@@ -95,6 +95,15 @@ SDL_AppResult ScreenMainGUI::render(SDL_Renderer *renderer, GameWorld *world)
 
 
 
+SDL_AppResult ScreenMainGUI::event(Game *game, SDL_Event *event)
+{
+  // For now, we don't have any interactive elements in the GUI, so we just return CONTINUE.
+  // In the future, this is where we would handle events like mouse clicks on buttons, etc.
+  return SDL_APP_CONTINUE;
+}
+
+
+
 SDL_AppResult ScreenMainGUI::generate_textures(Game *game)
 {
   log_debug("Generating title textures for panels...");

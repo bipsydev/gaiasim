@@ -38,6 +38,20 @@ GameWorld::~GameWorld()
   }
 }
 
+SDL_AppResult GameWorld::event(SDL_Event *event)
+{
+  // Handle game world events here (e.g. player input, NPC behavior, etc.)
+  // For now, we don't have any interactive elements in the game world, so we just return CONTINUE.
+  return SDL_APP_CONTINUE;
+}
+
+SDL_AppResult GameWorld::update()
+{
+  // Update game world state here (e.g. move NPCs, check for collisions, etc.)
+  // For now, we don't have any dynamic elements in the game world, so we just return CONTINUE.
+  return SDL_APP_CONTINUE;
+}
+
 SDL_AppResult GameWorld::render(SDL_Renderer *renderer, SDL_FRect *bounds)
 {
   // Attempt to render map_texture if we have one
