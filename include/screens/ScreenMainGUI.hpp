@@ -12,9 +12,18 @@
 #include <algorithm> // std::max, std::min
 
 
-namespace bipsy::gaiasim::gui
+namespace bipsy::gaiasim
 {
+// forward declare GameWorld
+class GameWorld;
+
+
+
+namespace gui
+{
+
 using namespace bipsy::sdlutils;  // log_error, etc
+
 
 class ScreenMainGUI
 {
@@ -110,21 +119,7 @@ public:
     return SDL_APP_CONTINUE;
   }
 
-  SDL_AppResult render(SDL_Renderer *renderer, SDL_Texture *map_texture)
-  {
-    SDL_AppResult result;
-
-    if (result = render_panel(renderer, m_left_sidebar))
-      return result;
-
-    if (result = render_panel(renderer, m_top_sidebar))
-      return result;
-      
-    if (result = render_panel(renderer, m_main_panel, map_texture))
-      return result;
-
-    return SDL_APP_CONTINUE;
-  }
+  SDL_AppResult render(SDL_Renderer *renderer, GameWorld *world);
 
 
 private:
@@ -208,116 +203,13 @@ private:
     return SDL_APP_CONTINUE;
   }
 
-  SDL_AppResult render_panel(SDL_Renderer *renderer, Panel &panel, SDL_Texture *map_texture = nullptr)
-  {
-    // Set draw color to panel color and render filled rect
-    if (not SDL_SetRenderDrawColor(renderer,
-        panel.m_color.r, panel.m_color.g, panel.m_color.b, panel.m_color.a))
-    {
-      return log_error("Failed to set panel '%s' render draw color: %s",
-        panel.m_title.c_str(), SDL_GetError());
-    }
-
-    // Convert panel partition to actual pixel bounds
-    SDL_FRect m_bounds;
-    // multiply partition values by window dimensions to get pixel bounds
-    m_bounds.x = panel.m_partition.x * m_window_width;
-    m_bounds.y = panel.m_partition.y * m_window_height;
-    m_bounds.w = panel.m_partition.w * m_window_width;
-    m_bounds.h = panel.m_partition.h * m_window_height;
-
-    // attempt to draw the rectangle
-    if (not SDL_RenderFillRect(renderer, &m_bounds))
-    {
-      return log_error("Failed to render panel '%s': %s",
-        panel.m_title.c_str(), SDL_GetError());
-    }
-    else
-      log_debug("Rendered panel '%s'", panel.m_title.c_str());
-
-    // Render the title texture for this panel, if it exists
-    if (panel.m_title_texture != nullptr)
-    {
-      // position to render text - we will render the title in the top left corner of the
-      // panel with some padding
-      const float padding_x = 5.0f;
-      const float padding_y = 0.0f;
-      SDL_FRect text_rect;
-
-      SDL_GetTextureSize(panel.m_title_texture, &text_rect.w, &text_rect.h); // Get the width and height of the texture
-      // We want the entire texture, unless clipping
-      SDL_FRect source_rect = {0, 0, text_rect.w, text_rect.h};
-      
-      // use width & height for centering and clipping if necessary
-      text_rect.x = std::min(std::max(
-        m_bounds.x + padding_x,
-          m_bounds.x + (m_bounds.w/2.0f) - (text_rect.w/2.0f)),
-        m_bounds.x + m_bounds.w - padding_x);
-      
-      text_rect.y = std::min(std::max(
-        m_bounds.y + padding_y,
-          m_bounds.y),
-        m_bounds.y + m_bounds.h - padding_y);
-
-      // clip text rect to panel bounds if necessary
-      if (text_rect.x + text_rect.w > m_bounds.x + m_bounds.w)
-      {
-        float diff = (text_rect.x + text_rect.w) - (m_bounds.x + m_bounds.w);
-        text_rect.w -= diff;
-        source_rect.w -= diff;
-        panel.m_use_small_font = true;
-      }
-      if (text_rect.y + text_rect.h > m_bounds.y + m_bounds.h)
-      {
-        float diff = (text_rect.y + text_rect.h) - (m_bounds.y + m_bounds.h);
-        text_rect.h -= diff;
-        source_rect.h -= diff;
-        panel.m_use_small_font = true;
-      }
-      // determine if we should switch back to larger font
-      if (panel.m_use_small_font
-        && (m_bounds.w > panel.m_title_texture_size.w + 2*padding_x
-          && m_bounds.h > panel.m_title_texture_size.h + 2*padding_y))
-      {
-        panel.m_use_small_font = false;
-      }
-
-      // Attempt to render map_texture if we have one
-      if (map_texture != nullptr)
-      {
-        SDL_FRect map_rect = m_bounds; // Render map to fill entire panel
-        SDL_GetTextureSize(map_texture, &map_rect.w, &map_rect.h); // Get the width and height of the texture
-        if (map_rect.w > m_bounds.w || map_rect.h > m_bounds.h)
-        {
-          // If the texture is larger than the panel, scale it down to fit while maintaining aspect ratio
-          float width_ratio = m_bounds.w / map_rect.w;
-          float height_ratio = m_bounds.h / map_rect.h;
-          float scale = std::min(width_ratio, height_ratio);
-          map_rect.w *= scale;
-          map_rect.h *= scale;
-        }
-        map_rect.x = m_bounds.x + (m_bounds.w/2.0f) - (map_rect.w/2.0f); // Center map horizontally in panel
-        map_rect.y = m_bounds.y + (m_bounds.h/2.0f) - (map_rect.h/2.0f); // Center map vertically in panel
-        if (not SDL_RenderTexture(renderer, map_texture, NULL, &map_rect))
-        {
-          return log_error("Failed to render map texture for panel '%s': %s",
-            panel.m_title.c_str(), SDL_GetError());
-        }
-      }
-
-      // Attempt to render the title texture
-      if (not SDL_RenderTexture(renderer, panel.m_title_texture, &source_rect, &text_rect))
-      {
-        return log_error("Failed to render title texture for panel '%s': %s",
-          panel.m_title.c_str(), SDL_GetError());
-      }
-    }
-
-    return SDL_APP_CONTINUE;
-  }
+  SDL_AppResult render_panel(SDL_Renderer *renderer, Panel &panel,
+                             GameWorld *world = nullptr);
 
 }; // class ScreenMainGUI
 
 } // namespace bipsy::gaiasim::gui
+
+} // namespace bipsy::gaiasim
 
 #endif // BIPSY_GAIASIM_SCREEN_MAIN_GUI_HPP

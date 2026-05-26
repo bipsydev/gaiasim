@@ -6,6 +6,7 @@
 #include "Screen.hpp"
 #include "ScreenMainGUI.hpp"
 #include "Game.hpp"
+#include "GameWorld.hpp"
 
 #include "SDL3/SDL.h"
 
@@ -19,28 +20,16 @@ class ScreenMain : public Screen
 {
   using GUI = gui::ScreenMainGUI;
   GUI * gui;
-
-  // for now, use an ASCII array to display a "map"
-  const std::string map = {
-    "####################\n"
-    "#..................#\n"
-    "#...#####..........#\n"
-    "#...#...#..........#\n"
-    "#...#...#..........#\n"
-    "#...#####..........#\n"
-    "#..................#\n"
-    "#..................#\n"
-    "#..................#\n"
-    "####################"
-  };
-  SDL_Texture *map_texture;
+  
+  // The game world data & it's rendering data.
+  GameWorld *world;
   
 
 public:
   ScreenMain(Game * game)
   : Screen(game, "ScreenMain", {0, 0, 0, 255}),
     gui{nullptr},
-    map_texture{nullptr}
+    world{nullptr}
   { };
 
   // Prevent copying
@@ -54,9 +43,6 @@ public:
   SDL_AppResult event(SDL_Event *event) override;
   SDL_AppResult update() override;
   SDL_AppResult render(SDL_Renderer *renderer) override;
-
-private:
-  SDL_AppResult generate_map_texture();
 };
 
 } // namespace bipsy::gaiasim
