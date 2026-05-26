@@ -40,13 +40,16 @@ class Game
   Uint8 m_active_screen_index;
 
   // -- SDL objects --
-  SDL_Window   *m_window   = nullptr; // Window object
-  SDL_Renderer *m_renderer = nullptr; // Rendering context to window
+  SDL_Window   *m_window;   // Window object
+  SDL_Renderer *m_renderer; // Rendering context to window
 
-  SDL_Color m_clear_color; // Clear/bg color for the renderer
+  SDL_Color m_clear_color;  // Clear/bg color for the renderer
 
-  TTF_Font *m_font = nullptr;       // Global font
-  TTF_Font *m_font_small = nullptr; // Smaller font
+  TTF_Font *m_font;       // Global font
+  TTF_Font *m_font_small; // Smaller font
+  TTF_Font *m_font_large; // Larger font
+  // Alias for larger font, for HiDPI displays
+  TTF_Font *&m_font_hidpi = m_font_large; 
 
   // -- Time-related variables --
   int m_frame;          // Frame count
