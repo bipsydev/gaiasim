@@ -40,6 +40,9 @@ class ScreenTest : public Screen
   static const int GRADIENT_RECT_VERTEX_COUNT = GRADIENT_RECT_TRIANGLE_COUNT * 3;
   SDL_Vertex gradient_rect[GRADIENT_RECT_VERTEX_COUNT];
 
+  // Verticies for a rainbow, color-changing triangle
+  SDL_Vertex rainbow_triangle[3];
+
   // texture for holding rendered text
   SDL_Texture *text_texture = nullptr;
 
@@ -70,6 +73,7 @@ public:
     polygon1{},
     polygon2{},
     gradient_rect{},
+    rainbow_triangle{},
     text_texture{nullptr},
     m_text_str{""}
   { }

@@ -3,7 +3,8 @@
 #include "Game.hpp" // log_info
 #include "screens/ScreenMain.hpp"
 
-#include <format> // std::format
+#include <cstdlib>  // rand
+#include <format>   // std::format
 
 
 namespace bipsy::gaiasim
@@ -73,6 +74,17 @@ SDL_AppResult ScreenTest::init()
   {
     gradient_rect[i].position.y += 300;
   }
+
+
+  // Rainbow triangle vertex data
+  log_info("Initializing vertex data for rainbow_triangle...", 2);
+  // Top left vertex
+  rainbow_triangle[0] = {{700, 400}, {1.0f,0.0f,0.0f,1.0f}, {0.0f,0.0f}};
+  // Top right vertex
+  rainbow_triangle[1] = {{1100, 400}, {0.0f,1.0f,0.0f,1.0f}, {1.0f,0.0f}};
+  // Bottom vertex
+  rainbow_triangle[2] = {{900, 800}, {0.0f,0.0f,1.0f,1.0f}, {0.5f,1.0f}};
+
 
   log_info("Vertex data initialized successfully", 2);
 
@@ -210,6 +222,18 @@ SDL_AppResult ScreenTest::update()
     return result;
   }
 
+  // Set rainbow_triangle colors to random values
+#define RAND_COLOR() \
+{ \
+  static_cast<float>(rand()) / RAND_MAX, \
+  static_cast<float>(rand()) / RAND_MAX, \
+  static_cast<float>(rand()) / RAND_MAX, 1.0f \
+}
+  rainbow_triangle[0].color = RAND_COLOR();
+  rainbow_triangle[1].color = RAND_COLOR();
+  rainbow_triangle[2].color = RAND_COLOR();
+#undef RAND_COLOR
+
 
   return SDL_APP_CONTINUE;
 }
@@ -244,6 +268,14 @@ SDL_AppResult ScreenTest::render(SDL_Renderer *renderer)
     SDL_Log("num_verticies: GRADIENT_RECT_VERTEX_COUNT = %d", GRADIENT_RECT_VERTEX_COUNT);
     SDL_LogError(SDL_LOG_CATEGORY_ERROR,
       "Failed to render geometry gradient_rect: %s", SDL_GetError());
+    return SDL_APP_FAILURE; // Return failure result if rendering failed
+  }
+
+  if (not SDL_RenderGeometry(renderer, NULL,
+    rainbow_triangle ,3, NULL, 0))
+  {
+    SDL_LogError(SDL_LOG_CATEGORY_ERROR,
+      "Failed to render geometry rainbow_triangle: %s", SDL_GetError());
     return SDL_APP_FAILURE; // Return failure result if rendering failed
   }
 
