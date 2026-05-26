@@ -179,6 +179,8 @@ public:
   GETTER(SDL_Renderer *const, renderer)
   GETTER(TTF_Font *const, font)
   GETTER(TTF_Font *const, font_small)
+  GETTER(TTF_Font *const, font_large)
+  GETTER(TTF_Font *const, font_hidpi)
 
   GETTER(SDL_Color, clear_color)
   SETTER(SDL_Color, clear_color)

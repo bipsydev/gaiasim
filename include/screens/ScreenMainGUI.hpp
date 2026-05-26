@@ -163,8 +163,13 @@ private:
 
   SDL_AppResult create_panel_title_texture(Game *game, Panel &panel)
   {
-    TTF_Font *panel_font = panel.m_use_small_font ? game->font_small()
-                                                  : game->font();
+    TTF_Font *panel_font = panel.m_use_small_font ?
+        game->font_small() :
+#ifndef __ANDROID__
+        game->font();
+#else
+        game->font_hidpi();
+#endif
     // Determine title text color
     SDL_Color text_color = {0, 0, 0, 255}; // default to black
     
