@@ -34,6 +34,9 @@
 // For SDL_AppResult
 #include "SDL3/SDL.h"
 
+// EnTT library for ECS (entity-component-system) architecture
+#include "entt/entt.hpp"
+
 
 
 /*******************************************************************************
@@ -59,6 +62,7 @@ using bipsy::gaiasim::Game,
  ******************************************************************************/
 
 void init_logging();
+void test_entt();
 
 
 /*******************************************************************************
@@ -95,12 +99,25 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv)
 {
   init_logging();
   log_info("------ AppInit: Initializing ------");
+
+  test_entt();
+
   // Initialize Game (starts SDL systems and loads initial game state)
   Game *game = new Game();
   *appstate = game;
   log_info("------ AppInit: Initialization complete ------");
 
   return game->init();
+}
+
+void test_entt()
+{
+  log_info("Testing EnTT library...", 1);
+  entt::registry registry;
+  auto entity = registry.create();
+  registry.emplace<int>(entity, 42);
+  int &value = registry.get<int>(entity);
+  log_info("EnTT test successful, value: %i", 0, value);
 }
 
 
