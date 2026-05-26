@@ -77,11 +77,18 @@ if(PROJECT_SOURCES)
 
   # Add include directories for all platforms
   target_include_directories(${EXECUTABLE_NAME} PRIVATE ./include)
+  
+  # Treat external library headers as system includes (suppresses strict warnings for them)
+  target_include_directories(${EXECUTABLE_NAME} SYSTEM PRIVATE
+    "${CMAKE_SOURCE_DIR}/external_libs/entt/src"
+  )
 
   # Apply -Weffc++ only to our source files, not external libraries
   if(NOT MSVC)
     # TODO: remove `-Wno-format-security` once the logging in `SDL_Utils.hpp` is refactored to use `std::format` instead.
-    target_compile_options(${EXECUTABLE_NAME} PRIVATE -Weffc++ -Wno-format-security)
+    target_compile_options(${EXECUTABLE_NAME} PRIVATE -Wno-format-security)
+    # Apply -Weffc++ only to our own source files
+    set_source_files_properties(${PROJECT_SOURCES} PROPERTIES COMPILE_FLAGS "-Weffc++")
   endif()
 
 else()
@@ -133,6 +140,13 @@ set(SDLIMAGE_JPEG OFF)
 set(SDLIMAGE_WEBP OFF)
 add_subdirectory(external_libs/SDL_image EXCLUDE_FROM_ALL)
 
+
+# Add EnTT with Natvis support (VS Code's data visualizer).
+set(ENTT_INSTALL ON)
+set(ENTT_INCLUDE_NATVIS ON)
+add_subdirectory(external_libs/entt EXCLUDE_FROM_ALL)
+
+
 # Zlib's CMakeLists.txt renames zconf.h to zconf.h.included to prevent CMake from
 # regenerating it. However, this modifies the vendored source tree and shows as modified
 # in git. Restore the original filename after configuration to keep the submodule clean.
@@ -149,8 +163,9 @@ target_link_libraries(${EXECUTABLE_NAME} PRIVATE
     SDL3_mixer::SDL3_mixer
     SDL3_ttf::SDL3_ttf
     SDL3::SDL3
+    # Also link to EnTT
+    EnTT::EnTT
 )
-
 
 
 # SDL_Image bug: https://github.com/libsdl-org/SDL_image/issues/506
