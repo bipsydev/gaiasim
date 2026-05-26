@@ -9,7 +9,72 @@
 namespace bipsy::gaiasim::gui
 {
 
+
 using namespace sdlutils;  // log_error, log_warn, etc
+
+
+
+ScreenMainGUI::ScreenMainGUI()
+: m_main_panel(
+      {0.25, 0.25, 0.75, 0.75},
+      "Main",
+      {0x00, 0x00, 0x00, 0xFF}),
+  m_left_sidebar(
+      {0, 0.25, 0.25, 0.75},
+      "Left Sidebar",
+      {0xFF, 0x00, 0xCB, 0xFF}),
+  m_top_sidebar(
+      {0, 0, 1.0, 0.25},
+      "Top Sidebar",
+      {0x00, 0xB4, 0x5D, 0xFF}),
+  m_window_width{0}, m_window_height{0}
+{ }
+
+
+
+ScreenMainGUI::~ScreenMainGUI()
+{
+  // Clean up textures
+  if (m_main_panel.m_title_texture != nullptr)
+    SDL_DestroyTexture(m_main_panel.m_title_texture);
+  if (m_left_sidebar.m_title_texture != nullptr)
+    SDL_DestroyTexture(m_left_sidebar.m_title_texture);
+  if (m_top_sidebar.m_title_texture != nullptr)
+    SDL_DestroyTexture(m_top_sidebar.m_title_texture);
+}
+
+
+
+SDL_AppResult ScreenMainGUI::update_layout(Game *game)
+{
+  log_trace("ScreenMainGUI::update_layout called.");
+
+  int window_width, window_height;
+  if (not SDL_GetCurrentRenderOutputSize(
+    game->renderer(), &window_width, &window_height))
+  {
+    // Handle error
+    return log_error("Failed to get current render output size: %s",
+      SDL_GetError());
+  }
+  
+  bool changed = false;
+  // check if window size has changed since last update
+  if (window_width != m_window_width || window_height != m_window_height)
+    changed = true;
+
+  m_window_width = window_width;
+  m_window_height = window_height;
+
+  log_debug("Updated layout with window size %dx%d", 1, m_window_width, m_window_height);
+  
+  // regenerate textures based on window size change
+  if (changed)
+    return generate_textures(game);
+  // continue otherwise
+  return SDL_APP_CONTINUE;
+}
+
 
 
 SDL_AppResult ScreenMainGUI::render(SDL_Renderer *renderer, GameWorld *world)
@@ -28,6 +93,39 @@ SDL_AppResult ScreenMainGUI::render(SDL_Renderer *renderer, GameWorld *world)
   return SDL_APP_CONTINUE;
 }
 
+
+
+SDL_AppResult ScreenMainGUI::generate_textures(Game *game)
+{
+  log_debug("Generating title textures for panels...");
+
+  // free anything already allocated
+  if (m_main_panel.m_title_texture != nullptr)
+  {
+    SDL_DestroyTexture(m_main_panel.m_title_texture);
+    m_main_panel.m_title_texture = nullptr;
+  }
+  if (m_left_sidebar.m_title_texture != nullptr)
+  {
+    SDL_DestroyTexture(m_left_sidebar.m_title_texture);
+    m_left_sidebar.m_title_texture = nullptr;
+  }
+  if (m_top_sidebar.m_title_texture != nullptr)
+  {
+    SDL_DestroyTexture(m_top_sidebar.m_title_texture);
+    m_top_sidebar.m_title_texture = nullptr;
+  }
+
+  // allocate all 3
+  if (create_panel_title_texture(game, m_main_panel))
+    return log_error("Failed to create title texture for main panel");
+  if (create_panel_title_texture(game, m_left_sidebar))
+    return log_error("Failed to create title texture for left sidebar");
+  if (create_panel_title_texture(game, m_top_sidebar))
+    return log_error("Failed to create title texture for top sidebar");
+  
+  return SDL_APP_CONTINUE;
+}
 
 
 
@@ -77,6 +175,7 @@ SDL_AppResult ScreenMainGUI::create_panel_title_texture(Game *game, Panel &panel
   
   return SDL_APP_CONTINUE;
 }
+
 
 
 SDL_AppResult ScreenMainGUI::render_panel(SDL_Renderer *renderer, Panel &panel, GameWorld *world)
