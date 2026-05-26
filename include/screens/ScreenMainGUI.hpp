@@ -54,9 +54,18 @@ class ScreenMainGUI
 
 public:
   ScreenMainGUI()
-  : m_main_panel({0.25, 0.25, 0.75, 0.75}, "Main", {218, 255, 0, 255}),
-    m_left_sidebar({0, 0.25, 0.25, 0.75}, "Left Sidebar", {255, 0, 203, 255}),
-    m_top_sidebar({0, 0, 1.0, 0.25}, "Top Sidebar", {0, 180, 93, 255}),
+  : m_main_panel(
+        {0.25, 0.25, 0.75, 0.75},
+        "Main",
+        {0x00, 0x00, 0x00, 0xFF}),
+    m_left_sidebar(
+        {0, 0.25, 0.25, 0.75},
+        "Left Sidebar",
+        {0xFF, 0x00, 0xCB, 0xFF}),
+    m_top_sidebar(
+        {0, 0, 1.0, 0.25},
+        "Top Sidebar",
+        {0x00, 0xB4, 0x5D, 0xFF}),
     m_window_width{0}, m_window_height{0}
   { }
 
@@ -156,9 +165,18 @@ private:
   {
     TTF_Font *panel_font = panel.m_use_small_font ? game->font_small()
                                                   : game->font();
+    // Determine title text color
+    SDL_Color text_color = {0, 0, 0, 255}; // default to black
+    
+    Uint8 brightness = (panel.m_color.r * 0.2126f) + (panel.m_color.g * 0.7152f) + (panel.m_color.b * 0.0722f);
+    if (brightness < 128)
+    {
+      text_color = {255, 255, 255, 255}; // use white 
+    }
+
     SDL_Surface * text_surface = TTF_RenderText_Blended(
       panel_font, panel.m_title.c_str(),
-      0, {0, 0, 0, 255}  // black color
+      0, text_color
     );
     if (text_surface == nullptr)
     {
