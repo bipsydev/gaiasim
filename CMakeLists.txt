@@ -144,6 +144,12 @@ add_subdirectory(external_libs/SDL_image EXCLUDE_FROM_ALL)
 # Add EnTT with Natvis support (VS Code's data visualizer).
 set(ENTT_INSTALL ON)
 set(ENTT_INCLUDE_NATVIS ON)
+set(ENTT_CMAKELISTS "${CMAKE_SOURCE_DIR}/external_libs/entt/CMakeLists.txt")
+if(NOT EXISTS "${ENTT_CMAKELISTS}")
+    message(FATAL_ERROR
+        "Missing EnTT submodule at external_libs/entt. "
+        "Run: git submodule update --init --recursive")
+endif()
 add_subdirectory(external_libs/entt EXCLUDE_FROM_ALL)
 
 
