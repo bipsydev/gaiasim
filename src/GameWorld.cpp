@@ -40,8 +40,51 @@ GameWorld::~GameWorld()
 
 SDL_AppResult GameWorld::event(SDL_Event *event)
 {
-  // Handle game world events here (e.g. player input, NPC behavior, etc.)
-  // For now, we don't have any interactive elements in the game world, so we just return CONTINUE.
+  
+  // respond to arrow keys/WASD
+  if (event->type == SDL_EVENT_KEY_DOWN)
+  {
+    Uint8 new_x = player_x;
+    Uint8 new_y = player_y;
+    switch (event->key.key)
+    {
+    case SDLK_UP:
+    case SDLK_W:
+      moved = true;
+      new_y = static_cast<Uint8>(std::max<Sint16>(
+        player_y - 1, 0));
+      break;
+    case SDLK_DOWN:
+    case SDLK_S:
+      moved = true;
+      new_y = static_cast<Uint8>(std::min<Sint16>(
+        player_y + 1, map_height - 1));
+      break;
+    case SDLK_LEFT:
+    case SDLK_A:
+      moved = true;
+      new_x = static_cast<Uint8>(std::max<Sint16>(
+        player_x - 1, 0));
+      break;
+    case SDLK_RIGHT:
+    case SDLK_D:
+      moved = true;
+      new_x = static_cast<Uint8>(std::min<Sint16>(
+        player_x + 1, map_width - 1));
+      break;
+    default:
+      break; // ignore other keys
+    }
+    if (moved)
+    {
+      log_info("Player moved to (%d, %d)", new_x, new_y);
+      player_x_old = player_x;
+      player_y_old = player_y;
+      player_x = new_x;
+      player_y = new_y;
+    }
+  }
+
   return SDL_APP_CONTINUE;
 }
 
@@ -54,6 +97,25 @@ SDL_AppResult GameWorld::update()
 
 SDL_AppResult GameWorld::render(SDL_Renderer *renderer, SDL_FRect *bounds)
 {
+  if (moved)
+  {
+    // first, replace map location from '@' to '.':
+    map.replace(map.find(player_char), 1, ".");
+    // then, replace new map location with '@':
+    // calculate string index from coordinates
+    int str_i = (player_y * (map_width + 1)) + player_x; // +1 for newline character at end of each row
+    map.replace(str_i, 1, std::string(1, player_char));
+
+    // update the map texture
+    if (SDL_AppResult result = generate_map_texture())
+    {
+      return result;
+    }
+
+    // reset flag
+    moved = false;
+  }
+
   // Attempt to render map_texture if we have one
   if (map_texture != nullptr)
   {
@@ -81,11 +143,19 @@ SDL_AppResult GameWorld::render(SDL_Renderer *renderer, SDL_FRect *bounds)
 
 SDL_AppResult GameWorld::generate_map_texture()
 {
+  // Generate surface from text
   SDL_Surface *map_surface = TTF_RenderText_Blended_Wrapped(m_game->font(), map.c_str(), 0, {255, 255, 255, 255}, 0);
   if(map_surface == nullptr)
   {
     return log_error_init("map_surface");
   }
+  // destroy map_texture if it exists already
+  if (map_texture != nullptr)
+  {
+    SDL_DestroyTexture(map_texture);
+    map_texture = nullptr;
+  }
+  // allocate the texture
   map_texture = SDL_CreateTextureFromSurface(m_game->renderer(), map_surface);
   SDL_DestroySurface(map_surface);
   if(map_texture == nullptr)
