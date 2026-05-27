@@ -40,41 +40,43 @@ GameWorld::~GameWorld()
 
 SDL_AppResult GameWorld::event(SDL_Event *event)
 {
-  
   // respond to arrow keys/WASD
   if (event->type == SDL_EVENT_KEY_DOWN)
   {
     Uint8 new_x = player_x;
     Uint8 new_y = player_y;
+
+#define NEW_POS(func, arg1, arg2) \
+  static_cast<Uint8>(std::func<Sint16>(arg1, arg2))
+
     switch (event->key.key)
     {
     case SDLK_UP:
     case SDLK_W:
       moved = true;
-      new_y = static_cast<Uint8>(std::max<Sint16>(
-        player_y - 1, 0));
+      new_y = NEW_POS(max, player_y - 1, 0);
       break;
     case SDLK_DOWN:
     case SDLK_S:
       moved = true;
-      new_y = static_cast<Uint8>(std::min<Sint16>(
-        player_y + 1, map_height - 1));
+      new_y = NEW_POS(min, player_y + 1, map_height - 1);
       break;
     case SDLK_LEFT:
     case SDLK_A:
       moved = true;
-      new_x = static_cast<Uint8>(std::max<Sint16>(
-        player_x - 1, 0));
+      new_x = NEW_POS(max, player_x - 1, 0);
       break;
     case SDLK_RIGHT:
     case SDLK_D:
       moved = true;
-      new_x = static_cast<Uint8>(std::min<Sint16>(
-        player_x + 1, map_width - 1));
+      new_x = NEW_POS(min, player_x + 1, map_width - 1);
       break;
     default:
       break; // ignore other keys
     }
+
+#undef NEW_POS
+
     if (moved)
     {
       log_info("Player moved to (%d, %d)", new_x, new_y);
