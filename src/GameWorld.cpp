@@ -15,15 +15,22 @@ using namespace sdlutils; // log_error_init, log_info, etc.
 
 GameWorld::GameWorld(Game *game)
 : m_game{game},
+  world_map{},
   map_texture{nullptr}
-{
-  // Initialize game world state here, using the Game instance if needed
-}
+{ }
 
 SDL_AppResult GameWorld::init()
 {
+  SDL_AppResult result;
+
   // Generate the map texture based on the ASCII map
-  return generate_map_texture();
+  if (result = generate_map_texture())
+  {
+    return result;
+  }
+
+  // generate the world map (chunks & blocks)
+  return generate_world_map();
 }
 
 GameWorld::~GameWorld()
@@ -165,6 +172,25 @@ SDL_AppResult GameWorld::generate_map_texture()
     return log_error_init("map_texture");
   }
 
+  return SDL_APP_CONTINUE;
+}
+
+SDL_AppResult GameWorld::generate_world_map()
+{
+  // just generate a single chunk at the origin for now
+  auto chunk = world_map.create_chunk(0, 0, 0);
+  if (chunk == entt::null)
+  {
+    return log_error("Failed to create initial chunk at (0, 0, 0)");
+  }
+  else
+  {
+    log_info("Created initial chunk at (0, 0, 0)");
+    log_info("Chunk entity ID: %u", 1, static_cast<entt::id_type>(chunk));
+    auto& chunk_pos = world_map.get_component<ChunkPos>(chunk);
+    log_info("Chunk position component: (%i, %i, %i)", 2,
+      chunk_pos.x, chunk_pos.y, chunk_pos.z);
+  }
   return SDL_APP_CONTINUE;
 }
 

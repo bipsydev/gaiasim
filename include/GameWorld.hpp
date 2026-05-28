@@ -3,6 +3,8 @@
 #define BIPSY_GAIASIM_GAMEWORLD_HPP
 
 
+#include "WorldMap.hpp"
+
 #include "SDL3/SDL.h"
 
 #include <string>
@@ -33,6 +35,7 @@ class GameWorld
     "#..................#\n"
     "####################"
   };
+  WorldMap world_map;
   SDL_Texture *map_texture;
 
   Uint8 map_width = 20;
@@ -66,6 +69,7 @@ public:
 
 private:
   SDL_AppResult generate_map_texture();
+  SDL_AppResult generate_world_map();
 
 }; // class GameWorld
 

@@ -111,15 +111,25 @@ public:
   ~WorldMap();
 
 
+  // registry getters
+  entt::registry& registry()              { return m_chunk_registry; }
+  const entt::registry& registry() const  { return m_chunk_registry; }
+
+  // component getters
+  template<typename Component>
+  Component& get_component(entt::entity entity)
+  { return m_chunk_registry.get<Component>(entity); }
+
+
   // Chunk creation functions
-  entt::entity create_chunk(const ChunkPos &pos);
+  entt::entity create_chunk(const ChunkPos& pos);
 
   entt::entity create_chunk(Sint64 x, Sint64 y, Sint64 z)
   { return create_chunk(ChunkPos{x, y, z}); }
 
 
   // Chunk deletion functions
-  bool delete_chunk(const ChunkPos &pos);
+  bool delete_chunk(const ChunkPos& pos);
 
   bool delete_chunk(Sint64 x, Sint64 y, Sint64 z)
   { return delete_chunk(ChunkPos{x, y, z}); }
@@ -129,21 +139,21 @@ public:
 
 
   // Chunk retrieval functions
-  entt::entity get_chunk(const ChunkPos &pos) const;
+  entt::entity get_chunk(const ChunkPos& pos) const;
 
   entt::entity get_chunk(Sint64 x, Sint64 y, Sint64 z) const
   { return get_chunk(ChunkPos{x, y, z}); }
 
 
   // Block retrieval functions
-  BlockID get_block(const ChunkPos &chunk_pos,
+  BlockID get_block(const ChunkPos& chunk_pos,
                     int local_x, int local_y, int local_z) const;
   
   BlockID get_block(Sint64 global_x, Sint64 global_y, Sint64 global_z) const;
 
 
   // Block setting functions
-  bool set_block(const ChunkPos &chunk_pos,
+  bool set_block(const ChunkPos& chunk_pos,
                  int local_x, int local_y, int local_z,
                  BlockID block_id);
 
