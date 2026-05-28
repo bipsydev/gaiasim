@@ -71,17 +71,43 @@ entt::entity WorldMap::get_chunk(const ChunkPos& pos) const
 
 
 BlockID WorldMap::get_block(const ChunkPos& chunk_pos,
-                             Uint8 local_x, Uint8 local_y, Uint8 local_z) const
+                            const LocalPos& local_pos) const
 {
   // TODO implement
   log_warn("get_block not implemented yet");
   log_info("get_block called with chunk_pos (%i, %i, %i) and local coords (%i, %i, %i)",
-    1, chunk_pos.x, chunk_pos.y, chunk_pos.z, local_x, local_y, local_z);
+    1, chunk_pos.x, chunk_pos.y, chunk_pos.z, local_pos.x, local_pos.y, local_pos.z);
   return 0;
 }
 
 
 BlockID WorldMap::get_block(Sint64 global_x, Sint64 global_y, Sint64 global_z) const
+{
+  auto [chunk_pos, local_pos] = convert_global_to_chunk_pos(global_x, global_y, global_z);
+  return get_block(chunk_pos, local_pos);
+}
+
+
+bool WorldMap::set_block(const ChunkPos& chunk_pos,
+                         const LocalPos& local_pos,
+                         BlockID block_id)
+{
+  // TODO implement
+  log_warn("set_block not implemented yet");
+  return false;
+}
+
+
+bool WorldMap::set_block(Sint64 global_x, Sint64 global_y, Sint64 global_z,
+                         BlockID block_id)
+{
+  auto [chunk_pos, local_pos] = convert_global_to_chunk_pos(global_x, global_y, global_z);
+  return set_block(chunk_pos, local_pos, block_id);
+}
+
+
+std::tuple<ChunkPos, LocalPos> WorldMap::convert_global_to_chunk_pos
+(Sint64 global_x, Sint64 global_y, Sint64 global_z) const
 {
   //TODO replace with simpler calculations -- floor division instead
 
@@ -99,41 +125,20 @@ BlockID WorldMap::get_block(Sint64 global_x, Sint64 global_y, Sint64 global_z) c
   Uint8 local_y = global_y % ChunkData::SIZE + (global_y < 0 && global_y % ChunkData::SIZE != 0 ? ChunkData::SIZE : 0);
   Uint8 local_z = global_z % ChunkData::SIZE + (global_z < 0 && global_z % ChunkData::SIZE != 0 ? ChunkData::SIZE : 0);
 
-  return get_block(
-    ChunkPos{chunk_x, chunk_y, chunk_z},
-    local_x, local_y, local_z
-  );
+  return {ChunkPos{chunk_x, chunk_y, chunk_z},
+          LocalPos{local_x, local_y, local_z}};
 }
 
 
-bool WorldMap::set_block(const ChunkPos& chunk_pos,
-                         Uint8 local_x, Uint8 local_y, Uint8 local_z,
-                         BlockID block_id)
+GlobalPos WorldMap::convert_chunk_to_global_pos
+(Sint64 chunk_x, Sint64 chunk_y, Sint64 chunk_z,
+ Uint8 local_x, Uint8 local_y, Uint8 local_z) const
 {
-  // TODO implement
-  log_warn("set_block not implemented yet");
-  return false;
+  //TODO implement
+  log_error("convert_chunk_to_global_pos not implemented yet, returning (0, 0, 0)");
+  return GlobalPos{0, 0, 0};
 }
 
-
-bool WorldMap::set_block(Sint64 global_x, Sint64 global_y, Sint64 global_z,
-                         BlockID block_id)
-{
-  //TODO replace this with get_block impl
-  return set_block(
-    // Integer division again
-    ChunkPos{
-      global_x / ChunkData::SIZE,
-      global_y / ChunkData::SIZE,
-      global_z / ChunkData::SIZE
-    },
-    // Modulo again
-    global_x % ChunkData::SIZE,
-    global_y % ChunkData::SIZE,
-    global_z % ChunkData::SIZE,
-    // pass through block_id to set
-    block_id);
-}
 
 
 } // namespace bipsy::gaiasim

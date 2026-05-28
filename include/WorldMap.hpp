@@ -11,6 +11,8 @@
 #include <unordered_map>  // std::unordered_map
 #include <limits>         // std::numeric_limits
 #include <functional>     // std::hash
+#include <tuple>          // std::tuple
+#include <concepts>        // std::integral
 
 
 namespace bipsy::gaiasim
@@ -20,23 +22,35 @@ namespace bipsy::gaiasim
 using BlockID = Uint64;
 
 
-// ------------------------------ EnTT Components ------------------------------
-
-// A position in chunk-coordinates
-struct ChunkPos
+// Abstract base class for all 3D position types
+// ensure CoordType is an integer type using concepts (for hashing and indexing)
+template<std::integral CoordType>
+struct Position3D
 {
-  Sint64 x = 0;
-  Sint64 y = 0;
-  Sint64 z = 0;
+  CoordType x = 0;
+  CoordType y = 0;
+  CoordType z = 0;
 
-  ChunkPos(Sint64 x = 0, Sint64 y = 0, Sint64 z = 0)
+  Position3D(CoordType x = 0, CoordType y = 0, CoordType z = 0)
   : x{x}, y{y}, z{z}
   { }
 
-  bool operator==(const ChunkPos& other) const
-  {
-    return x == other.x && y == other.y && z == other.z;
-  }
+  bool operator==(const Position3D& other) const
+  { return x == other.x && y == other.y && z == other.z; }
+
+  virtual ~Position3D() = default;
+}; // struct Position3D
+
+
+// ------------------------------ EnTT Components ------------------------------
+
+// A position in chunk-coordinates
+struct ChunkPos : public Position3D<Sint64>
+{
+
+  ChunkPos(Sint64 x = 0, Sint64 y = 0, Sint64 z = 0)
+  : Position3D{x, y, z}
+  { }
 
   // For use in unordered_map, we need to define a hash function
   // as a separate class in order to pass as template argument to unordered_map
@@ -79,6 +93,24 @@ struct BlockEntities
   static_assert(ChunkData::SIZE * ChunkData::SIZE * ChunkData::SIZE
     <= std::numeric_limits<BlockEntitiesIndex>::max(),
     "Chunk size is too large for block entity map");
+};
+
+
+// Chunk-Local position within a chunk (0 to SIZE - 1 in each dimension)
+struct LocalPos : public Position3D<Uint8>
+{
+  LocalPos(Uint8 x = 0, Uint8 y = 0, Uint8 z = 0)
+  : Position3D{x, y, z}
+  { }
+};
+
+
+// Global world position (positive or negative, theoretically unbounded)
+struct GlobalPos : public Position3D<Sint64>
+{
+  GlobalPos(Sint64 x = 0, Sint64 y = 0, Sint64 z = 0)
+  : Position3D{x, y, z}
+  { }
 };
 
 
@@ -147,18 +179,58 @@ public:
 
   // Block retrieval functions
   BlockID get_block(const ChunkPos& chunk_pos,
-                    Uint8 local_x, Uint8 local_y, Uint8 local_z) const;
+                    const LocalPos& local_pos) const;
   
+  BlockID get_block(const ChunkPos& chunk_pos,
+                    Uint8 local_x, Uint8 local_y, Uint8 local_z) const
+  { return get_block(chunk_pos, LocalPos{local_x, local_y, local_z}); }
+
+  BlockID get_block(const GlobalPos& global_pos) const
+  { return get_block(global_pos.x, global_pos.y, global_pos.z); }
+
   BlockID get_block(Sint64 global_x, Sint64 global_y, Sint64 global_z) const;
 
 
   // Block setting functions
   bool set_block(const ChunkPos& chunk_pos,
-                 Uint8 local_x, Uint8 local_y, Uint8 local_z,
+                 const LocalPos& local_pos,
                  BlockID block_id);
+              
+  bool set_block(const ChunkPos& chunk_pos,
+                 Uint8 local_x, Uint8 local_y, Uint8 local_z,
+                 BlockID block_id)
+  { return set_block(chunk_pos, LocalPos{local_x, local_y, local_z}, block_id); }
+
+  bool set_block(const GlobalPos& global_pos, BlockID block_id)
+  { return set_block(global_pos.x, global_pos.y, global_pos.z, block_id); }
 
   bool set_block(Sint64 global_x, Sint64 global_y, Sint64 global_z,
                  BlockID block_id);
+
+
+  // Coordinate conversion functions: Global -> Chunk local
+  std::tuple<ChunkPos, LocalPos> convert_global_to_chunk_pos
+  (Sint64 global_x, Sint64 global_y, Sint64 global_z) const;
+
+  std::tuple<ChunkPos, LocalPos> convert_global_to_chunk_pos
+  (const GlobalPos& global_pos) const
+  {
+    return convert_global_to_chunk_pos
+      (global_pos.x, global_pos.y, global_pos.z);
+  }
+
+  // Coordinate conversion functions: Chunk local -> Global
+  GlobalPos convert_chunk_to_global_pos
+  (Sint64 chunk_x, Sint64 chunk_y, Sint64 chunk_z,
+   Uint8 local_x, Uint8 local_y, Uint8 local_z) const;
+
+  GlobalPos convert_chunk_to_global_pos
+  (const ChunkPos& chunk_pos, const LocalPos& local_pos) const
+  {
+    return convert_chunk_to_global_pos
+      (chunk_pos.x, chunk_pos.y, chunk_pos.z,
+       local_pos.x, local_pos.y, local_pos.z);
+  }
 
 }; // class WorldMap
 
