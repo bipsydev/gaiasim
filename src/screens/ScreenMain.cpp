@@ -14,8 +14,16 @@ SDL_AppResult ScreenMain::init()
   // init the game world
   world = new GameWorld(game());
 
-  //generate the map texture based on the ASCII map
-  return world->init();
+  // attempt to generate the map texture based on the ASCII map
+  if (SDL_AppResult result = world->init())
+  {
+    // if we failed, deallocate what we allocated earlier before returning
+    delete gui;
+    delete world;
+    return result;
+  }
+
+  return SDL_APP_CONTINUE;
 }
 
 

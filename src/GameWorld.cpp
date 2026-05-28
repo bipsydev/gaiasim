@@ -6,11 +6,13 @@
 
 #include "SDL3_ttf/SDL_ttf.h"
 
+#include <algorithm> // std::min, std::max
+
 
 namespace bipsy::gaiasim
 {
 
-using namespace sdlutils; // log_error_init, log_info, etc.
+using namespace bipsy::sdlutils; // log_error_init, log_info, etc.
 
 
 GameWorld::GameWorld(Game *game)
@@ -50,12 +52,17 @@ SDL_AppResult GameWorld::event(SDL_Event *event)
   // respond to arrow keys/WASD
   if (event->type == SDL_EVENT_KEY_DOWN)
   {
+    // reset the flag that tracks whether the player moved this frame
+    moved = false;
+    // `render` will set this back to false when the flag is handled
+    
     Uint8 new_x = player_x;
     Uint8 new_y = player_y;
 
 #define NEW_POS(func, arg1, arg2) \
   static_cast<Uint8>(std::func<Sint16>(arg1, arg2))
 
+    // set `moved` flag to true to indicate that movement should occur in `update` and `render`
     switch (event->key.key)
     {
     case SDLK_UP:
@@ -124,6 +131,10 @@ SDL_AppResult GameWorld::render(SDL_Renderer *renderer, SDL_FRect *bounds)
     // reset flag
     moved = false;
   }
+
+  // ensure bounds isn't null
+  if (bounds == nullptr)
+    return log_error("Bounds cannot be null in GameWorld::render");
 
   // Attempt to render map_texture if we have one
   if (map_texture != nullptr)

@@ -13,7 +13,7 @@
 namespace bipsy::gaiasim
 {
 
-using namespace sdlutils; // log_error, etc.
+using namespace bipsy::sdlutils; // log_error, etc.
 
 
 WorldMap::WorldMap()

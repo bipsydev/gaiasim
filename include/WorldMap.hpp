@@ -63,7 +63,7 @@ struct ChunkData
   static constexpr int SIZE = 16;
 
   // 3D array of block IDs (flattened to 1D)
-  std::array<BlockID, SIZE * SIZE * SIZE> blocks;
+  std::array<BlockID, SIZE * SIZE * SIZE> blocks{};
 };
 
 

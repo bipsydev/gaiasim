@@ -10,7 +10,7 @@ namespace bipsy::gaiasim::gui
 {
 
 
-using namespace sdlutils;  // log_error, log_warn, etc
+using namespace bipsy::sdlutils;  // log_error, log_warn, etc
 
 
 
@@ -214,6 +214,19 @@ SDL_AppResult ScreenMainGUI::render_panel(SDL_Renderer *renderer, Panel &panel, 
   else
     log_debug("Rendered panel '%s'", panel.m_title.c_str());
 
+  // RENDER THE GAME WORLD here!
+  if (world != nullptr) // if this panel contains a game world pointer...
+  {
+    // attempt to render, and if it fails, log error
+    SDL_AppResult result;
+    if ( (result = (world->render(renderer, &m_bounds))) )
+    {
+      log_error("Failed to render map texture for panel '%s': %s", 0,
+        panel.m_title.c_str(), SDL_GetError());
+      return result;
+    }
+  }
+
   // Render the title texture for this panel, if it exists
   if (panel.m_title_texture != nullptr)
   {
@@ -259,19 +272,6 @@ SDL_AppResult ScreenMainGUI::render_panel(SDL_Renderer *renderer, Panel &panel, 
         && m_bounds.h > panel.m_title_texture_size.h + 2*padding_y))
     {
       panel.m_use_small_font = false;
-    }
-
-    // RENDER THE GAME WORLD here!
-    if (world != nullptr) // if this panel contains a game world pointer...
-    {
-      // attempt to render, and if it fails, log error
-      SDL_AppResult result;
-      if ( (result = (world->render(renderer, &m_bounds))) )
-      {
-        log_error("Failed to render map texture for panel '%s': %s", 0,
-          panel.m_title.c_str(), SDL_GetError());
-        return result;
-      }
     }
 
     // Attempt to render the title texture
