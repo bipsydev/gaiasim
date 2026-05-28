@@ -188,7 +188,6 @@ SDL_AppResult GameWorld::generate_map_texture()
 
 SDL_AppResult GameWorld::generate_world_map()
 {
-  // just generate a single chunk at the origin for now
   auto chunk = world_map.create_chunk(0, 0, 0);
   if (chunk == entt::null)
   {
@@ -202,6 +201,24 @@ SDL_AppResult GameWorld::generate_world_map()
     log_info("Chunk position component: (%i, %i, %i)", 2,
       chunk_pos.x, chunk_pos.y, chunk_pos.z);
   }
+
+  auto chunk_negative = world_map.create_chunk(-3, -3, -3);
+  if (chunk_negative == entt::null)
+  {
+    return log_error("Failed to create chunk at (-3, -3, -3)");
+  }
+  else
+  {
+    log_info("Created chunk at (-3, -3, -3)");
+    // global coords, so should be in chunk (-4, -4, -4)
+    // and at local coords (11, 6, 1)
+    Sint64 x = (ChunkData::SIZE * -3) - 5;
+    Sint64 y = (ChunkData::SIZE * -3) - 10;
+    Sint64 z = (ChunkData::SIZE * -3) - 15;
+    BlockID block = world_map.get_block(x, y, z);
+    log_info("get_block(%i, %i, %i) = %u", 1, x, y, z, block);
+  }
+
   return SDL_APP_CONTINUE;
 }
 

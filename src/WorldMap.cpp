@@ -7,7 +7,7 @@
 
 #include "SDL3/SDL_stdinc.h" // Sint64 (named integer type)
 
-#include <unordered_map> // std::unordered_map
+#include <unordered_map>  // std::unordered_map
 
 
 namespace bipsy::gaiasim
@@ -71,33 +71,43 @@ entt::entity WorldMap::get_chunk(const ChunkPos& pos) const
 
 
 BlockID WorldMap::get_block(const ChunkPos& chunk_pos,
-                             int local_x, int local_y, int local_z) const
+                             Uint8 local_x, Uint8 local_y, Uint8 local_z) const
 {
   // TODO implement
   log_warn("get_block not implemented yet");
+  log_info("get_block called with chunk_pos (%i, %i, %i) and local coords (%i, %i, %i)",
+    1, chunk_pos.x, chunk_pos.y, chunk_pos.z, local_x, local_y, local_z);
   return 0;
 }
 
 
 BlockID WorldMap::get_block(Sint64 global_x, Sint64 global_y, Sint64 global_z) const
 {
+  //TODO replace with simpler calculations -- floor division instead
+
+  // Integer division gets us the chunk coordinates
+  // Subtract SIZE before division to account for first negative chunk being -1 instead of 0
+  // Add 1 before division to handle the 1 block offset from (0, 0, 0) being owned by chunk {0, 0, 0}
+  Sint64 chunk_x = (global_x < 0 ? global_x - ChunkData::SIZE + 1 : global_x) / ChunkData::SIZE;
+  Sint64 chunk_y = (global_y < 0 ? global_y - ChunkData::SIZE + 1 : global_y) / ChunkData::SIZE;
+  Sint64 chunk_z = (global_z < 0 ? global_z - ChunkData::SIZE + 1 : global_z) / ChunkData::SIZE;
+  
+  // Modulo gets us the local block coordinates within the chunk
+  // Add SIZE after modulo if it's negative to handle negative coordinates correctly
+  // BUT make sure 16 % 16 = 0, not 16, so only add SIZE if the result is not zero
+  Uint8 local_x = global_x % ChunkData::SIZE + (global_x < 0 && global_x % ChunkData::SIZE != 0 ? ChunkData::SIZE : 0);
+  Uint8 local_y = global_y % ChunkData::SIZE + (global_y < 0 && global_y % ChunkData::SIZE != 0 ? ChunkData::SIZE : 0);
+  Uint8 local_z = global_z % ChunkData::SIZE + (global_z < 0 && global_z % ChunkData::SIZE != 0 ? ChunkData::SIZE : 0);
+
   return get_block(
-    // Integer division gets us the chunk coordinates
-    ChunkPos{
-      global_x / ChunkData::SIZE,
-      global_y / ChunkData::SIZE,
-      global_z / ChunkData::SIZE
-    },
-    // Modulo gets us the local block coordinates within the chunk
-    global_x % ChunkData::SIZE,
-    global_y % ChunkData::SIZE,
-    global_z % ChunkData::SIZE
+    ChunkPos{chunk_x, chunk_y, chunk_z},
+    local_x, local_y, local_z
   );
 }
 
 
 bool WorldMap::set_block(const ChunkPos& chunk_pos,
-                         int local_x, int local_y, int local_z,
+                         Uint8 local_x, Uint8 local_y, Uint8 local_z,
                          BlockID block_id)
 {
   // TODO implement
@@ -109,6 +119,7 @@ bool WorldMap::set_block(const ChunkPos& chunk_pos,
 bool WorldMap::set_block(Sint64 global_x, Sint64 global_y, Sint64 global_z,
                          BlockID block_id)
 {
+  //TODO replace this with get_block impl
   return set_block(
     // Integer division again
     ChunkPos{

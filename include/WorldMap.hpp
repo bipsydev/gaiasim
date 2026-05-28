@@ -147,14 +147,14 @@ public:
 
   // Block retrieval functions
   BlockID get_block(const ChunkPos& chunk_pos,
-                    int local_x, int local_y, int local_z) const;
+                    Uint8 local_x, Uint8 local_y, Uint8 local_z) const;
   
   BlockID get_block(Sint64 global_x, Sint64 global_y, Sint64 global_z) const;
 
 
   // Block setting functions
   bool set_block(const ChunkPos& chunk_pos,
-                 int local_x, int local_y, int local_z,
+                 Uint8 local_x, Uint8 local_y, Uint8 local_z,
                  BlockID block_id);
 
   bool set_block(Sint64 global_x, Sint64 global_y, Sint64 global_z,
