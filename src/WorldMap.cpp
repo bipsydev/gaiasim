@@ -37,7 +37,7 @@ entt::entity WorldMap::create_chunk(const ChunkPos& pos)
   if (it != m_chunk_map.end())
   {
     log_error("Chunk already exists at position (%i, %i, %i)", 0, pos.x, pos.y, pos.z);
-    return it->second; // Return existing chunk entity
+    return entt::null; // Return null entity to indicate failure
   }
 
   // Create a new chunk entity in the registry
