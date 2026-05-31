@@ -70,6 +70,8 @@ public:
 private:
   SDL_AppResult generate_map_texture();
   SDL_AppResult generate_world_map();
+  
+  SDL_AppResult test_world_map_operations();
 
 }; // class GameWorld
 

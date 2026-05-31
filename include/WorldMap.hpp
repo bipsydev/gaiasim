@@ -19,7 +19,14 @@ namespace bipsy::gaiasim
 {
 
 // Use 64-bit unsigned integers for block IDs
-using BlockID = Uint64;
+// using BlockID = Uint64;
+enum BlockID : Uint64
+{
+  AIR = 0,
+  GROUND,
+  // ... more types here ...
+  INVALID = std::numeric_limits<Uint64>::max()
+};
 
 
 // Abstract base class for all 3D position types
@@ -129,9 +136,11 @@ class WorldMap
   // Holds Chunks as Entities
   entt::registry m_chunk_registry;
 
-  // 3D integer coordinates -> chunk entity
   // pass hashing function for ChunkPos to unordered_map
-  std::unordered_map<ChunkPos, entt::entity, ChunkPos::Hash> m_chunk_map;
+  using ChunkMap = std::unordered_map<ChunkPos, entt::entity, ChunkPos::Hash>;
+  using ChunkMapConstIterator = typename ChunkMap::const_iterator;
+  // 3D integer coordinates -> chunk entity
+  ChunkMap m_chunk_map;
 
 
 public:

@@ -56,28 +56,66 @@ entt::entity WorldMap::create_chunk(const ChunkPos& pos)
 
 bool WorldMap::delete_chunk(const ChunkPos& pos)
 {
-  // TODO implement
-  log_warn("delete_chunk not implemented yet");
-  return false;
+  // Get the chunk entity if it exists
+  auto it = m_chunk_map.find(pos);
+  if (it == m_chunk_map.end())
+  {
+    log_error("No chunk exists at position (%i, %i, %i) to delete", 0, pos.x, pos.y, pos.z);
+    return false; // Indicate failure to find
+  }
+
+  // Destroy the chunk entity in the registry (free up component data)
+  m_chunk_registry.destroy(it->second);
+
+  // Remove the chunk from the unordered_map
+  m_chunk_map.erase(it);
+
+  return true; // Indicate successful deletion
 }
 
 
 entt::entity WorldMap::get_chunk(const ChunkPos& pos) const
 {
-  // TODO implement
-  log_warn("get_chunk not implemented yet");
-  return entt::null;
+  // Check if the chunk exists at this position
+  auto it = m_chunk_map.find(pos);
+  if (it == m_chunk_map.end())
+  {
+    log_error("No chunk exists at position (%i, %i, %i) to get", 0, pos.x, pos.y, pos.z);
+    return entt::null; // Indicate failure to find
+  }
+
+  // Get the chunk entity and return it
+  entt::entity chunk_entity = it->second;
+  return chunk_entity;
 }
 
 
 BlockID WorldMap::get_block(const ChunkPos& chunk_pos,
                             const LocalPos& local_pos) const
 {
-  // TODO implement
-  log_warn("get_block not implemented yet");
   log_info("get_block called with chunk_pos (%i, %i, %i) and local coords (%i, %i, %i)",
-    1, chunk_pos.x, chunk_pos.y, chunk_pos.z, local_pos.x, local_pos.y, local_pos.z);
-  return 0;
+    0, chunk_pos.x, chunk_pos.y, chunk_pos.z, local_pos.x, local_pos.y, local_pos.z);
+  
+  // get the chunk entity for this chunk position
+  auto chunk_entity = get_chunk(chunk_pos);
+  if (chunk_entity == entt::null)
+  {
+    log_error("Cannot get block because chunk does not exist at position (%i, %i, %i)",
+      0, chunk_pos.x, chunk_pos.y, chunk_pos.z);
+    return INVALID; // Not generated yet
+  }
+
+  // get the chunk data component for this chunk entity
+  const ChunkData& chunk_data = m_chunk_registry.get<ChunkData>(chunk_entity);
+  // get the block ID from the chunk data using the local block coordinates
+  int index = (local_pos.z * ChunkData::SIZE * ChunkData::SIZE)
+              + (local_pos.y * ChunkData::SIZE)
+              + local_pos.x;
+  BlockID block = chunk_data.blocks[index];
+  log_info("Block ID at local coords (%i, %i, %i) in chunk (%i, %i, %i) is %u",
+    0, local_pos.x, local_pos.y, local_pos.z, chunk_pos.x, chunk_pos.y, chunk_pos.z, block);
+
+  return block;
 }
 
 
@@ -92,9 +130,31 @@ bool WorldMap::set_block(const ChunkPos& chunk_pos,
                          const LocalPos& local_pos,
                          BlockID block_id)
 {
-  // TODO implement
-  log_warn("set_block not implemented yet");
-  return false;
+  log_info("set_block (block=%i) called with chunk_pos (%i, %i, %i) and local coords (%i, %i, %i)",
+    0, block_id, chunk_pos.x, chunk_pos.y, chunk_pos.z, local_pos.x, local_pos.y, local_pos.z);
+  
+  // get the chunk entity for this chunk position
+  auto chunk_entity = get_chunk(chunk_pos);
+  if (chunk_entity == entt::null)
+  {
+    log_error("Cannot set block because chunk does not exist at position (%i, %i, %i)",
+      0, chunk_pos.x, chunk_pos.y, chunk_pos.z);
+    return false; // Return false to indicate failure to set block
+  }
+
+  // get the chunk data component for this chunk entity
+  ChunkData& chunk_data = m_chunk_registry.get<ChunkData>(chunk_entity);
+  // set the block ID in the chunk data using the local block coordinates
+  int index = (local_pos.z * ChunkData::SIZE * ChunkData::SIZE)
+              + (local_pos.y * ChunkData::SIZE)
+              + local_pos.x;
+  BlockID old_id = chunk_data.blocks[index];
+  chunk_data.blocks[index] = block_id;
+  log_info("Block ID at local coords (%i, %i, %i) in chunk (%i, %i, %i) changed from %u to %u",
+    0, local_pos.x, local_pos.y, local_pos.z, chunk_pos.x, chunk_pos.y, chunk_pos.z, old_id, block_id);
+
+  // success
+  return true;
 }
 
 
