@@ -22,9 +22,6 @@ class GameWorld;
 namespace gui
 {
 
-using namespace bipsy::sdlutils;  // log_error, etc
-
-
 class ScreenMainGUI
 {
 

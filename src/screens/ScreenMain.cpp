@@ -19,7 +19,11 @@ SDL_AppResult ScreenMain::init()
   {
     // if we failed, deallocate what we allocated earlier before returning
     delete gui;
+    gui = nullptr;
+
     delete world;
+    world = nullptr;
+    
     return result;
   }
 

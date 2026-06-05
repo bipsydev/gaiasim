@@ -45,8 +45,12 @@ struct Position3D
   bool operator==(const Position3D& other) const
   { return x == other.x && y == other.y && z == other.z; }
 
-  virtual ~Position3D() = default;
+  virtual ~Position3D() = 0;
 }; // struct Position3D
+
+// define template implementation for pure virtual destructor
+template<std::integral CoordType>
+Position3D<CoordType>::~Position3D() { }
 
 
 // ------------------------------ EnTT Components ------------------------------
@@ -175,8 +179,7 @@ public:
   bool delete_chunk(Sint64 x, Sint64 y, Sint64 z)
   { return delete_chunk(ChunkPos{x, y, z}); }
 
-  bool delete_chunk(entt::entity chunk_entity)
-  { return delete_chunk(m_chunk_registry.get<ChunkPos>(chunk_entity)); }
+  bool delete_chunk(entt::entity chunk_entity);
 
 
   // Chunk retrieval functions
