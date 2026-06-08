@@ -2,7 +2,7 @@
 
 #include "Game.hpp"
 
-#include "SDL_utils.hpp"
+#include "SDL3_utils.hpp"
 
 #include "SDL3_ttf/SDL_ttf.h"
 

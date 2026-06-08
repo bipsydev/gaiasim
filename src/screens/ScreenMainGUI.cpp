@@ -3,7 +3,7 @@
 // full definition of the class we forward declared
 #include "GameWorld.hpp"
 
-#include "SDL_utils.hpp"
+#include "SDL3_utils.hpp"
 
 
 namespace bipsy::gaiasim::gui

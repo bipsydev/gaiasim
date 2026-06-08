@@ -3,7 +3,7 @@
 #define BIPSY_GAIASIM_GAME_HPP
 
 
-#include "SDL_utils.hpp"
+#include "SDL3_utils.hpp"
 #include "Screen.hpp"
 
 #include "SDL3/SDL.h"
