@@ -40,6 +40,37 @@ inline constexpr std::string asset_dir(std::string asset_name)
 #endif // __ANDROID__
 }
 
+
+/**
+ * @brief Singleton class for SDL logging utilities.
+ * 
+ * Uses the Meyers Singleton pattern.
+ * 
+ */
+class Log
+{
+
+public:
+  static Log& get_instance()
+  {
+    // Guaranteed to be instantiated only once on first use
+    static Log instance;
+    // Also guaranteed to be destroyed properly when the program exits
+    // ALSO guaranteed to be thread-safe in C++11 and later!
+    return instance;
+  }
+
+  // Prevent copying and assignment (singleton)
+  Log(const Log&) = delete;
+  Log& operator=(const Log&) = delete;
+
+private:
+  // Prevent instantiation from outside the class
+  Log() = default;
+};
+
+
+
 /**
  * @brief Logs an SDL info message with specified indentation level.
  * 
