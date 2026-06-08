@@ -124,7 +124,7 @@ public:
   /**
    * @brief Reset the indentation level to 0.
    */
-  static void reset_indent() { instance().m_indent = 0; }
+  static void reset_indent()  { instance().m_indent = 0; }
 
 
 
