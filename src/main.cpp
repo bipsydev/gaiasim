@@ -41,8 +41,7 @@
  ******************************************************************************/
 
 using bipsy::gaiasim::Game,
-      bipsy::sdl3_utils::log_info,
-      bipsy::sdl3_utils::get_log_priority_name;
+      bipsy::sdl3_utils::Log;
 
 
 
@@ -94,11 +93,11 @@ void init_logging();
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv)
 {
   init_logging();
-  log_info("------ AppInit: Initializing ------");
+  Log::info("------ AppInit: Initializing ------");
   // Initialize Game (starts SDL systems and loads initial game state)
   Game *game = new Game();
   *appstate = game;
-  log_info("------ AppInit: Initialization complete ------");
+  Log::info("------ AppInit: Initialization complete ------");
 
   return game->init();
 }
@@ -110,8 +109,8 @@ void init_logging()
   SDL_SetLogPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_TRACE);
 #endif
 
-  log_info("Logging initialized with priority %s for APPLICATION category.",
-    get_log_priority_name(SDL_GetLogPriority(SDL_LOG_CATEGORY_APPLICATION))
+  Log::info("Logging initialized with priority {} for APPLICATION category.",
+    Log::get_log_priority_name(SDL_GetLogPriority(SDL_LOG_CATEGORY_APPLICATION))
       .c_str());
 }
 

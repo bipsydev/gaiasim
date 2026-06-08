@@ -16,7 +16,6 @@
 
 namespace bipsy::gaiasim
 {
-  using namespace bipsy::sdl3_utils;  // log_info, log_error_init
 
 /**
  * @brief Local application running state structure.
@@ -189,30 +188,34 @@ public:
   template<typename ScreenType, typename... Args>
   SDL_AppResult add_screen(Args&&... args)
   {
+    using bipsy::sdl3_utils::Log;
+
     // Create a new screen instance with the provided arguments
     Screen *new_screen = new ScreenType(this, std::forward<Args>(args)...);
 
     // Initialize the new screen and check for errors
     if (SDL_AppResult result = new_screen->init())
     {
-      log_error("Error occurred while initializing new screen, terminating...");
+      Log::error("Error occurred while initializing new screen, terminating...");
       delete new_screen; // Clean up allocated memory on failure
       return result;
     }
 
     // Add the new screen to the list of screens
     m_screens.push_back(new_screen);
-    log_info("Added new screen: " + new_screen->name());
+    Log::info("Added new screen: {}", new_screen->name());
 
     return SDL_APP_CONTINUE;
   }
 
   bool switch_screen(Uint8 screen_index)
   {
+    using bipsy::sdl3_utils::Log;
+
     // check if index is valid
     if (screen_index >= m_screens.size())
     {
-      log_error("Invalid screen index: " + std::to_string(screen_index));
+      Log::error("Invalid screen index: {}", screen_index);
       return false;
     }
 
@@ -227,7 +230,7 @@ public:
     // call show() method code (sets clear color, etc)
     active_screen()->show();
     
-    log_info("Switched to screen: " + active_screen()->name());
+    Log::info("Switched to screen: {}", active_screen()->name());
     return true;
   }
 

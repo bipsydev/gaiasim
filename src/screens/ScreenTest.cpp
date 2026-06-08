@@ -2,6 +2,7 @@
 
 #include "Game.hpp" // log_info
 #include "screens/ScreenMain.hpp"
+#include "SDL3_utils.hpp"
 
 #include <cstdlib>  // rand
 #include <format>   // std::format
@@ -10,11 +11,14 @@
 namespace bipsy::gaiasim
 {
 
+using bipsy::sdl3_utils::Log;
+
+
 SDL_AppResult ScreenTest::init()
 {
   // --- Initialize vertex data ---
   // Polygon 1
-  log_info("Initializing vertex data for polygon1...", 2);
+  Log::info(2, "Initializing vertex data for polygon1...");
   // Triangle 1
   polygon1[0].position   = {100, 100};         // top-left vertex
   polygon1[0].color      = {1.0, 0, 0, 1.0};   // red
@@ -31,7 +35,7 @@ SDL_AppResult ScreenTest::init()
   polygon1[5].color      = {0, 0, 1.0, 1.0};   // blue (same as vertex 2)
 
   // Polygon 2
-  log_info("Initializing vertex data for polygon2...", 2);
+  Log::info(2, "Initializing vertex data for polygon2...");
   // Triangle 1
   polygon2[0].position   = {400, 100};         // top-left vertex
   polygon2[0].color      = {1.0, 0, 0, 1.0};   // red
@@ -50,7 +54,7 @@ SDL_AppResult ScreenTest::init()
 
 
   // Gradient rectangle (4 triangles, 3 vertices each)
-  log_info("Initializing vertex data for gradient_rect...", 2);
+  Log::info(2, "Initializing vertex data for gradient_rect...");
   // Triangle 1 (left side)
   gradient_rect[0]  = {{100, 100}, {1.0f,0.0f,1.0f,1.0f}, {0.0f,0.0f}}; // top-left vertex (magenta)
   gradient_rect[1]  = {{100, 300}, {1.0f,0.0f,0.0f,1.0f}, {0.0f,1.0f}}; // bottom-left vertex (red)
@@ -68,7 +72,7 @@ SDL_AppResult ScreenTest::init()
   gradient_rect[10] = {{300, 300}, {0.0f,1.0f,0.0f,1.0f}, {1.0f,1.0f}}; // bottom-right vertex (green)
   gradient_rect[11] = {{200, 200}, {0.5f,0.5f,0.5f,1.0f}, {0.5f,0.5f}}; // center vertex (gray)
 
-  log_info("Moving gradient_rect down 300 px...", 2);
+  Log::info(2, "Moving gradient_rect down 300 px...");
   // Move gradient_rect down 300 px
   for (int i = 0; i < GRADIENT_RECT_VERTEX_COUNT; i++)
   {
@@ -77,7 +81,7 @@ SDL_AppResult ScreenTest::init()
 
 
   // Rainbow triangle vertex data
-  log_info("Initializing vertex data for rainbow_triangle...", 2);
+  Log::info(2, "Initializing vertex data for rainbow_triangle...");
   // Top left vertex
   rainbow_triangle[0] = {{700, 400}, {1.0f,0.0f,0.0f,1.0f}, {0.0f,0.0f}};
   // Top right vertex
@@ -86,12 +90,11 @@ SDL_AppResult ScreenTest::init()
   rainbow_triangle[2] = {{900, 800}, {0.0f,0.0f,1.0f,1.0f}, {0.5f,1.0f}};
 
 
-  log_info("Vertex data initialized successfully", 2);
-
+  Log::info(2, "Vertex data initialized successfully");
 
   if(auto result = init_text_texture())
   {
-    log_error("Error occured while initializing text texture, terminating...");
+    Log::error("Error occured while initializing text texture, terminating...");
     return result;
   }
 
@@ -101,8 +104,9 @@ SDL_AppResult ScreenTest::init()
 
 SDL_AppResult ScreenTest::init_text_texture()
 {
-  log_info(std::format("{} texture for rendered text...",
-    (text_texture == nullptr? "Initializing" : "Updating")), 2);
+  // TODO put std::format inside the logging function and remove this outer call
+  Log::info(2, std::format("{} texture for rendered text...",
+    (text_texture == nullptr? "Initializing" : "Updating")));
   
   // Update text string first
   std::string new_text_str = (
@@ -119,12 +123,12 @@ SDL_AppResult ScreenTest::init_text_texture()
   // Check if texture update is necessary (new text generated this frame)
   if (m_text_str != new_text_str)
   {
-    log_info("Text content updated, regenerating text texture", 3);
+    Log::info(3, "Text content updated, regenerating text texture");
     m_text_str = new_text_str;
   }
   else
   {
-    log_info("Text content unchanged, skipping texture update", 3);
+    Log::info(3, "Text content unchanged, skipping texture update");
     return SDL_APP_CONTINUE; // No need to update texture if text hasn't changed
   }
 
@@ -137,7 +141,7 @@ SDL_AppResult ScreenTest::init_text_texture()
   );
   if (text_surface == nullptr)
   {
-    return log_error_init("text_surface");
+    return Log::error_init("text_surface");
   }
 
   // If previous texture exists, destroy it to free up GPU memory
@@ -145,7 +149,7 @@ SDL_AppResult ScreenTest::init_text_texture()
   {
     SDL_DestroyTexture(text_texture);
     text_texture = nullptr;
-    log_info("Destroyed previous text texture", 3);
+    Log::info(3, "Destroyed previous text texture");
   }
 
   // Create a texture from the surface
@@ -154,11 +158,11 @@ SDL_AppResult ScreenTest::init_text_texture()
   SDL_DestroySurface(text_surface); // We can free the surface after creating the texture
   if (text_texture == nullptr)
   {
-    return log_error_init("text_texture");
+    return Log::error_init("text_texture");
   }
   else
   {
-    log_info("Created text texture successfully", 3);
+    Log::info(3, "Created text texture successfully");
   }
 
   // Successfully created text texture
@@ -172,11 +176,11 @@ ScreenTest::~ScreenTest()
   {
     SDL_DestroyTexture(text_texture);
     text_texture = nullptr;
-    log_info("Destroyed text texture");
+    Log::info("Destroyed text texture");
   }
   else
   {
-    log_info("text_texture was not initialized, no need to destroy");
+    Log::info("text_texture was not initialized, no need to destroy");
   }
 }
 
@@ -186,17 +190,18 @@ SDL_AppResult ScreenTest::event(SDL_Event *event)
   // React to 'N' key press to switch to main screen
   if (event->type == SDL_EVENT_KEY_DOWN)
   {
-    log_info(std::format("'{}' key pressed ('{}')",
+    //TODO remove outer format call
+    Log::info(std::format("'{}' key pressed ('{}')",
       SDL_GetKeyName(event->key.key),
       SDL_GetScancodeName(event->key.scancode)));
     if (event->key.key == SDLK_N)
     {
-      log_info("'N' key pressed, switching to main screen...");
+      Log::info("'N' key pressed, switching to main screen...");
       return switch_to_main_screen();
     }
     if (event->key.key == SDLK_ESCAPE)
     {
-      log_info("'ESCAPE' key pressed, quitting game...");
+      Log::info("'ESCAPE' key pressed, quitting game...");
       SDL_Event quit_event;
       quit_event.type = SDL_EVENT_QUIT;
       SDL_PushEvent(&quit_event); // Push a quit event to trigger app termination
@@ -205,7 +210,8 @@ SDL_AppResult ScreenTest::event(SDL_Event *event)
   }
   else if (not SDL_HasKeyboard() && event->type == SDL_EVENT_FINGER_DOWN)
   {
-    log_info(std::format("Touch event #{} pressed at ({:.4f}, {:.4f}) with pressure {:.4f} and type {}",
+    //TODO remove outer call
+    Log::info(std::format("Touch event #{} pressed at ({:.4f}, {:.4f}) with pressure {:.4f} and type {}",
       event->tfinger.fingerID, event->tfinger.x, event->tfinger.y,
       event->tfinger.pressure, static_cast<int>(event->tfinger.type)));
     return switch_to_main_screen();
@@ -218,7 +224,7 @@ SDL_AppResult ScreenTest::update()
   // Update text_texture with new info
   if (auto result = init_text_texture())
   {
-    log_error("Error occured while updating text texture, terminating...");
+    Log::error("Error occured while updating text texture, terminating...");
     return result;
   }
 
@@ -332,7 +338,7 @@ SDL_AppResult ScreenTest::switch_to_main_screen()
   }
   else
   {
-    return log_error("Failed to switch to main screen: %s", SDL_GetError());
+    return Log::error("Failed to switch to main screen: {}", SDL_GetError());
   }
 }
 

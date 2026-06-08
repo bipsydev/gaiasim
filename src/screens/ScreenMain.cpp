@@ -1,9 +1,16 @@
 #include "screens/ScreenMain.hpp"
 
+#include "screens/ScreenMainGUI.hpp"
+#include "GameWorld.hpp"
+#include "SDL3_utils.hpp"
+
+#include "SDL3/SDL.h"
+
 
 namespace bipsy::gaiasim
 {
 
+using bipsy::sdl3_utils::Log;
 
 
 SDL_AppResult ScreenMain::init()
@@ -59,7 +66,7 @@ SDL_AppResult ScreenMain::event(SDL_Event *event)
     if (event->key.key == SDLK_N ||
         event->key.key == SDLK_ESCAPE)
     {
-      log_info("'%s' key pressed, switching back to test screen...",
+      Log::info("'{}' key pressed, switching back to test screen...",
         SDL_GetKeyName(event->key.key));
       game()->switch_screen(0); // Switch back to the first screen (ScreenTest)
       return SDL_APP_CONTINUE;
@@ -67,8 +74,8 @@ SDL_AppResult ScreenMain::event(SDL_Event *event)
   }
   else if (not SDL_HasKeyboard() && event->type == SDL_EVENT_FINGER_DOWN)
   {
-    log_info("Touch event #%lld pressed at (%.4f, %.4f) "
-      "with pressure %.4f and type %d",
+    Log::info("Touch event #{} pressed at ({:.4f}, {:.4f}) "
+      "with pressure {:.4f} and type {}",
       static_cast<long long>(event->tfinger.fingerID),
       event->tfinger.x, event->tfinger.y,
       event->tfinger.pressure,

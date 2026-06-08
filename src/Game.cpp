@@ -1,6 +1,7 @@
 #include "Game.hpp"
 
 #include "screens/ScreenTest.hpp"
+#include "SDL3_utils.hpp"
 
 #include "SDL3/SDL.h"
 #include "SDL3_mixer/SDL_mixer.h"
@@ -13,6 +14,8 @@
 
 namespace bipsy::gaiasim
 {
+
+using namespace bipsy::sdl3_utils; // Log, GAME_CLEAR_COLOR_DEFAULT
 
 
 Game::Game(InitRequest initializations)
@@ -41,7 +44,7 @@ SDL_AppResult Game::init(InitRequest initializations)
   // Perform requested initializations in order
   while (m_inits_complete < initializations)
   {
-    log_info("Initialization step: " + std::to_string(m_inits_complete + 1), 1);
+    Log::info(1, "Initialization step: {}", m_inits_complete + 1);
     // the `init_` functions will update `m_inits_complete` if successful,
     // or return an error result if failed, which will break the loop.
     switch(m_inits_complete)
@@ -50,28 +53,28 @@ SDL_AppResult Game::init(InitRequest initializations)
       // Initialization Stage 1: Libraries (SDL_Init)
       if (SDL_AppResult result = init_libraries())
       {
-        log_error("Error occured while initializing libraries, terminating...");
+        Log::error("Error occured while initializing libraries, terminating...");
         return result;
       }
-      log_info("Libraries initialized successfully", 1);
+      Log::info(1, "Libraries initialized successfully");
       break;
     case LIBRARIES:
       // Initialization Stage 2: System objects (window, renderer, etc)
       if (SDL_AppResult result = init_system_objects())
       {
-        log_error("Error occured while initializing system objects, terminating...");
+        Log::error("Error occured while initializing system objects, terminating...");
         return result;
       }
-      log_info("System objects initialized successfully", 1);
+      Log::info(1, "System objects initialized successfully");
       break;
     case SYSTEM_OBJECTS:
       // Initialization Stage 3: Game state (initial screen, asset allocation)
       if (SDL_AppResult result = init_game_state())
       {
-        log_error("Error occured while initializing game state, terminating...");
+        Log::error("Error occured while initializing game state, terminating...");
         return result;
       }
-      log_info("Game state initialized successfully", 1);
+      Log::info(1, "Game state initialized successfully");
       break;
     case GAME_STATE:
       // error state, code should never reach here
@@ -81,7 +84,7 @@ SDL_AppResult Game::init(InitRequest initializations)
     }
   }
 
-  log_info("`Game` object constructed successfully!");
+  Log::info(1, "`Game` object constructed successfully!");
   return SDL_APP_CONTINUE;
 }
 
@@ -91,39 +94,39 @@ SDL_AppResult Game::init_libraries()
   // check initialization stage to avoid re-initialization
   if (m_inits_complete >= LIBRARIES)
   {
-    log_error("Libraries already initialized!");
+    Log::error("Libraries already initialized!");
     return SDL_APP_FAILURE;
   }
 
   // Initialize SDL and its subsystems
   if (not SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO))
   {
-    return log_error_init("SDL");
+    return Log::error_init("SDL");
   }
   else
   {
-    log_info("SDL3 initialized successfully", 2);
+    Log::info(2, "SDL3 initialized successfully");
   }
 
   if (not TTF_Init())
   {
-    return log_error_init("SDL_ttf");
+    return Log::error_init("SDL_ttf");
   }
   else
   {
-    log_info("SDL_ttf initialized successfully", 3);
+    Log::info(3, "SDL_ttf initialized successfully");
   }
 
   if (not MIX_Init())
   {
-    return log_error_init("SDL_mixer");
+    return Log::error_init("SDL_mixer");
   }
   else
   {
-    log_info("SDL_mixer initialized successfully", 3);
+    Log::info(3, "SDL_mixer initialized successfully");
   }
 
-  log_info("All subsystems initialized successfully", 2);
+  Log::info(2, "All subsystems initialized successfully");
 
   // Initialization complete, update stage and return
   m_inits_complete = LIBRARIES;
@@ -137,7 +140,7 @@ SDL_AppResult Game::init_system_objects()
   // check initialization stage to avoid re-initialization
   if (m_inits_complete >= SYSTEM_OBJECTS)
   {
-    log_error("System objects already initialized!");
+    Log::error("System objects already initialized!");
     return SDL_APP_FAILURE;
   }
 
@@ -148,11 +151,11 @@ SDL_AppResult Game::init_system_objects()
     // SDL_WINDOW_VULKAN | 
     SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN)))
   {
-    return log_error_init("SDL_Window *window");
+    return Log::error_init("SDL_Window *window");
   }
   else
   {
-    log_info("SDL_Window created successfully", 2);
+    Log::info(2, "SDL_Window created successfully");
   }
   // Center the window on the screen
   // This takes a second, so we wait to show the window
@@ -163,11 +166,11 @@ SDL_AppResult Game::init_system_objects()
   // Create a rendering context from a window
   if (not (m_renderer = SDL_CreateRenderer(m_window, NULL)))
   {
-    return log_error_init("SDL_Renderer *renderer");
+    return Log::error_init("SDL_Renderer *renderer");
   }
   else
   {
-    log_info("SDL_Renderer created successfully", 2);
+    Log::info(2, "SDL_Renderer created successfully");
   }
   // Enable adaptive vsync for the renderer
   SDL_SetRenderVSync(m_renderer, SDL_RENDERER_VSYNC_ADAPTIVE);
@@ -176,32 +179,32 @@ SDL_AppResult Game::init_system_objects()
   std::string font_name = "PixelCode.ttf";
   if (not (m_font = TTF_OpenFont(asset_dir(font_name).c_str(), 24)))
   {
-    return log_error_init("TTF_Font *font");
+    return Log::error_init("TTF_Font *font");
   }
   else
   {
-    log_info("TTF_Font \"" + std::string(font_name) + "\" loaded successfully", 2);
+    Log::info(2, "TTF_Font \"{}\" loaded successfully", font_name);
   }
 
   // Create a smaller TTF font from PixelCode.ttf in our ./assets/ directory
   if (not (m_font_small = TTF_OpenFont(asset_dir(font_name).c_str(), 14)))
   {
-    return log_error_init("TTF_Font *font_small");
+    return Log::error_init("TTF_Font *font_small");
   }
   else
   {
-    log_info("TTF_Font \"" + std::string(font_name) + "\" loaded successfully", 2);
+    Log::info(2, "TTF_Font \"{}\" loaded successfully", font_name);
   }
 
   // Create larger TTF font
   // TODO dynamic font size based on DPI scale? right now it's just assuming 2.0 scale and doubling
   if (not (m_font_large = TTF_OpenFont(asset_dir(font_name).c_str(), 48)))
   {
-    return log_error_init("TTF_Font *font_large");
+    return Log::error_init("TTF_Font *font_large");
   }
   else
   {
-    log_info("TTF_Font \"" + std::string(font_name) + "\" loaded successfully", 2);
+    Log::info(2, "TTF_Font \"{}\" loaded successfully", font_name);
   }
 
   // Initialization complete, update stage and return
@@ -215,7 +218,7 @@ SDL_AppResult Game::init_game_state()
   // check initialization stage to avoid re-initialization
   if (m_inits_complete >= GAME_STATE)
   {
-    log_error("Game state already initialized!");
+    Log::error("Game state already initialized!");
     return SDL_APP_FAILURE;
   }
 
@@ -223,7 +226,7 @@ SDL_AppResult Game::init_game_state()
   Screen *screen_test = new ScreenTest(this);
   if (SDL_AppResult result = screen_test->init())
   {
-    log_error("Error occured while initializing `ScreenTest`, terminating...");
+    Log::error("Error occured while initializing `ScreenTest`, terminating...");
     return result;
   }
   m_screens.push_back(screen_test);
@@ -239,17 +242,17 @@ SDL_AppResult Game::init_game_state()
 
 Game::~Game()
 {
-  log_info("Deinitializing `Game` object...");
+  Log::info("Deinitializing `Game` object...");
 
   // Deinitialization Stage 3: Game state
   if (m_inits_complete >= GAME_STATE)
   {
-    log_info("Deinitializing game state...", 1);
+    Log::info(1, "Deinitializing game state...");
     // ScreenTest needs to be deallocated
     // Deallocate all screens we have active
     for (Screen *screen : m_screens)
     {
-      log_info("Deallocating screen \"" + screen->name() + "\"...", 2);
+      Log::info(2, "Deallocating screen \"{}\"...", screen->name());
       delete screen;
     }
     // clear out the pointer vector
@@ -259,7 +262,7 @@ Game::~Game()
   // Deinitialization Stage 2: System objects
   if (m_inits_complete >= SYSTEM_OBJECTS)
   {
-    log_info("Deinitializing system objects...", 1);
+    Log::info(1, "Deinitializing system objects...");
     if (m_renderer)
     {
       SDL_DestroyRenderer(m_renderer);
@@ -290,13 +293,13 @@ Game::~Game()
   // Deinitialization Stage 1: Libraries
   if (m_inits_complete >= LIBRARIES)
   {
-    log_info("Deinitializing libraries...", 1);
+    Log::info(1, "Deinitializing libraries...");
     MIX_Quit();
     TTF_Quit();
     SDL_Quit();
   }
 
-  log_info("`Game` object deinitialized successfully!");
+  Log::info("`Game` object deinitialized successfully!");
 }
 
 
@@ -306,7 +309,7 @@ SDL_AppResult Game::event(SDL_Event *event)
   // catch the QUIT event (game requesting successful termination)
   if (event->type == SDL_EVENT_QUIT)
   {
-    log_info("Quit event received, terminating...");
+    Log::info("Quit event received, terminating...");
     return SDL_APP_SUCCESS;
   }
   else
@@ -363,16 +366,16 @@ SDL_AppResult Game::update()
   }
 #endif // __ANDROID__
 
-  log_info("--- frame: " + frame_count + " ---");
-  log_info(std::format("Frame time (s): {:.2f} s", m_time_ns / 1000000000.0));
-  log_info(std::format("Delta time (ms): {:.4f} ms", m_delta_time_ns / 1000000.0));
-  log_info(std::format("FPS: {:.2f}", fps()));
+  Log::info("--- frame: {} ---", frame_count);
+  Log::info("Frame time (s): {:.2f} s", m_time_ns / 1000000000.0);
+  Log::info("Delta time (ms): {:.4f} ms", m_delta_time_ns / 1000000.0);
+  Log::info("FPS: {:.2f}", fps());
 
   // Make window visible on first frame (after initialization)
   if (m_frame == 0)
   {
     SDL_ShowWindow(m_window);
-    log_info("Window shown");
+    Log::info("Window shown");
   }
 
   // forward to active screen
