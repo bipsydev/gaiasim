@@ -13,8 +13,33 @@
 namespace bipsy::sdl3_utils
 {
 
-  // Default clear color (Sky Blue)
-  constexpr SDL_Color GAME_CLEAR_COLOR_DEFAULT = {0, 128, 255, 255}; 
+/**
+ * @brief A default clear color for the game (sky blue)
+ */
+constexpr SDL_Color GAME_CLEAR_COLOR_DEFAULT = {0, 128, 255, 255};
+
+
+/**
+ * @brief Returns the full path to an asset file, given its name.
+ * 
+ * On Android, assets are accessed relative to the APK's asset directory,
+ * but on other platforms, we return SDL's base path
+ * plus the "assets/" subdirectory.
+ * 
+ * @param asset_name 
+ * @return constexpr std::string 
+ */
+inline constexpr std::string asset_dir(std::string asset_name)
+{
+  // get the asset directory
+  return
+#if not __ANDROID__
+  std::string(SDL_GetBasePath()) + "assets/" + asset_name;
+#else
+  asset_name; // On Android, we can just use the asset name directly
+#endif // __ANDROID__
+}
+
 /**
  * @brief Logs an SDL info message with specified indentation level.
  * 
@@ -296,19 +321,6 @@ inline constexpr std::string get_log_priority_name(SDL_LogPriority priority)
 #undef CASE
     default: return "UNKNOWN";
   }
-}
-
-
-
-inline constexpr std::string asset_dir(std::string asset_name)
-{
-  // get the asset directory
-  return
-#if not __ANDROID__
-  std::string(SDL_GetBasePath()) + "assets/";
-#else
-  ""; // On Android, we can just use the asset name directly
-#endif // __ANDROID__
 }
 
 
