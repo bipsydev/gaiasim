@@ -6,8 +6,9 @@
 
 #include "SDL3/SDL.h"
 
-#include <string>   // std::string
-#include <utility>  // std::forward
+#include <string>      // std::string
+#include <type_traits> // std::enable_if_t, std::is_integral_v
+#include <utility>     // std::forward
 
 
 namespace bipsy::sdl3_utils
@@ -138,11 +139,12 @@ public:
    * @return SDL_AppResult SDL_APP_FAILURE for convenience.
    */
   template <typename... Args>
-  static inline SDL_AppResult error_init(std::string subsystem, size_t indent = 0,
-    Args&&... args)
+  static inline SDL_AppResult error_init(std::string subsystem, Args&&... args)
   {
-    SDL_LogErrorIndent(indent, "Failed to initialize %s: %s",
-      subsystem.c_str(), SDL_GetError(), std::forward<Args>(args)...);
+    SDL_LogIndent(instance().indent(), SDL_LogPriority::SDL_LOG_PRIORITY_ERROR,
+                  "Failed to initialize {}: {}",
+                  subsystem.c_str(), SDL_GetError(),
+                  std::forward<Args>(args)...);
     return SDL_APP_FAILURE;
   }
 
@@ -167,14 +169,14 @@ public:
    * @param args Format arguments for the log message.
    */
   template <typename... Args>
-  static inline void trace(size_t indent, std::string message, Args&&... args)
+  static inline void trace(int indent, std::string message, Args&&... args)
   {
     SDL_LogIndent(indent, SDL_LogPriority::SDL_LOG_PRIORITY_TRACE,
                   message.c_str(), std::forward<Args>(args)...);
   }
 
-  template <typename... Args>
-  static inline void trace(std::string message, Args&&... args)
+  template <typename Msg, typename... Args>
+  static inline std::enable_if_t<!std::is_integral_v<Msg>, void> trace(Msg&& message, Args&&... args)
   {
     trace(instance().indent(), message, std::forward<Args>(args)...);
   }
@@ -189,14 +191,14 @@ public:
    * @param args Format arguments for the log message.
    */
   template <typename... Args>
-  static inline void verbose(size_t indent, std::string message, Args&&... args)
+  static inline void verbose(int indent, std::string message, Args&&... args)
   {
     SDL_LogIndent(indent, SDL_LogPriority::SDL_LOG_PRIORITY_VERBOSE,
                   message.c_str(), std::forward<Args>(args)...);
   }
 
-  template <typename... Args>
-  static inline void verbose(std::string message, Args&&... args)
+  template <typename Msg, typename... Args>
+  static inline std::enable_if_t<!std::is_integral_v<Msg>, void> verbose(Msg&& message, Args&&... args)
   {
     verbose(instance().indent(), message, std::forward<Args>(args)...);
   }
@@ -211,14 +213,14 @@ public:
    * @param args Format arguments for the log message.
    */
   template <typename... Args>
-  static inline void debug(size_t indent, std::string message, Args&&... args)
+  static inline void debug(int indent, std::string message, Args&&... args)
   {
     SDL_LogIndent(indent, SDL_LogPriority::SDL_LOG_PRIORITY_DEBUG,
                   message.c_str(), std::forward<Args>(args)...);
   }
 
-  template <typename... Args>
-  static inline void debug(std::string message, Args&&... args)
+  template <typename Msg, typename... Args>
+  static inline std::enable_if_t<!std::is_integral_v<Msg>, void> debug(Msg&& message, Args&&... args)
   {
     debug(instance().indent(), message, std::forward<Args>(args)...);
   }
@@ -233,7 +235,7 @@ public:
    * @param args Format arguments for the log message.
    */
   template <typename... Args>
-  static inline void info(size_t indent, std::string message, Args&&... args)
+  static inline void info(int indent, std::string message, Args&&... args)
   {
     if (log_info_enabled)
     {
@@ -242,8 +244,8 @@ public:
     }
   }
 
-  template <typename... Args>
-  static inline void info(std::string message, Args&&... args)
+  template <typename Msg, typename... Args>
+  static inline std::enable_if_t<!std::is_integral_v<Msg>, void> info(Msg&& message, Args&&... args)
   {
     info(instance().indent(), message, std::forward<Args>(args)...);
   }
@@ -267,8 +269,8 @@ public:
     return SDL_APP_FAILURE;
   }
 
-  template <typename... Args>
-  static inline SDL_AppResult warn(std::string message, Args&&... args)
+  template <typename Msg, typename... Args>
+  static inline std::enable_if_t<!std::is_integral_v<Msg>, SDL_AppResult> warn(Msg&& message, Args&&... args)
   {
     return warn(instance().indent(), message, std::forward<Args>(args)...);
   }
@@ -285,15 +287,15 @@ public:
    * @return SDL_AppResult `SDL_APP_FAILURE` for convenience in error handling.
    */
   template <typename... Args>
-  static inline SDL_AppResult error(size_t indent, std::string message, Args&&... args)
+  static inline SDL_AppResult error(int indent, std::string message, Args&&... args)
   {
     SDL_LogIndent(indent, SDL_LogPriority::SDL_LOG_PRIORITY_ERROR,
                   message.c_str(), std::forward<Args>(args)...);
     return SDL_APP_FAILURE;
   }
 
-  template <typename... Args>
-  static inline SDL_AppResult error(std::string message, Args&&... args)
+  template <typename Msg, typename... Args>
+  static inline std::enable_if_t<!std::is_integral_v<Msg>, SDL_AppResult> error(Msg&& message, Args&&... args)
   {
     return error(instance().indent(), message, std::forward<Args>(args)...);
   }
@@ -310,15 +312,15 @@ public:
    * @return SDL_AppResult `SDL_APP_FAILURE` for convenience in error handling.
    */
   template <typename... Args>
-  static inline SDL_AppResult critical(size_t indent, std::string message, Args&&... args)
+  static inline SDL_AppResult critical(int indent, std::string message, Args&&... args)
   {
     SDL_LogIndent(indent, SDL_LogPriority::SDL_LOG_PRIORITY_CRITICAL,
                   message.c_str(), std::forward<Args>(args)...);
     return SDL_APP_FAILURE;
   }
 
-  template <typename... Args>
-  static inline SDL_AppResult critical(std::string message, Args&&... args)
+  template <typename Msg, typename... Args>
+  static inline std::enable_if_t<!std::is_integral_v<Msg>, SDL_AppResult> critical(Msg&& message, Args&&... args)
   {
     return critical(instance().indent(), message, std::forward<Args>(args)...);
   }
