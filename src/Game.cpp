@@ -174,7 +174,7 @@ SDL_AppResult Game::init_system_objects()
   
   // Create a TTF font from PixelCode.ttf in our ./assets/ directory
   std::string font_name = "PixelCode.ttf";
-  if (not (m_font = TTF_OpenFont((asset_dir(font_name) + font_name).c_str(), 24)))
+  if (not (m_font = TTF_OpenFont(asset_dir(font_name).c_str(), 24)))
   {
     return log_error_init("TTF_Font *font");
   }
@@ -184,7 +184,7 @@ SDL_AppResult Game::init_system_objects()
   }
 
   // Create a smaller TTF font from PixelCode.ttf in our ./assets/ directory
-  if (not (m_font_small = TTF_OpenFont((asset_dir(font_name) + font_name).c_str(), 14)))
+  if (not (m_font_small = TTF_OpenFont(asset_dir(font_name).c_str(), 14)))
   {
     return log_error_init("TTF_Font *font_small");
   }
@@ -195,7 +195,7 @@ SDL_AppResult Game::init_system_objects()
 
   // Create larger TTF font
   // TODO dynamic font size based on DPI scale? right now it's just assuming 2.0 scale and doubling
-  if (not (m_font_large = TTF_OpenFont((asset_dir(font_name) + font_name).c_str(), 48)))
+  if (not (m_font_large = TTF_OpenFont(asset_dir(font_name).c_str(), 48)))
   {
     return log_error_init("TTF_Font *font_large");
   }
