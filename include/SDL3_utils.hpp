@@ -190,6 +190,8 @@ public:
    *               Omit this to call the overload that uses the global indentation level.
    * @param message A printf-style format string for the log message.
    * @param args Format arguments for the log message.
+   * 
+   * @warning see `trace` function's @@warning
    */
   template <typename... Args>
   static inline void verbose(int indent, std::string message, Args&&... args)
@@ -212,6 +214,8 @@ public:
    *               Omit this to call the overload that uses the global indentation level.
    * @param message A printf-style format string for the log message.
    * @param args Format arguments for the log message.
+   * 
+   * @warning see `trace` function's @@warning
    */
   template <typename... Args>
   static inline void debug(int indent, std::string message, Args&&... args)
@@ -234,6 +238,8 @@ public:
    *               Omit this to call the overload that uses the global indentation level.
    * @param message A printf-style format string for the log message.
    * @param args Format arguments for the log message.
+   * 
+   * @warning see `trace` function's @@warning
    */
   template <typename... Args>
   static inline void info(int indent, std::string message, Args&&... args)
@@ -261,6 +267,8 @@ public:
    * @param args Format arguments for the log message.
    * 
    * @return SDL_AppResult `SDL_APP_FAILURE` for convenience in error handling.
+   * 
+   * @warning see `trace` function's @@warning
    */
   template <typename... Args>
   static inline SDL_AppResult warn(int indent, std::string message, Args&&... args)
@@ -286,6 +294,8 @@ public:
    * @param args Format arguments for the log message.
    * 
    * @return SDL_AppResult `SDL_APP_FAILURE` for convenience in error handling.
+   * 
+   * @warning see `trace` function's @@warning
    */
   template <typename... Args>
   static inline SDL_AppResult error(int indent, std::string message, Args&&... args)
@@ -311,6 +321,8 @@ public:
    * @param args Format arguments for the log message.
    * 
    * @return SDL_AppResult `SDL_APP_FAILURE` for convenience in error handling.
+   * 
+   * @warning see `trace` function's @@warning
    */
   template <typename... Args>
   static inline SDL_AppResult critical(int indent, std::string message, Args&&... args)
