@@ -12,7 +12,7 @@
 namespace bipsy::gaiasim
 {
 
-using namespace bipsy::sdlutils; // log_error_init, log_info, etc.
+using namespace bipsy::sdl3_utils; // log_error_init, log_info, etc.
 
 
 GameWorld::GameWorld(Game *game)

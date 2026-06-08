@@ -41,8 +41,8 @@
  ******************************************************************************/
 
 using bipsy::gaiasim::Game,
-      bipsy::sdlutils::log_info,
-      bipsy::sdlutils::get_log_priority_name;
+      bipsy::sdl3_utils::log_info,
+      bipsy::sdl3_utils::get_log_priority_name;
 
 
 

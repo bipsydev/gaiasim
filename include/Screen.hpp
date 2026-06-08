@@ -53,7 +53,7 @@ class Screen
 
 public:
 
-  Screen(Game * game, const std::string &name, SDL_Color color = sdlutils::GAME_CLEAR_COLOR_DEFAULT)
+  Screen(Game * game, const std::string &name, SDL_Color color = sdl3_utils::GAME_CLEAR_COLOR_DEFAULT)
   : game_ptr(game), name_str(name), clear_color(color)
   { };
 

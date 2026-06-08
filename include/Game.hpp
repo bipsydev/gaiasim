@@ -16,7 +16,7 @@
 
 namespace bipsy::gaiasim
 {
-  using namespace bipsy::sdlutils;  // log_info, log_error_init
+  using namespace bipsy::sdl3_utils;  // log_info, log_error_init
 
 /**
  * @brief Local application running state structure.

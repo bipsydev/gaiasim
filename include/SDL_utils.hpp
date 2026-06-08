@@ -10,7 +10,7 @@
 #include <utility>  // std::forward
 
 
-namespace bipsy::sdlutils
+namespace bipsy::sdl3_utils
 {
 
   // Default clear color (Sky Blue)
@@ -312,7 +312,7 @@ inline constexpr std::string asset_dir(std::string asset_name)
 }
 
 
-} // namespace bipsy::sdlutils
+} // namespace bipsy::sdl3_utils
 
 
 #endif // BIPSY_SDL3UTILS_SDL_LOGINDENT_HPP
