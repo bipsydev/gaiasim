@@ -56,6 +56,11 @@ class Log
    */
   static inline bool log_info_enabled = true;
 
+  /**
+   * @brief The current indentation level for logging messages.
+   * 
+   * Default indentation width is 2 spaces, but TODO: can be configured
+   */
   size_t m_indent;
 
 public:
@@ -71,6 +76,55 @@ public:
   // Prevent copying and assignment (singleton)
   Log(const Log&) = delete;
   Log& operator=(const Log&) = delete;
+
+
+  // ---- Indentation control functions ----
+
+  /**
+   * @brief Get a reference to the singleton's indentation level.
+   * 
+   * @return size_t& reference
+   */
+  static size_t& indent()  { return instance().m_indent; }
+
+  /**
+   * @brief Get the indentation level.
+   * 
+   * @return size_t value
+   */
+  static size_t get_indent()  { return instance().m_indent; }
+
+  /**
+   * @brief Set the indentation level.
+   * 
+   * @param indent size_t
+   */
+  static void set_indent(size_t indent)  { instance().m_indent = indent; }
+
+  /**
+   * @brief Increase the indentation level by a certain amount, or 1 by default.
+   * 
+   * @param amount Default is 1
+   */
+  static void increase_indent(size_t amount = 1)
+  { instance().m_indent += amount; }
+
+  /**
+   * @brief Decrease the indentation level by a certain amount, or 1 by default.
+   * 
+   * @param amount Default is 1
+   */
+  static void decrease_indent(size_t amount = 1)
+  {
+    instance().m_indent = (instance().m_indent >= amount) ?
+        instance().m_indent - amount :
+        0;
+  }
+
+  /**
+   * @brief Reset the indentation level to 0.
+   */
+  static void reset_indent() { instance().m_indent = 0; }
 
 
 
