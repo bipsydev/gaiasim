@@ -155,6 +155,30 @@ public:
   { info_enable(false); }
 
 
+  /**
+   * @brief Log a message of given priority, with optional indentation level.
+   * 
+   * @tparam Args Variadic template parameters for the format arguments.
+   * @param indent Number of indentation levels to apply.
+   *               Omit this to call the overload that uses the global indentation level.
+   * @param message A std::format-style format string for the log message.
+   * @param args Format arguments for the log message.
+   */
+  template <typename... Args>
+  static inline void log(SDL_LogPriority priority, size_t indent,
+                         std::format_string<Args...> message, Args&&... args)
+  {
+    SDL_LogIndent(indent, priority,
+                  std::format(message, std::forward<Args>(args)...));
+  }
+
+  template <typename... Args>
+  static inline void log(SDL_LogPriority priority,
+                         std::format_string<Args...> message, Args&&... args)
+  {
+    log(priority, instance().indent(), message, std::forward<Args>(args)...);
+  }
+
 
   /**
    * @brief Log a TRACE-level message, with optional indentation level.
