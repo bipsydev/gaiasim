@@ -56,8 +56,10 @@ class Log
    */
   static inline bool log_info_enabled = true;
 
+  size_t m_indent;
+
 public:
-  static Log& get_instance()
+  static Log& instance()
   {
     // Guaranteed to be instantiated only once on first use
     static Log instance;
@@ -277,7 +279,7 @@ public:
 
 private:
   // Prevent instantiation from outside the class
-  Log() = default;
+  Log(): m_indent{0}  { }
 
   /**
    * @brief Logs an SDL info message with specified indentation level.
@@ -294,10 +296,10 @@ private:
    *             (parameter pack)
    */
   template <typename... Args>
-  static inline void SDL_LogIndent(int indent, SDL_LogPriority priority,
-                            // `&&` is an rvalue reference, which allows
-                            // perfect forwarding of template arguments
-                            const char* message, Args&&... args)
+  static inline void SDL_LogIndent(size_t indent, SDL_LogPriority priority,
+                                   // `&&` is an rvalue reference, which allows
+                                   // perfect forwarding of template arguments
+                                   const char* message, Args&&... args)
   {
     SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION,
                   priority,
@@ -305,6 +307,14 @@ private:
                   // forward the variadic arguments to preserve & reduce copying
                   std::forward<Args>(args)...);
   }
+
+  template <typename... Args>
+  inline void SDL_LogAutoIndent(SDL_LogPriority priority,
+                                const char* message, Args&&... args)
+  {
+    SDL_LogIndent(m_indent, priority, message, std::forward<Args>(args)...);
+  }
+
 
   template <typename... Args>
   inline void SDL_LogTraceIndent(int indent, const char* message, Args&&... args)
