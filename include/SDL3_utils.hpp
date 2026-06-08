@@ -82,7 +82,7 @@ public:
    * @return SDL_AppResult SDL_APP_FAILURE for convenience.
    */
   template <typename... Args>
-  static inline SDL_AppResult log_error_init(std::string subsystem, int indent = 0,
+  static inline SDL_AppResult error_init(std::string subsystem, int indent = 0,
     Args&&... args)
   {
     SDL_LogErrorIndent(indent, "Failed to initialize %s: %s",
@@ -93,11 +93,11 @@ public:
   /**
    * @brief Enables or disables info logging.
    */
-  static inline constexpr void log_info_enable(bool enable = true)
+  static inline constexpr void info_enable(bool enable = true)
   { log_info_enabled = enable; }
 
-  static inline constexpr void log_info_disable()
-  { log_info_enable(false); }
+  static inline constexpr void info_disable()
+  { info_enable(false); }
 
 
 
@@ -110,15 +110,15 @@ public:
    * @param args Format arguments for the log message.
    */
   template <typename... Args>
-  static inline void log_trace(std::string message, int indent, Args&&... args)
+  static inline void trace(std::string message, int indent, Args&&... args)
   {
     SDL_LogTraceIndent(indent, message.c_str(), std::forward<Args>(args)...);
   }
 
   template <typename... Args>
-  static inline void log_trace(std::string message, Args&&... args)
+  static inline void trace(std::string message, Args&&... args)
   {
-    log_trace(message, 0, std::forward<Args>(args)...);
+    trace(message, 0, std::forward<Args>(args)...);
   }
 
   /**
@@ -130,15 +130,15 @@ public:
    * @param args Format arguments for the log message.
    */
   template <typename... Args>
-  static inline void log_verbose(std::string message, int indent, Args&&... args)
+  static inline void verbose(std::string message, int indent, Args&&... args)
   {
     SDL_LogVerboseIndent(indent, message.c_str(), std::forward<Args>(args)...);
   }
 
   template <typename... Args>
-  static inline void log_verbose(std::string message, Args&&... args)
+  static inline void verbose(std::string message, Args&&... args)
   {
-    log_verbose(message, 0, std::forward<Args>(args)...);
+    verbose(message, 0, std::forward<Args>(args)...);
   }
 
   /**
@@ -150,15 +150,15 @@ public:
    * @param args Format arguments for the log message.
    */
   template <typename... Args>
-  static inline void log_debug(std::string message, int indent, Args&&... args)
+  static inline void debug(std::string message, int indent, Args&&... args)
   {
     SDL_LogDebugIndent(indent, message.c_str(), std::forward<Args>(args)...);
   }
 
   template <typename... Args>
-  static inline void log_debug(std::string message, Args&&... args)
+  static inline void debug(std::string message, Args&&... args)
   {
-    log_debug(message, 0, std::forward<Args>(args)...);
+    debug(message, 0, std::forward<Args>(args)...);
   }
 
   /**
@@ -170,7 +170,7 @@ public:
    * @param args Format arguments for the log message.
    */
   template <typename... Args>
-  static inline void log_info(std::string message, int indent, Args&&... args)
+  static inline void info(std::string message, int indent, Args&&... args)
   {
     if (log_info_enabled)
     {
@@ -179,9 +179,9 @@ public:
   }
 
   template <typename... Args>
-  static inline void log_info(std::string message, Args&&... args)
+  static inline void info(std::string message, Args&&... args)
   {
-    log_info(message, 0, std::forward<Args>(args)...);
+    info(message, 0, std::forward<Args>(args)...);
   }
 
   /**
@@ -195,16 +195,16 @@ public:
    * @return SDL_AppResult `SDL_APP_FAILURE` for convenience in error handling.
    */
   template <typename... Args>
-  static inline SDL_AppResult log_warn(std::string message, int indent, Args&&... args)
+  static inline SDL_AppResult warn(std::string message, int indent, Args&&... args)
   {
     SDL_LogWarnIndent(indent, message.c_str(), std::forward<Args>(args)...);
     return SDL_APP_FAILURE;
   }
 
   template <typename... Args>
-  static inline SDL_AppResult log_warn(std::string message, Args&&... args)
+  static inline SDL_AppResult warn(std::string message, Args&&... args)
   {
-    return log_warn(message, 0, std::forward<Args>(args)...);
+    return warn(message, 0, std::forward<Args>(args)...);
   }
 
   /**
@@ -218,16 +218,16 @@ public:
    * @return SDL_AppResult `SDL_APP_FAILURE` for convenience in error handling.
    */
   template <typename... Args>
-  static inline SDL_AppResult log_error(std::string message, int indent, Args&&... args)
+  static inline SDL_AppResult error(std::string message, int indent, Args&&... args)
   {
     SDL_LogErrorIndent(indent, message.c_str(), std::forward<Args>(args)...);
     return SDL_APP_FAILURE;
   }
 
   template <typename... Args>
-  static inline SDL_AppResult log_error(std::string message, Args&&... args)
+  static inline SDL_AppResult error(std::string message, Args&&... args)
   {
-    return log_error(message, 0, std::forward<Args>(args)...);
+    return error(message, 0, std::forward<Args>(args)...);
   }
 
   /**
@@ -241,16 +241,16 @@ public:
    * @return SDL_AppResult `SDL_APP_FAILURE` for convenience in error handling.
    */
   template <typename... Args>
-  static inline SDL_AppResult log_critical(std::string message, int indent, Args&&... args)
+  static inline SDL_AppResult critical(std::string message, int indent, Args&&... args)
   {
     SDL_LogCriticalIndent(indent, message.c_str(), std::forward<Args>(args)...);
     return SDL_APP_FAILURE;
   }
 
   template <typename... Args>
-  static inline SDL_AppResult log_critical(std::string message, Args&&... args)
+  static inline SDL_AppResult critical(std::string message, Args&&... args)
   {
-    return log_critical(message, 0, std::forward<Args>(args)...);
+    return critical(message, 0, std::forward<Args>(args)...);
   }
 
 
@@ -294,7 +294,7 @@ private:
    *             (parameter pack)
    */
   template <typename... Args>
-  inline void SDL_LogIndent(int indent, SDL_LogPriority priority,
+  static inline void SDL_LogIndent(int indent, SDL_LogPriority priority,
                             // `&&` is an rvalue reference, which allows
                             // perfect forwarding of template arguments
                             const char* message, Args&&... args)
