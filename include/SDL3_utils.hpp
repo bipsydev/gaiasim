@@ -162,6 +162,12 @@ public:
    *               Omit this to call the overload that uses the global indentation level.
    * @param message A printf-style format string for the log message.
    * @param args Format arguments for the log message.
+   * 
+   * @warning If `indent` is 0, the compiler gets confused and overload
+   *          resolution ambiguity occurs because 0 is an `int` but can also be
+   *          interpreted as a `char *` because `0 == nullptr`,
+   *          using the `std::string` constructor that takes a C string.
+   *          TODO: fix!
    */
   template <typename... Args>
   static inline void trace(int indent, std::string message, Args&&... args)
