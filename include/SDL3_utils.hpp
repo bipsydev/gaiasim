@@ -1,6 +1,6 @@
 #pragma once
-#ifndef BIPSY_SDL3UTILS_SDL_LOGINDENT_HPP
-#define BIPSY_SDL3UTILS_SDL_LOGINDENT_HPP
+#ifndef BIPSY_SDL3_UTILS_HPP
+#define BIPSY_SDL3_UTILS_HPP
 
 #include "tab.hpp"
 
@@ -315,4 +315,4 @@ inline constexpr std::string asset_dir(std::string asset_name)
 } // namespace bipsy::sdl3_utils
 
 
-#endif // BIPSY_SDL3UTILS_SDL_LOGINDENT_HPP
+#endif // BIPSY_SDL3_UTILS_HPP
