@@ -5,7 +5,6 @@
 #include "SDL3_utils.hpp"
 
 #include <cstdlib>  // rand
-#include <format>   // std::format
 
 
 namespace bipsy::gaiasim
@@ -105,8 +104,8 @@ SDL_AppResult ScreenTest::init()
 SDL_AppResult ScreenTest::init_text_texture()
 {
   // TODO put std::format inside the logging function and remove this outer call
-  Log::info(2, std::format("{} texture for rendered text...",
-    (text_texture == nullptr? "Initializing" : "Updating")));
+  Log::info(2, "{} texture for rendered text...",
+    (text_texture == nullptr? "Initializing" : "Updating"));
   
   // Update text string first
   std::string new_text_str = (
@@ -191,9 +190,9 @@ SDL_AppResult ScreenTest::event(SDL_Event *event)
   if (event->type == SDL_EVENT_KEY_DOWN)
   {
     //TODO remove outer format call
-    Log::info(std::format("'{}' key pressed ('{}')",
+    Log::info("'{}' key pressed ('{}')",
       SDL_GetKeyName(event->key.key),
-      SDL_GetScancodeName(event->key.scancode)));
+      SDL_GetScancodeName(event->key.scancode));
     if (event->key.key == SDLK_N)
     {
       Log::info("'N' key pressed, switching to main screen...");
@@ -211,9 +210,9 @@ SDL_AppResult ScreenTest::event(SDL_Event *event)
   else if (not SDL_HasKeyboard() && event->type == SDL_EVENT_FINGER_DOWN)
   {
     //TODO remove outer call
-    Log::info(std::format("Touch event #{} pressed at ({:.4f}, {:.4f}) with pressure {:.4f} and type {}",
+    Log::info("Touch event #{} pressed at ({:.4f}, {:.4f}) with pressure {:.4f} and type {}",
       event->tfinger.fingerID, event->tfinger.x, event->tfinger.y,
-      event->tfinger.pressure, static_cast<int>(event->tfinger.type)));
+      event->tfinger.pressure, static_cast<int>(event->tfinger.type));
     return switch_to_main_screen();
   }
   return SDL_APP_CONTINUE;

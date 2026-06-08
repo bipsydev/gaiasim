@@ -257,7 +257,7 @@ SDL_AppResult GameWorld::test_world_map_operations()
   Log::info(1, "Deleted chunk at {{-1, -2, -3}}: {}", delete_result ? "success" : "failure");
   // confirm deletion by trying to get the chunk again
   auto deleted_chunk_entity = world_map.get_chunk(-1, -2, -3);
-  Log::info(1, "Attempted to get deleted chunk at {{-1, -2, -3}}, {}: {}",
+  Log::info(1, "Attempted to get deleted chunk at {{-1, -2, -3}}: {}",
     deleted_chunk_entity == entt::null ? "got null entity as expected"
                                        : "UNEXPECTED: got a valid entity!");
 
