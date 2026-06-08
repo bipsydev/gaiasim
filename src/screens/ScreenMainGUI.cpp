@@ -10,7 +10,7 @@ namespace bipsy::gaiasim::gui
 {
 
 
-using namespace bipsy::sdlutils;  // log_error, log_warn, etc
+using namespace bipsy::sdl3_utils;  // log_error, log_warn, etc
 
 
 
