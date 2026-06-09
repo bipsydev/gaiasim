@@ -55,7 +55,12 @@ public:
 
   Screen(Game * game, const std::string &name, SDL_Color color = sdl3_utils::GAME_CLEAR_COLOR_DEFAULT)
   : game_ptr(game), name_str(name), clear_color(color)
-  { };
+  {
+    LOG_FRAME_CLASS(Screen);
+    bipsy::sdl3_utils::Log::verbose(
+      "Constructed screen \"{}\" with bg clear color RGBA({}, {}, {}, {})",
+      name_str, clear_color.r, clear_color.g, clear_color.b, clear_color.a);
+  };
 
   // Prevent copying (for now) because of pointer data members
   // May implement later if the need arises
