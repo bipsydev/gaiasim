@@ -5,6 +5,7 @@
 #include "SDL3_utils.hpp"
 
 #include <cstdlib>  // rand
+#include <format>   // std::format
 
 
 namespace bipsy::gaiasim
@@ -228,6 +229,7 @@ SDL_AppResult ScreenTest::update()
   }
 
   // Set rainbow_triangle colors to random values
+  //TODO seed rand?
 #define RAND_COLOR() \
 { \
   static_cast<float>(rand()) / RAND_MAX, \
