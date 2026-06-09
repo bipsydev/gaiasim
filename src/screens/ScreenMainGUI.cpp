@@ -3,14 +3,13 @@
 // full definition of the class we forward declared
 #include "GameWorld.hpp"
 
-#include "SDL_utils.hpp"
+#include "SDL3_utils.hpp"
 
 
 namespace bipsy::gaiasim::gui
 {
 
-
-using namespace bipsy::sdlutils;  // log_error, log_warn, etc
+using bipsy::sdl3_utils::Log;
 
 
 
@@ -47,15 +46,14 @@ ScreenMainGUI::~ScreenMainGUI()
 
 SDL_AppResult ScreenMainGUI::update_layout(Game *game)
 {
-  log_trace("ScreenMainGUI::update_layout called.");
+  LOG_FRAME_CLASS(ScreenMainGUI);
 
   int window_width, window_height;
   if (not SDL_GetCurrentRenderOutputSize(
     game->renderer(), &window_width, &window_height))
   {
     // Handle error
-    return log_error("Failed to get current render output size: %s",
-      SDL_GetError());
+    return Log::error("Failed to get current render output size: {}", SDL_GetError());
   }
   
   bool changed = false;
@@ -66,7 +64,7 @@ SDL_AppResult ScreenMainGUI::update_layout(Game *game)
   m_window_width = window_width;
   m_window_height = window_height;
 
-  log_debug("Updated layout with window size %dx%d", 1, m_window_width, m_window_height);
+  Log::verbose(Log::indent() + 1, "Updated layout with window size {}x{}", m_window_width, m_window_height);
   
   // regenerate textures based on window size change
   if (changed)
@@ -79,6 +77,8 @@ SDL_AppResult ScreenMainGUI::update_layout(Game *game)
 
 SDL_AppResult ScreenMainGUI::render(SDL_Renderer *renderer, GameWorld *world)
 {
+  LOG_FRAME_CLASS(ScreenMainGUI);
+
   SDL_AppResult result;
 
   if (result = render_panel(renderer, m_left_sidebar))
@@ -106,7 +106,9 @@ SDL_AppResult ScreenMainGUI::event(Game *game, SDL_Event *event)
 
 SDL_AppResult ScreenMainGUI::generate_textures(Game *game)
 {
-  log_debug("Generating title textures for panels...");
+  LOG_FRAME_CLASS(ScreenMainGUI);
+
+  Log::debug("Generating title textures for panels...");
 
   // free anything already allocated
   if (m_main_panel.m_title_texture != nullptr)
@@ -127,11 +129,11 @@ SDL_AppResult ScreenMainGUI::generate_textures(Game *game)
 
   // allocate all 3
   if (create_panel_title_texture(game, m_main_panel))
-    return log_error("Failed to create title texture for main panel");
+    return Log::error("Failed to create title texture for main panel");
   if (create_panel_title_texture(game, m_left_sidebar))
-    return log_error("Failed to create title texture for left sidebar");
+    return Log::error("Failed to create title texture for left sidebar");
   if (create_panel_title_texture(game, m_top_sidebar))
-    return log_error("Failed to create title texture for top sidebar");
+    return Log::error("Failed to create title texture for top sidebar");
   
   return SDL_APP_CONTINUE;
 }
@@ -140,6 +142,8 @@ SDL_AppResult ScreenMainGUI::generate_textures(Game *game)
 
 SDL_AppResult ScreenMainGUI::create_panel_title_texture(Game *game, Panel &panel)
 {
+  LOG_FRAME_CLASS(ScreenMainGUI);
+
   TTF_Font *panel_font = panel.m_use_small_font ?
       game->font_small() :
 #ifndef __ANDROID__
@@ -162,7 +166,7 @@ SDL_AppResult ScreenMainGUI::create_panel_title_texture(Game *game, Panel &panel
   );
   if (text_surface == nullptr)
   {
-    return log_error_init("text_surface");
+    return Log::error_init("text_surface");
   }
 
   // Create a texture from the surface
@@ -171,7 +175,7 @@ SDL_AppResult ScreenMainGUI::create_panel_title_texture(Game *game, Panel &panel
   SDL_DestroySurface(text_surface); // We can free the surface after creating the texture
   if (panel.m_title_texture == nullptr)
   {
-    return log_error_init("panel.m_title_texture");
+    return Log::error_init("panel.m_title_texture");
   }
 
   // Cache larger font texture dimensions for later layout calculations
@@ -189,12 +193,14 @@ SDL_AppResult ScreenMainGUI::create_panel_title_texture(Game *game, Panel &panel
 
 SDL_AppResult ScreenMainGUI::render_panel(SDL_Renderer *renderer, Panel &panel, GameWorld *world)
 {
+  LOG_FRAME_CLASS(ScreenMainGUI);
+
   // Set draw color to panel color and render filled rect
   if (not SDL_SetRenderDrawColor(renderer,
       panel.m_color.r, panel.m_color.g, panel.m_color.b, panel.m_color.a))
   {
-    return log_error("Failed to set panel '%s' render draw color: %s",
-      panel.m_title.c_str(), SDL_GetError());
+    return Log::error("Failed to set panel '{}' render draw color: {}",
+      panel.m_title, SDL_GetError());
   }
 
   // Convert panel partition to actual pixel bounds
@@ -208,11 +214,11 @@ SDL_AppResult ScreenMainGUI::render_panel(SDL_Renderer *renderer, Panel &panel, 
   // attempt to draw the rectangle
   if (not SDL_RenderFillRect(renderer, &m_bounds))
   {
-    return log_error("Failed to render panel '%s': %s",
-      panel.m_title.c_str(), SDL_GetError());
+    return Log::error("Failed to render panel '{}': {}",
+      panel.m_title, SDL_GetError());
   }
   else
-    log_debug("Rendered panel '%s'", panel.m_title.c_str());
+    Log::debug("Rendered panel '{}'", panel.m_title);
 
   // RENDER THE GAME WORLD here!
   if (world != nullptr) // if this panel contains a game world pointer...
@@ -221,8 +227,8 @@ SDL_AppResult ScreenMainGUI::render_panel(SDL_Renderer *renderer, Panel &panel, 
     SDL_AppResult result;
     if ( (result = (world->render(renderer, &m_bounds))) )
     {
-      log_error("Failed to render map texture for panel '%s': %s", 0,
-        panel.m_title.c_str(), SDL_GetError());
+      Log::error("Failed to render map texture for panel '{}': {}",
+        panel.m_title, SDL_GetError());
       return result;
     }
   }
@@ -277,8 +283,8 @@ SDL_AppResult ScreenMainGUI::render_panel(SDL_Renderer *renderer, Panel &panel, 
     // Attempt to render the title texture
     if (not SDL_RenderTexture(renderer, panel.m_title_texture, &source_rect, &text_rect))
     {
-      return log_error("Failed to render title texture for panel '%s': %s",
-        panel.m_title.c_str(), SDL_GetError());
+      return Log::error("Failed to render title texture for panel '{}': {}",
+        panel.m_title, SDL_GetError());
     }
   }
 

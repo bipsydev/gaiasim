@@ -8,6 +8,7 @@
 #include "SDL3/SDL_stdinc.h" // Sint64 (named integer type)
 
 #include <array>          // std::array
+#include <format>         // std::formatter
 #include <unordered_map>  // std::unordered_map
 #include <limits>         // std::numeric_limits
 #include <functional>     // std::hash
@@ -247,5 +248,20 @@ public:
 }; // class WorldMap
 
 } // namespace bipsy::gaiasim
+
+//TODO: make a macro for this that takes the object and output types.
+// since this is copy-pasted for InitRequest and SDL_AppResult as well
+// format BlockID -> Uint64 output
+template <>
+struct std::formatter<bipsy::gaiasim::BlockID, char>
+    : std::formatter<Uint64, char>
+{
+  auto format(bipsy::gaiasim::BlockID block_id,
+              std::format_context& ctx) const
+  {
+    return std::formatter<Uint64, char>::format(
+      static_cast<Uint64>(block_id), ctx);
+  }
+};
 
 #endif // BIPSY_GAIASIM_WORLDMAP_HPP

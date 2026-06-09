@@ -2,7 +2,7 @@
 #ifndef BIPSY_GAIASIM_SCREEN_MAIN_GUI_HPP
 #define BIPSY_GAIASIM_SCREEN_MAIN_GUI_HPP
 
-#include "SDL_utils.hpp"
+#include "SDL3_utils.hpp"
 #include "Game.hpp"
 
 #include "SDL3/SDL.h"

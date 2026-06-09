@@ -1,10 +1,9 @@
 #include "WorldMap.hpp"
 
 
-#include "SDL_utils.hpp" // log_error, etc.
+#include "SDL3_utils.hpp" // log_error, etc.
 
 #include "entt/entt.hpp"  // entt::registry
-
 #include "SDL3/SDL_stdinc.h" // Sint64 (named integer type)
 
 #include <unordered_map>  // std::unordered_map
@@ -13,7 +12,7 @@
 namespace bipsy::gaiasim
 {
 
-using namespace bipsy::sdlutils; // log_error, etc.
+using bipsy::sdl3_utils::Log;
 
 
 WorldMap::WorldMap()
@@ -36,7 +35,7 @@ entt::entity WorldMap::create_chunk(const ChunkPos& pos)
   auto it = m_chunk_map.find(pos);
   if (it != m_chunk_map.end())
   {
-    log_error("Chunk already exists at position (%lld, %lld, %lld)", 0, pos.x, pos.y, pos.z);
+    Log::error("Chunk already exists at position ({}, {}, {})", pos.x, pos.y, pos.z);
     return entt::null; // Return null entity to indicate failure
   }
 
@@ -60,8 +59,7 @@ bool WorldMap::delete_chunk(const ChunkPos& pos)
   auto it = m_chunk_map.find(pos);
   if (it == m_chunk_map.end())
   {
-    log_error("No chunk exists at position (%lld, %lld, %lld) to delete", 0,
-      pos.x, pos.y, pos.z);
+    Log::error("No chunk exists at position ({}, {}, {}) to delete", pos.x, pos.y, pos.z);
     return false; // Indicate failure to find
   }
 
@@ -80,15 +78,14 @@ bool WorldMap::delete_chunk(entt::entity chunk_entity)
   // determine if entity exists first
   if (!m_chunk_registry.valid(chunk_entity))
   {
-    log_error("Invalid entity ID %u passed to delete_chunk", 0, static_cast<Uint32>(chunk_entity));
+    Log::error("Invalid entity ID {} passed to delete_chunk", static_cast<Uint32>(chunk_entity));
     return false;
   }
   // attempt to get the component, fail if it doesn't exist
   auto chunk_pos = m_chunk_registry.try_get<ChunkPos>(chunk_entity); // Check if the chunk has a ChunkPos component
   if (chunk_pos == nullptr)
   {
-    log_error("No chunk exists with entity ID %u to delete", 0,
-      static_cast<Uint32>(chunk_entity));
+    Log::error("No chunk exists with entity ID {} to delete", static_cast<Uint32>(chunk_entity));
     return false; // Indicate failure to find
   }
   // delete based on chunk position component
@@ -103,7 +100,7 @@ entt::entity WorldMap::get_chunk(const ChunkPos& pos) const
   auto it = m_chunk_map.find(pos);
   if (it == m_chunk_map.end())
   {
-    log_error("No chunk exists at position (%lld, %lld, %lld) to get", 0, pos.x, pos.y, pos.z);
+    Log::error("No chunk exists at position ({}, {}, {}) to get", pos.x, pos.y, pos.z);
     return entt::null; // Indicate failure to find
   }
 
@@ -116,16 +113,16 @@ entt::entity WorldMap::get_chunk(const ChunkPos& pos) const
 BlockID WorldMap::get_block(const ChunkPos& chunk_pos,
                             const LocalPos& local_pos) const
 {
-  log_info("get_block called with chunk_pos (%lld, %lld, %lld) and local coords (%i, %i, %i)",
-    0, chunk_pos.x, chunk_pos.y, chunk_pos.z, local_pos.x, local_pos.y, local_pos.z);
-  
+  Log::info("get_block called with chunk_pos ({}, {}, {}) and local coords ({}, {}, {})",
+    chunk_pos.x, chunk_pos.y, chunk_pos.z, local_pos.x, local_pos.y, local_pos.z);
+
   // make sure `local_pos` is within bounds of the chunk size
   if (local_pos.x >= ChunkData::SIZE ||
     local_pos.y >= ChunkData::SIZE ||
     local_pos.z >= ChunkData::SIZE)
   {
-    log_error("Local position (%i, %i, %i) is out of bounds for chunk size %i",
-      0, local_pos.x, local_pos.y, local_pos.z, ChunkData::SIZE);
+    Log::error("Local position ({}, {}, {}) is out of bounds for chunk size {}",
+      local_pos.x, local_pos.y, local_pos.z, ChunkData::SIZE);
     return INVALID; // Return invalid block ID to indicate out of bounds
   }
   
@@ -133,8 +130,8 @@ BlockID WorldMap::get_block(const ChunkPos& chunk_pos,
   auto chunk_entity = get_chunk(chunk_pos);
   if (chunk_entity == entt::null)
   {
-    log_error("Cannot get block because chunk does not exist at position (%lld, %lld, %lld)",
-      0, chunk_pos.x, chunk_pos.y, chunk_pos.z);
+    Log::error("Cannot get block because chunk does not exist at position ({}, {}, {})",
+      chunk_pos.x, chunk_pos.y, chunk_pos.z);
     return INVALID; // Not generated yet
   }
 
@@ -145,8 +142,8 @@ BlockID WorldMap::get_block(const ChunkPos& chunk_pos,
               + (local_pos.y * ChunkData::SIZE)
               + local_pos.x;
   BlockID block = chunk_data.blocks[index];
-  log_info("Block ID at local coords (%i, %i, %i) in chunk (%lld, %lld, %lld) is %u",
-    0, local_pos.x, local_pos.y, local_pos.z, chunk_pos.x, chunk_pos.y, chunk_pos.z, block);
+  Log::info("Block ID at local coords ({}, {}, {}) in chunk ({}, {}, {}) is {}",
+    local_pos.x, local_pos.y, local_pos.z, chunk_pos.x, chunk_pos.y, chunk_pos.z, block);
 
   return block;
 }
@@ -163,16 +160,16 @@ bool WorldMap::set_block(const ChunkPos& chunk_pos,
                          const LocalPos& local_pos,
                          BlockID block_id)
 {
-  log_info("set_block (block=%i) called with chunk_pos (%lld, %lld, %lld) and local coords (%i, %i, %i)",
-    0, block_id, chunk_pos.x, chunk_pos.y, chunk_pos.z, local_pos.x, local_pos.y, local_pos.z);
-  
+  Log::info("set_block (block={}) called with chunk_pos ({}, {}, {}) and local coords ({}, {}, {})",
+    block_id, chunk_pos.x, chunk_pos.y, chunk_pos.z, local_pos.x, local_pos.y, local_pos.z);
+
   // make sure `local_pos` is within bounds of the chunk size
   if (local_pos.x >= ChunkData::SIZE ||
     local_pos.y >= ChunkData::SIZE ||
     local_pos.z >= ChunkData::SIZE)
   {
-    log_error("Local position (%i, %i, %i) is out of bounds for chunk size %i",
-      0, local_pos.x, local_pos.y, local_pos.z, ChunkData::SIZE);
+    Log::error("Local position ({}, {}, {}) is out of bounds for chunk size {}",
+      local_pos.x, local_pos.y, local_pos.z, ChunkData::SIZE);
     return false; // Return false to indicate failure to set block
   }
 
@@ -180,8 +177,8 @@ bool WorldMap::set_block(const ChunkPos& chunk_pos,
   auto chunk_entity = get_chunk(chunk_pos);
   if (chunk_entity == entt::null)
   {
-    log_error("Cannot set block because chunk does not exist at position (%lld, %lld, %lld)",
-      0, chunk_pos.x, chunk_pos.y, chunk_pos.z);
+    Log::error("Cannot set block because chunk does not exist at position ({}, {}, {})",
+      chunk_pos.x, chunk_pos.y, chunk_pos.z);
     return false; // Return false to indicate failure to set block
   }
 
@@ -193,8 +190,8 @@ bool WorldMap::set_block(const ChunkPos& chunk_pos,
               + local_pos.x;
   BlockID old_id = chunk_data.blocks[index];
   chunk_data.blocks[index] = block_id;
-  log_info("Block ID at local coords (%i, %i, %i) in chunk (%lld, %lld, %lld) changed from %u to %u",
-    0, local_pos.x, local_pos.y, local_pos.z, chunk_pos.x, chunk_pos.y, chunk_pos.z, old_id, block_id);
+  Log::info("Block ID at local coords ({}, {}, {}) in chunk ({}, {}, {}) changed from {} to {}",
+    local_pos.x, local_pos.y, local_pos.z, chunk_pos.x, chunk_pos.y, chunk_pos.z, old_id, block_id);
 
   // success
   return true;
@@ -238,7 +235,7 @@ GlobalPos WorldMap::convert_chunk_to_global_pos
  Uint8 local_x, Uint8 local_y, Uint8 local_z) const
 {
   //TODO implement
-  log_error("convert_chunk_to_global_pos not implemented yet, returning (0, 0, 0)");
+  Log::error("convert_chunk_to_global_pos not implemented yet, returning (0, 0, 0)");
   return GlobalPos{0, 0, 0};
 }
 

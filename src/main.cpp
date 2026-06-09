@@ -22,7 +22,7 @@
  ******************************************************************************/
 
 // --- Project Headers ---
-#include "SDL_utils.hpp"
+#include "SDL3_utils.hpp"
 #include "Game.hpp"   // bipsy::gaiasim::Game class
 
 
@@ -41,8 +41,7 @@
  ******************************************************************************/
 
 using bipsy::gaiasim::Game,
-      bipsy::sdlutils::log_info,
-      bipsy::sdlutils::get_log_priority_name;
+      bipsy::sdl3_utils::Log;
 
 
 
@@ -94,13 +93,10 @@ void init_logging();
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv)
 {
   init_logging();
-  log_info("------ AppInit: Initializing ------");
-  // Initialize Game (starts SDL systems and loads initial game state)
-  Game *game = new Game();
-  *appstate = game;
-  log_info("------ AppInit: Initialization complete ------");
-
-  return game->init();
+  Log::info("========== SDL_AppInit: Initializing ==========");
+  SDL_AppResult result = Game::new_game(*appstate);
+  Log::info("========== SDL_AppInit: Initialization complete ==========");
+  return result;
 }
 
 void init_logging()
@@ -109,10 +105,11 @@ void init_logging()
 #ifndef NDEBUG
   SDL_SetLogPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_TRACE);
 #endif
-
-  log_info("Logging initialized with priority %s for APPLICATION category.",
-    get_log_priority_name(SDL_GetLogPriority(SDL_LOG_CATEGORY_APPLICATION))
-      .c_str());
+  // log a message of our set priority
+  Log::log(SDL_GetLogPriority(SDL_LOG_CATEGORY_APPLICATION),
+    "Logging initialized with priority {} for APPLICATION category.",
+    Log::get_log_priority_name(SDL_GetLogPriority(SDL_LOG_CATEGORY_APPLICATION))
+  );
 }
 
 
@@ -158,6 +155,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
  */
 SDL_AppResult SDL_AppIterate(void *appstate)
 {
+  Log::info("========== SDL_AppIterate: Iterating new frame ==========");
   GetGame;
   return game->iterate();
 }
@@ -179,8 +177,13 @@ SDL_AppResult SDL_AppIterate(void *appstate)
  */
 void SDL_AppQuit(void *appstate, SDL_AppResult result)
 {
+  Log::info("========== SDL_AppQuit: Cleaning up with result {} ==========",
+            (result == SDL_APP_SUCCESS) ? "SDL_APP_SUCCESS (successful termination)" :
+            (result == SDL_APP_FAILURE) ? "SDL_APP_FAILURE (termination with error)" :
+            (result == SDL_APP_CONTINUE) ? "SDL_APP_CONTINUE (ERROR STATE?)" : "unknown result");
   // Deallocate game state
   GetGame;
   delete game;
+  Log::info("========== SDL_AppQuit: Goodbye! ==========");
 }
 
