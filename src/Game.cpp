@@ -21,24 +21,23 @@ using namespace bipsy::sdl3_utils; // Log, GAME_CLEAR_COLOR_DEFAULT
 // Factory Method
 SDL_AppResult Game::new_game(void *&appstate, InitRequest initializations)
 {
-  Log::increase_indent();
-  Log::trace("Entered Game::new_game factory method with initializations = {}", initializations);
+  LOG_FRAME_CLASS(Game);
+  Log::verbose("Requested initializations = {}", initializations);
 
-  // Construct a game object and get it's pointer address
+  Log::verbose("Constructing a Game instance without initializations first");
   Game *game = new Game(Game::InitRequest::NONE);
   // Assign the address to the appstate in-param
-  //*appstate = game;
   appstate = game;
+  Log::verbose("New Game instance bound to appstate pointer, now initializing Game with requested initializations...");
   // initialize game state up to the requested init phase, and return result
   SDL_AppResult result = game->init(initializations);
 
   // log and return
-  Log::trace("Game::new_game factory method completed {} returning {}",
-             (result == SDL_APP_CONTINUE) ? "successfully," :
-             (result == SDL_APP_SUCCESS) ? "with a \"successful\" termination request? weird..." :
-             (result == SDL_APP_FAILURE) ? "with failure," : "with unknown result!",
-             result);
-  Log::decrease_indent();
+  Log::verbose("Game::new_game factory method completed initializing Game {} returning {}",
+               (result == SDL_APP_CONTINUE) ? "successfully," :
+               (result == SDL_APP_SUCCESS) ? "with a \"successful\" termination request? weird..." :
+               (result == SDL_APP_FAILURE) ? "with failure," : "with unknown result!",
+               result);
   return result; // return result from initialization request
 }
 
@@ -58,19 +57,32 @@ Game::Game(InitRequest initializations)
   m_delta_time_ns{0},
   m_inits_complete{NONE}
 {
-  init(initializations);  // throws away return value `SDL_AppResult`
+  LOG_FRAME_CLASS(Game);
+  // only initialize if we requested something to initialize
+  if (initializations > InitRequest::NONE)
+  {
+    // throws away return value `SDL_AppResult`
+    init(initializations);
+  }
+  else
+  {
+    Log::verbose("No initializations requested, skipping initialization");
+  }
 }
 
 
 SDL_AppResult Game::init(InitRequest initializations)
 {
+  LOG_FRAME_CLASS(Game);
+  Log::verbose("Requested initializations = {}", initializations);
 
+  // ensure we have initializations to actually do
   assert(initializations <= Game::InitRequest::ALL);
 
   // Perform requested initializations in order
   while (m_inits_complete < initializations)
   {
-    Log::info(1, "Initialization step: {}", m_inits_complete + 1);
+    Log::verbose("Performing initialization step: {}", m_inits_complete + 1);
     // the `init_` functions will update `m_inits_complete` if successful,
     // or return an error result if failed, which will break the loop.
     switch(m_inits_complete)
@@ -82,7 +94,7 @@ SDL_AppResult Game::init(InitRequest initializations)
         Log::error("Error occured while initializing libraries, terminating...");
         return result;
       }
-      Log::info(1, "Libraries initialized successfully");
+      Log::verbose("Libraries initialized successfully");
       break;
     case LIBRARIES:
       // Initialization Stage 2: System objects (window, renderer, etc)
@@ -91,7 +103,7 @@ SDL_AppResult Game::init(InitRequest initializations)
         Log::error("Error occured while initializing system objects, terminating...");
         return result;
       }
-      Log::info(1, "System objects initialized successfully");
+      Log::verbose("System objects and global assets initialized successfully");
       break;
     case SYSTEM_OBJECTS:
       // Initialization Stage 3: Game state (initial screen, asset allocation)
@@ -100,7 +112,7 @@ SDL_AppResult Game::init(InitRequest initializations)
         Log::error("Error occured while initializing game state, terminating...");
         return result;
       }
-      Log::info(1, "Game state initialized successfully");
+      Log::verbose("Game state initialized successfully");
       break;
     case GAME_STATE:
       // error state, code should never reach here
@@ -110,49 +122,42 @@ SDL_AppResult Game::init(InitRequest initializations)
     }
   }
 
-  Log::info(1, "`Game` object constructed successfully!");
   return SDL_APP_CONTINUE;
 }
 
 
 SDL_AppResult Game::init_libraries()
 {
+  LOG_FRAME_CLASS(Game);
+
   // check initialization stage to avoid re-initialization
   if (m_inits_complete >= LIBRARIES)
   {
     Log::error("Libraries already initialized!");
     return SDL_APP_FAILURE;
   }
+  Log::verbose("Initializing system libraries...");
 
   // Initialize SDL and its subsystems
   if (not SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO))
   {
     return Log::error_init("SDL");
   }
-  else
-  {
-    Log::info(2, "SDL3 initialized successfully");
-  }
+  Log::verbose("SDL3 initialized successfully, initializing subsystems...");
 
   if (not TTF_Init())
   {
     return Log::error_init("SDL_ttf");
   }
-  else
-  {
-    Log::info(3, "SDL_ttf initialized successfully");
-  }
+  Log::verbose(Log::indent() + 1, "SDL_ttf initialized successfully");
 
   if (not MIX_Init())
   {
     return Log::error_init("SDL_mixer");
   }
-  else
-  {
-    Log::info(3, "SDL_mixer initialized successfully");
-  }
+  Log::verbose(Log::indent() + 1, "SDL_mixer initialized successfully");
 
-  Log::info(2, "All subsystems initialized successfully");
+  Log::verbose("All subsystems initialized successfully");
 
   // Initialization complete, update stage and return
   m_inits_complete = LIBRARIES;
@@ -162,6 +167,7 @@ SDL_AppResult Game::init_libraries()
 
 SDL_AppResult Game::init_system_objects()
 {
+  LOG_FRAME_CLASS(Game);
 
   // check initialization stage to avoid re-initialization
   if (m_inits_complete >= SYSTEM_OBJECTS)
@@ -169,6 +175,7 @@ SDL_AppResult Game::init_system_objects()
     Log::error("System objects already initialized!");
     return SDL_APP_FAILURE;
   }
+  Log::verbose("Initializing system objects and global assets...");
 
   // Create a window
   if (not (m_window = SDL_CreateWindow(
@@ -181,7 +188,7 @@ SDL_AppResult Game::init_system_objects()
   }
   else
   {
-    Log::info(2, "SDL_Window created successfully");
+    Log::verbose("SDL_Window created successfully");
   }
   // Center the window on the screen
   // This takes a second, so we wait to show the window
@@ -196,7 +203,7 @@ SDL_AppResult Game::init_system_objects()
   }
   else
   {
-    Log::info(2, "SDL_Renderer created successfully");
+    Log::verbose("SDL_Renderer created successfully");
   }
   // Enable adaptive vsync for the renderer
   SDL_SetRenderVSync(m_renderer, SDL_RENDERER_VSYNC_ADAPTIVE);
@@ -209,7 +216,7 @@ SDL_AppResult Game::init_system_objects()
   }
   else
   {
-    Log::info(2, "TTF_Font \"{}\" loaded successfully", font_name);
+    Log::verbose("TTF_Font \"{}\" loaded at size {} successfully", font_name, 24);
   }
 
   // Create a smaller TTF font from PixelCode.ttf in our ./assets/ directory
@@ -219,7 +226,7 @@ SDL_AppResult Game::init_system_objects()
   }
   else
   {
-    Log::info(2, "TTF_Font \"{}\" loaded successfully", font_name);
+    Log::verbose("TTF_Font \"{}\" loaded at size {} successfully", font_name, 14);
   }
 
   // Create larger TTF font
@@ -230,7 +237,7 @@ SDL_AppResult Game::init_system_objects()
   }
   else
   {
-    Log::info(2, "TTF_Font \"{}\" loaded successfully", font_name);
+    Log::verbose("TTF_Font \"{}\" loaded at size {} successfully", font_name, 48);
   }
 
   // Initialization complete, update stage and return
@@ -241,24 +248,32 @@ SDL_AppResult Game::init_system_objects()
 
 SDL_AppResult Game::init_game_state()
 {
+  LOG_FRAME_CLASS(Game);
+
   // check initialization stage to avoid re-initialization
   if (m_inits_complete >= GAME_STATE)
   {
     Log::error("Game state already initialized!");
     return SDL_APP_FAILURE;
   }
+  Log::verbose("Setting initial game state...");
 
   // Create a `ScreenTest` and add it to the list of screens
+  Log::verbose("For now, we're going to initialize at a new ScreenTest screen instance:");
   Screen *screen_test = new ScreenTest(this);
   if (SDL_AppResult result = screen_test->init())
   {
-    Log::error("Error occured while initializing `ScreenTest`, terminating...");
+    Log::critical("Error occured while initializing `ScreenTest`, terminating...");
     return result;
   }
+  // Now we can add it to our list of screens and update the window title
   m_screens.push_back(screen_test);
   SDL_SetWindowTitle(m_window, ("gaiasim - " + screen_test->name()).c_str());
   // `active_screen_index` is already 0, so `screen_test` is the active screen
+  //TODO use switch_screen() function? encapsulate the window title setting logic
+  Log::verbose("ScreenTest set as active screen within Game");
 
+  Log::verbose("Initial game state has been set successfully, have fun!");
   // Initialization complete, update stage and return
   m_inits_complete = GAME_STATE;
   return SDL_APP_CONTINUE;
@@ -268,17 +283,19 @@ SDL_AppResult Game::init_game_state()
 
 Game::~Game()
 {
-  Log::info("Deinitializing `Game` object...");
+  LOG_FRAME_CLASS(Game);
+
+  Log::verbose("Deinitializing `Game` object...");
 
   // Deinitialization Stage 3: Game state
   if (m_inits_complete >= GAME_STATE)
   {
-    Log::info(1, "Deinitializing game state...");
+    Log::info(Log::indent() + 1, "Deinitializing game state...");
     // ScreenTest needs to be deallocated
     // Deallocate all screens we have active
     for (Screen *screen : m_screens)
     {
-      Log::info(2, "Deallocating screen \"{}\"...", screen->name());
+      Log::info(Log::indent() + 2, "Deallocating screen \"{}\"...", screen->name());
       delete screen;
     }
     // clear out the pointer vector
@@ -288,7 +305,7 @@ Game::~Game()
   // Deinitialization Stage 2: System objects
   if (m_inits_complete >= SYSTEM_OBJECTS)
   {
-    Log::info(1, "Deinitializing system objects...");
+    Log::info(Log::indent() + 1, "Deinitializing system objects...");
     if (m_renderer)
     {
       SDL_DestroyRenderer(m_renderer);
@@ -319,7 +336,7 @@ Game::~Game()
   // Deinitialization Stage 1: Libraries
   if (m_inits_complete >= LIBRARIES)
   {
-    Log::info(1, "Deinitializing libraries...");
+    Log::info(Log::indent() + 1, "Deinitializing libraries...");
     MIX_Quit();
     TTF_Quit();
     SDL_Quit();
@@ -335,6 +352,7 @@ SDL_AppResult Game::event(SDL_Event *event)
   // catch the QUIT event (game requesting successful termination)
   if (event->type == SDL_EVENT_QUIT)
   {
+    LOG_FRAME_CLASS(Game);
     Log::info("Quit event received, terminating...");
     return SDL_APP_SUCCESS;
   }
@@ -368,6 +386,8 @@ SDL_AppResult Game::iterate()
 
 SDL_AppResult Game::update()
 {
+  LOG_FRAME_CLASS(Game);
+  
   // update delta time
   // uses previous time_ns before we update in next line
   m_delta_time_ns = SDL_GetTicksNS() - m_time_ns;
@@ -410,6 +430,8 @@ SDL_AppResult Game::update()
 
 SDL_AppResult Game::render()
 {
+  LOG_FRAME_CLASS(Game);
+  
   // Clear the screen with a solid color
   SDL_SetRenderDrawColor(m_renderer,
       m_clear_color.r, m_clear_color.g, m_clear_color.b, m_clear_color.a);
@@ -428,6 +450,7 @@ SDL_AppResult Game::render()
 
 SDL_AppResult Game::post_render_update()
 {
+  LOG_FRAME_CLASS(Game);
 
   auto result = active_screen()->post_render_update();
 
