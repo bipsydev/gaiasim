@@ -249,6 +249,9 @@ public:
 
 } // namespace bipsy::gaiasim
 
+//TODO: make a macro for this that takes the object and output types.
+// since this is copy-pasted for InitRequest and SDL_AppResult as well
+// format BlockID -> Uint64 output
 template <>
 struct std::formatter<bipsy::gaiasim::BlockID, char>
     : std::formatter<Uint64, char>
