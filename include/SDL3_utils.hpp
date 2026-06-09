@@ -20,7 +20,6 @@ namespace bipsy::sdl3_utils
  */
 constexpr SDL_Color GAME_CLEAR_COLOR_DEFAULT = {0, 128, 255, 255};
 
-
 /**
  * @brief Returns the full path to an asset file, given its name.
  * 
@@ -51,7 +50,6 @@ inline constexpr std::string asset_dir(std::string asset_name)
  */
 class Log
 {
-
   /**
    * @brief Global flag to enable or disable info logging.
    * 
@@ -66,6 +64,91 @@ class Log
   size_t m_indent;
 
 public:
+
+/***************************
+ * INNER CLASS DECLARATION *
+ ***************************/
+
+/**
+ * @brief Increases indentation when constructed and decreases when destructed.
+ *
+ * Used to manage the indentation level for a block of messages.
+ * The constructor increases the indentation level and the destructor
+ * decreases the indentation level.
+ * This allows us to use RAII to automatically an indentation within
+ * a function call stack frame.
+ *
+ */
+class LogFrame
+{
+  // the function name for this frame
+  std::string_view m_fn_name;
+  // optional class name for this frame
+  std::string_view m_class_name;
+  // save the amount we indent/dedent by
+  size_t m_ind_amt;
+public:
+  /**
+   * @brief Increase indentation by a given amount, or 1 by default.
+   */
+  explicit LogFrame(std::string_view fn_name,
+                    std::string_view class_name = "",
+                    size_t indent_amount = 1)
+  : m_fn_name{fn_name},
+    m_class_name{class_name},
+    m_ind_amt{indent_amount}
+  {
+    // this is formatted with a tab size of 2 in mind, can change later
+    static_assert(bipsy::tab_impl::tab_size == 2);
+
+    // print class name if given, or just function name
+    if (m_class_name.length() > 0)
+      Log::trace("+ Entered {}::{}", m_class_name, m_fn_name);
+    else
+      Log::trace("+ Entered {}", m_fn_name);
+
+    // increase indentation level after printing to show + deeper in line
+    Log::increase_indent(m_ind_amt);
+  }
+
+  /**
+   * @brief Decrease indentation by the same amount we incraeased by.
+   */
+  ~LogFrame()
+  {
+    // decrease indentation level first to show - deeper in line
+    Log::decrease_indent(m_ind_amt);
+
+    // print class name if given, or just function name
+    if (m_class_name.length() > 0)
+      Log::trace("- Exiting {}::{}", m_class_name, m_fn_name);
+    else
+      Log::trace("- Exiting {}", m_fn_name);
+  }
+
+  // Prevent copying
+  LogFrame(const LogFrame&) = delete;
+  LogFrame& operator=(const LogFrame&) = delete;
+
+}; // class LogFrame
+
+
+// helper macros for concatenation of line number
+#define BIPSY_LOG_FRAME_CONCAT_IMPL(a, b) a##b
+#define BIPSY_LOG_FRAME_CONCAT(a, b) BIPSY_LOG_FRAME_CONCAT_IMPL(a, b)
+// Another convenience macro to create a log frame for a class member method
+#define LOG_FRAME_CLASS(Class) \
+  ::bipsy::sdl3_utils::Log::LogFrame BIPSY_LOG_FRAME_CONCAT(_log_frame_, __LINE__)(__func__, #Class)
+// Convenience macro to create a log frame for a function
+// uses ##__LINE__ to append line number to the variable name,
+// and __func__ to feed in the function name as a string.
+#define LOG_FRAME() LOG_FRAME_CLASS()
+
+
+  /***********************
+   * METHOD DECLARATIONS *
+   ***********************/
+
   static Log& instance()
   {
     // Guaranteed to be instantiated only once on first use
