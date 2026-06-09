@@ -427,4 +427,18 @@ private:
 } // namespace bipsy::sdl3_utils
 
 
+
+template <>
+struct std::formatter<SDL_AppResult, char>
+    : std::formatter<int, char>
+{
+  auto format(SDL_AppResult result,
+              std::format_context& ctx) const
+  {
+    return std::formatter<int, char>::format(
+      static_cast<int>(result), ctx);
+  }
+};
+
+
 #endif // BIPSY_SDL3_UTILS_HPP

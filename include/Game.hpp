@@ -241,4 +241,20 @@ public:
 
 } // namespace bipsy::gaiasim
 
+
+
+template <>
+struct std::formatter<bipsy::gaiasim::Game::InitRequest, char>
+    : std::formatter<Uint8, char>
+{
+  auto format(bipsy::gaiasim::Game::InitRequest init_request,
+              std::format_context& ctx) const
+  {
+    return std::formatter<Uint8, char>::format(
+      static_cast<Uint8>(init_request), ctx);
+  }
+};
+
+
+
 #endif // BIPSY_GAIASIM_GAME_HPP

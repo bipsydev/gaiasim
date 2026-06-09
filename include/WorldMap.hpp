@@ -251,13 +251,13 @@ public:
 
 template <>
 struct std::formatter<bipsy::gaiasim::BlockID, char>
-    : std::formatter<::Uint64, char>
+    : std::formatter<Uint64, char>
 {
   auto format(bipsy::gaiasim::BlockID block_id,
               std::format_context& ctx) const
   {
-    return std::formatter<::Uint64, char>::format(
-      static_cast<::Uint64>(block_id), ctx);
+    return std::formatter<Uint64, char>::format(
+      static_cast<Uint64>(block_id), ctx);
   }
 };
 
