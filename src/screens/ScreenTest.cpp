@@ -16,9 +16,12 @@ using bipsy::sdl3_utils::Log;
 
 SDL_AppResult ScreenTest::init()
 {
+  LOG_FRAME_CLASS(ScreenTest);
+
   // --- Initialize vertex data ---
+  Log::verbose("Initializing vertex data for polygons:");
   // Polygon 1
-  Log::info(2, "Initializing vertex data for polygon1...");
+  Log::verbose(Log::indent() + 1, "Initializing vertex data for polygon1...");
   // Triangle 1
   polygon1[0].position   = {100, 100};         // top-left vertex
   polygon1[0].color      = {1.0, 0, 0, 1.0};   // red
@@ -35,7 +38,7 @@ SDL_AppResult ScreenTest::init()
   polygon1[5].color      = {0, 0, 1.0, 1.0};   // blue (same as vertex 2)
 
   // Polygon 2
-  Log::info(2, "Initializing vertex data for polygon2...");
+  Log::verbose(Log::indent() + 1, "Success! Initializing vertex data for polygon2...");
   // Triangle 1
   polygon2[0].position   = {400, 100};         // top-left vertex
   polygon2[0].color      = {1.0, 0, 0, 1.0};   // red
@@ -54,7 +57,7 @@ SDL_AppResult ScreenTest::init()
 
 
   // Gradient rectangle (4 triangles, 3 vertices each)
-  Log::info(2, "Initializing vertex data for gradient_rect...");
+  Log::verbose(Log::indent() + 1, "Success! Initializing vertex data for gradient_rect...");
   // Triangle 1 (left side)
   gradient_rect[0]  = {{100, 100}, {1.0f,0.0f,1.0f,1.0f}, {0.0f,0.0f}}; // top-left vertex (magenta)
   gradient_rect[1]  = {{100, 300}, {1.0f,0.0f,0.0f,1.0f}, {0.0f,1.0f}}; // bottom-left vertex (red)
@@ -72,7 +75,7 @@ SDL_AppResult ScreenTest::init()
   gradient_rect[10] = {{300, 300}, {0.0f,1.0f,0.0f,1.0f}, {1.0f,1.0f}}; // bottom-right vertex (green)
   gradient_rect[11] = {{200, 200}, {0.5f,0.5f,0.5f,1.0f}, {0.5f,0.5f}}; // center vertex (gray)
 
-  Log::info(2, "Moving gradient_rect down 300 px...");
+  Log::verbose(Log::indent() + 1, "Moving gradient_rect down 300 px...");
   // Move gradient_rect down 300 px
   for (int i = 0; i < GRADIENT_RECT_VERTEX_COUNT; i++)
   {
@@ -81,7 +84,7 @@ SDL_AppResult ScreenTest::init()
 
 
   // Rainbow triangle vertex data
-  Log::info(2, "Initializing vertex data for rainbow_triangle...");
+  Log::verbose(Log::indent() + 1, "Success! Initializing vertex data for rainbow_triangle...");
   // Top left vertex
   rainbow_triangle[0] = {{700, 400}, {1.0f,0.0f,0.0f,1.0f}, {0.0f,0.0f}};
   // Top right vertex
@@ -90,8 +93,9 @@ SDL_AppResult ScreenTest::init()
   rainbow_triangle[2] = {{900, 800}, {0.0f,0.0f,1.0f,1.0f}, {0.5f,1.0f}};
 
 
-  Log::info(2, "Vertex data initialized successfully");
+  Log::verbose("Vertex data initialized successfully!");
 
+  Log::verbose("Initializing texture for on-screen rendered text from font:");
   if(auto result = init_text_texture())
   {
     Log::error("Error occured while initializing text texture, terminating...");
@@ -104,8 +108,8 @@ SDL_AppResult ScreenTest::init()
 
 SDL_AppResult ScreenTest::init_text_texture()
 {
-  // TODO put std::format inside the logging function and remove this outer call
-  Log::info(2, "{} texture for rendered text...",
+  LOG_FRAME_CLASS(ScreenTest);
+  Log::verbose("{} texture for rendered text...",
     (text_texture == nullptr? "Initializing" : "Updating"));
   
   // Update text string first
@@ -123,12 +127,12 @@ SDL_AppResult ScreenTest::init_text_texture()
   // Check if texture update is necessary (new text generated this frame)
   if (m_text_str != new_text_str)
   {
-    Log::info(3, "Text content updated, regenerating text texture");
+    Log::verbose("Text content updated, regenerating text texture...");
     m_text_str = new_text_str;
   }
   else
   {
-    Log::info(3, "Text content unchanged, skipping texture update");
+    Log::verbose("Text content unchanged, skipping unnecessary texture update");
     return SDL_APP_CONTINUE; // No need to update texture if text hasn't changed
   }
 
@@ -143,13 +147,17 @@ SDL_AppResult ScreenTest::init_text_texture()
   {
     return Log::error_init("text_surface");
   }
+  else
+  {
+    Log::verbose(Log::indent() + 1, "Rendered text surface successfully");
+  }
 
   // If previous texture exists, destroy it to free up GPU memory
   if (text_texture != nullptr)
   {
     SDL_DestroyTexture(text_texture);
     text_texture = nullptr;
-    Log::info(3, "Destroyed previous text texture");
+    Log::verbose(Log::indent() + 1, "Destroyed previous text texture");
   }
 
   // Create a texture from the surface
@@ -162,7 +170,7 @@ SDL_AppResult ScreenTest::init_text_texture()
   }
   else
   {
-    Log::info(3, "Created text texture successfully");
+    Log::verbose(Log::indent() + 1, "Created text texture from surface successfully");
   }
 
   // Successfully created text texture
@@ -171,27 +179,30 @@ SDL_AppResult ScreenTest::init_text_texture()
 
 ScreenTest::~ScreenTest()
 {
+  LOG_FRAME_CLASS(ScreenTest);
+
   // Clean up text texture
   if (text_texture != nullptr)
   {
     SDL_DestroyTexture(text_texture);
     text_texture = nullptr;
-    Log::info("Destroyed text texture");
+    Log::verbose("Destroyed text texture");
   }
   else
   {
-    Log::info("text_texture was not initialized, no need to destroy");
+    Log::warn("text_texture was not initialized, no need to destroy");
   }
 }
 
 SDL_AppResult ScreenTest::event(SDL_Event *event)
 {
-
   // React to 'N' key press to switch to main screen
   if (event->type == SDL_EVENT_KEY_DOWN)
   {
+    LOG_FRAME_CLASS(ScreenTest);
+
     //TODO remove outer format call
-    Log::info("'{}' key pressed ('{}')",
+    Log::verbose("'{}' key pressed ('{}')",
       SDL_GetKeyName(event->key.key),
       SDL_GetScancodeName(event->key.scancode));
     if (event->key.key == SDLK_N)
@@ -210,10 +221,13 @@ SDL_AppResult ScreenTest::event(SDL_Event *event)
   }
   else if (not SDL_HasKeyboard() && event->type == SDL_EVENT_FINGER_DOWN)
   {
+    LOG_FRAME_CLASS(ScreenTest);
+
     //TODO remove outer call
-    Log::info("Touch event #{} pressed at ({:.4f}, {:.4f}) with pressure {:.4f} and type {}",
+    Log::verbose("Touch event #{} pressed at ({:.4f}, {:.4f}) with pressure {:.4f} and type {}",
       event->tfinger.fingerID, event->tfinger.x, event->tfinger.y,
       event->tfinger.pressure, static_cast<int>(event->tfinger.type));
+    Log::info("Touch even recieved, switching to main screen...");
     return switch_to_main_screen();
   }
   return SDL_APP_CONTINUE;
@@ -221,10 +235,12 @@ SDL_AppResult ScreenTest::event(SDL_Event *event)
 
 SDL_AppResult ScreenTest::update()
 {
+  LOG_FRAME_CLASS(ScreenTest);
+
   // Update text_texture with new info
   if (auto result = init_text_texture())
   {
-    Log::error("Error occured while updating text texture, terminating...");
+    Log::critical("Error occured while updating text texture, terminating...");
     return result;
   }
 
@@ -240,6 +256,7 @@ SDL_AppResult ScreenTest::update()
   rainbow_triangle[1].color = RAND_COLOR();
   rainbow_triangle[2].color = RAND_COLOR();
 #undef RAND_COLOR
+  Log::verbose("Updated rainbow_triangle vertex colors to random values");
 
 
   return SDL_APP_CONTINUE;
@@ -247,44 +264,49 @@ SDL_AppResult ScreenTest::update()
 
 SDL_AppResult ScreenTest::render(SDL_Renderer *renderer)
 {
-  // draw gradient rectangle
+  LOG_FRAME_CLASS(ScreenTest);
+
+  // render polygon1
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   if (not SDL_RenderGeometry(renderer, NULL,
-    polygon1 ,VERTEX_COUNT,
-  NULL, 0)
+    polygon1 ,VERTEX_COUNT, NULL, 0)
   )
   {
-    SDL_Log("num_verticies: VERTEX_COUNT = %d", VERTEX_COUNT);
-    SDL_LogError(SDL_LOG_CATEGORY_ERROR,
-      "Failed to render geometry polygon1: %s", SDL_GetError());
-    return SDL_APP_FAILURE; // Return failure result if rendering failed
+    return Log::critical(
+      "Failed to render geometry polygon1 with {} verticies: {}",
+      6, SDL_GetError());
   }
+  Log::verbose("Polygon1 rendered");
 
+  // render polygon2
   if (not SDL_RenderGeometry(renderer, NULL,
     polygon2 ,VERTEX_COUNT, NULL, 0))
   {
-    SDL_Log("num_verticies: VERTEX_COUNT = %d", VERTEX_COUNT);
-    SDL_LogError(SDL_LOG_CATEGORY_ERROR,
-      "Failed to render geometry polygon2: %s", SDL_GetError());
-    return SDL_APP_FAILURE; // Return failure result if rendering failed
+    return Log::critical(
+      "Failed to render geometry polygon2 with {} verticies: {}",
+      6, SDL_GetError());
   }
+  Log::verbose("Polygon2 rendered");
 
+  // render gradient_rect
   if (not SDL_RenderGeometry(renderer, NULL,
     gradient_rect ,GRADIENT_RECT_VERTEX_COUNT, NULL, 0))
   {
-    SDL_Log("num_verticies: GRADIENT_RECT_VERTEX_COUNT = %d", GRADIENT_RECT_VERTEX_COUNT);
-    SDL_LogError(SDL_LOG_CATEGORY_ERROR,
-      "Failed to render geometry gradient_rect: %s", SDL_GetError());
-    return SDL_APP_FAILURE; // Return failure result if rendering failed
+    return Log::critical(
+      "Failed to render geometry gradient_rect with {} verticies: {}",
+      12, SDL_GetError());
   }
+  Log::verbose("gradient_rect rendered");
 
+  // render rainbow_triangle
   if (not SDL_RenderGeometry(renderer, NULL,
     rainbow_triangle ,3, NULL, 0))
   {
-    SDL_LogError(SDL_LOG_CATEGORY_ERROR,
-      "Failed to render geometry rainbow_triangle: %s", SDL_GetError());
-    return SDL_APP_FAILURE; // Return failure result if rendering failed
+    return Log::critical(
+      "Failed to render geometry rainbow_triangle with {} verticies: {}",
+      3, SDL_GetError());
   }
+  Log::verbose("rainbow_triangle rendered");
 
   // Lastly, render the text texture
   if (text_texture != nullptr)
@@ -300,7 +322,12 @@ SDL_AppResult ScreenTest::render(SDL_Renderer *renderer)
 #endif
     SDL_FRect text_rect = {x, y, 0.0f, 0.0f}; // We only set the x and y position here. The width and height will be determined by the texture
     SDL_GetTextureSize(text_texture, &text_rect.w, &text_rect.h); // Get the width and height of the texture
-    SDL_RenderTexture(renderer, text_texture, NULL, &text_rect); // Render the texture to the screen at the specified position
+    if (not SDL_RenderTexture(renderer, text_texture, NULL, &text_rect)) // Render the texture to the screen at the specified position
+    {
+      return Log::critical("Failed to render text texture: {}", SDL_GetError());
+    }
+    Log::verbose("Text texture rendered at position ({}, {}) with size ({}, {})",
+      text_rect.x, text_rect.y, text_rect.w, text_rect.h);
   }
 
   return SDL_APP_CONTINUE;
