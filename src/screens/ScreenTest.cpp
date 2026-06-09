@@ -98,7 +98,7 @@ SDL_AppResult ScreenTest::init()
   Log::verbose("Initializing texture for on-screen rendered text from font:");
   if(auto result = init_text_texture())
   {
-    Log::error("Error occured while initializing text texture, terminating...");
+    Log::error("Error occurred while initializing text texture, terminating...");
     return result;
   }
 
@@ -227,7 +227,7 @@ SDL_AppResult ScreenTest::event(SDL_Event *event)
     Log::verbose("Touch event #{} pressed at ({:.4f}, {:.4f}) with pressure {:.4f} and type {}",
       event->tfinger.fingerID, event->tfinger.x, event->tfinger.y,
       event->tfinger.pressure, static_cast<int>(event->tfinger.type));
-    Log::info("Touch even recieved, switching to main screen...");
+    Log::info("Touch event recieved, switching to main screen...");
     return switch_to_main_screen();
   }
   return SDL_APP_CONTINUE;
@@ -240,7 +240,7 @@ SDL_AppResult ScreenTest::update()
   // Update text_texture with new info
   if (auto result = init_text_texture())
   {
-    Log::critical("Error occured while updating text texture, terminating...");
+    Log::critical("Error occurred while updating text texture, terminating...");
     return result;
   }
 
@@ -273,7 +273,7 @@ SDL_AppResult ScreenTest::render(SDL_Renderer *renderer)
   )
   {
     return Log::critical(
-      "Failed to render geometry polygon1 with {} verticies: {}",
+      "Failed to render geometry polygon1 with {} vertices: {}",
       6, SDL_GetError());
   }
   Log::verbose("Polygon1 rendered");
@@ -283,7 +283,7 @@ SDL_AppResult ScreenTest::render(SDL_Renderer *renderer)
     polygon2 ,VERTEX_COUNT, NULL, 0))
   {
     return Log::critical(
-      "Failed to render geometry polygon2 with {} verticies: {}",
+      "Failed to render geometry polygon2 with {} vertices: {}",
       6, SDL_GetError());
   }
   Log::verbose("Polygon2 rendered");
@@ -293,7 +293,7 @@ SDL_AppResult ScreenTest::render(SDL_Renderer *renderer)
     gradient_rect ,GRADIENT_RECT_VERTEX_COUNT, NULL, 0))
   {
     return Log::critical(
-      "Failed to render geometry gradient_rect with {} verticies: {}",
+      "Failed to render geometry gradient_rect with {} vertices: {}",
       12, SDL_GetError());
   }
   Log::verbose("gradient_rect rendered");
@@ -303,7 +303,7 @@ SDL_AppResult ScreenTest::render(SDL_Renderer *renderer)
     rainbow_triangle ,3, NULL, 0))
   {
     return Log::critical(
-      "Failed to render geometry rainbow_triangle with {} verticies: {}",
+      "Failed to render geometry rainbow_triangle with {} vertices: {}",
       3, SDL_GetError());
   }
   Log::verbose("rainbow_triangle rendered");
