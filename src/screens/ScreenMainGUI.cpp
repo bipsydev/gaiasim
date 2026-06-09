@@ -46,15 +46,14 @@ ScreenMainGUI::~ScreenMainGUI()
 
 SDL_AppResult ScreenMainGUI::update_layout(Game *game)
 {
-  Log::trace("ScreenMainGUI::update_layout called.");
+  LOG_FRAME_CLASS(ScreenMainGUI);
 
   int window_width, window_height;
   if (not SDL_GetCurrentRenderOutputSize(
     game->renderer(), &window_width, &window_height))
   {
     // Handle error
-    return Log::error("Failed to get current render output size: {}",
-      SDL_GetError());
+    return Log::error("Failed to get current render output size: {}", SDL_GetError());
   }
   
   bool changed = false;
@@ -65,7 +64,7 @@ SDL_AppResult ScreenMainGUI::update_layout(Game *game)
   m_window_width = window_width;
   m_window_height = window_height;
 
-  Log::debug(1, "Updated layout with window size {}x{}", m_window_width, m_window_height);
+  Log::verbose(Log::indent() + 1, "Updated layout with window size {}x{}", m_window_width, m_window_height);
   
   // regenerate textures based on window size change
   if (changed)
@@ -78,6 +77,8 @@ SDL_AppResult ScreenMainGUI::update_layout(Game *game)
 
 SDL_AppResult ScreenMainGUI::render(SDL_Renderer *renderer, GameWorld *world)
 {
+  LOG_FRAME_CLASS(ScreenMainGUI);
+
   SDL_AppResult result;
 
   if (result = render_panel(renderer, m_left_sidebar))
@@ -105,6 +106,8 @@ SDL_AppResult ScreenMainGUI::event(Game *game, SDL_Event *event)
 
 SDL_AppResult ScreenMainGUI::generate_textures(Game *game)
 {
+  LOG_FRAME_CLASS(ScreenMainGUI);
+
   Log::debug("Generating title textures for panels...");
 
   // free anything already allocated
@@ -139,6 +142,8 @@ SDL_AppResult ScreenMainGUI::generate_textures(Game *game)
 
 SDL_AppResult ScreenMainGUI::create_panel_title_texture(Game *game, Panel &panel)
 {
+  LOG_FRAME_CLASS(ScreenMainGUI);
+
   TTF_Font *panel_font = panel.m_use_small_font ?
       game->font_small() :
 #ifndef __ANDROID__
@@ -188,6 +193,8 @@ SDL_AppResult ScreenMainGUI::create_panel_title_texture(Game *game, Panel &panel
 
 SDL_AppResult ScreenMainGUI::render_panel(SDL_Renderer *renderer, Panel &panel, GameWorld *world)
 {
+  LOG_FRAME_CLASS(ScreenMainGUI);
+
   // Set draw color to panel color and render filled rect
   if (not SDL_SetRenderDrawColor(renderer,
       panel.m_color.r, panel.m_color.g, panel.m_color.b, panel.m_color.a))

@@ -92,6 +92,7 @@ SDL_AppResult GameWorld::event(SDL_Event *event)
 
     if (moved)
     {
+      LOG_FRAME_CLASS(GameWorld);
       Log::info("Player moved to ({}, {})", new_x, new_y);
       player_x_old = player_x;
       player_y_old = player_y;
@@ -112,6 +113,8 @@ SDL_AppResult GameWorld::update()
 
 SDL_AppResult GameWorld::render(SDL_Renderer *renderer, SDL_FRect *bounds)
 {
+  LOG_FRAME_CLASS(GameWorld);
+
   if (moved)
   {
     //TODO this assumes that the player character always exists and is unique,
@@ -131,11 +134,17 @@ SDL_AppResult GameWorld::render(SDL_Renderer *renderer, SDL_FRect *bounds)
 
     // reset flag
     moved = false;
+
+    Log::verbose("Updated player position in map string");
+  }
+  else
+  {
+    Log::verbose("Player did not move, map string was not updated");
   }
 
   // ensure bounds isn't null
   if (bounds == nullptr)
-    return Log::error("Bounds cannot be null in GameWorld::render");
+    return Log::critical("Bounds cannot be null in GameWorld::render");
 
   // Attempt to render map_texture if we have one
   if (map_texture != nullptr)
@@ -157,6 +166,15 @@ SDL_AppResult GameWorld::render(SDL_Renderer *renderer, SDL_FRect *bounds)
     {
       return Log::error("Failed to render map texture: {}", SDL_GetError());
     }
+    else
+    {
+      Log::verbose("Map texture rendered at position ({}, {}) with size ({}, {})",
+        map_rect.x, map_rect.y, map_rect.w, map_rect.h);
+    }
+  }
+  else
+  {
+    return Log::error("map_texture is null, cannot render map!");
   }
 
   return SDL_APP_CONTINUE;
@@ -164,7 +182,9 @@ SDL_AppResult GameWorld::render(SDL_Renderer *renderer, SDL_FRect *bounds)
 
 SDL_AppResult GameWorld::generate_map_texture()
 {
-  // Generate surface from text
+  LOG_FRAME_CLASS(GameWorld);
+  
+  // Generate surface from ASCII map in string
   SDL_Surface *map_surface = TTF_RenderText_Blended_Wrapped(m_game->font(), map.c_str(), 0, {255, 255, 255, 255}, 0);
   if(map_surface == nullptr)
   {
@@ -175,6 +195,7 @@ SDL_AppResult GameWorld::generate_map_texture()
   {
     SDL_DestroyTexture(map_texture);
     map_texture = nullptr;
+    Log::debug("Destroyed existing map texture to create new one");
   }
   // allocate the texture
   map_texture = SDL_CreateTextureFromSurface(m_game->renderer(), map_surface);
@@ -183,28 +204,30 @@ SDL_AppResult GameWorld::generate_map_texture()
   {
     return Log::error_init("map_texture");
   }
+  Log::verbose("Map texture successfully generated from ASCII map");
 
   return SDL_APP_CONTINUE;
 }
 
 SDL_AppResult GameWorld::generate_world_map()
 {
-  Log::info("generate_world_map() called, running test_world_map_operations()...");
   //TODO replace with actual WorldMap generation
   return SDL_APP_CONTINUE; // skip for now
 }
 
 SDL_AppResult GameWorld::test_world_map_operations()
 {
+  LOG_FRAME_CLASS(GameWorld);
+
   auto chunk = world_map.create_chunk(0, 0, 0);
   if (chunk == entt::null)
   {
     return Log::error("Failed to create initial chunk at {{0, 0, 0}}");
   }
-  Log::info("Created initial chunk at {{0, 0, 0}}");
-  Log::info(1, "Chunk entity ID: {}", static_cast<entt::id_type>(chunk));
+  Log::debug("Created initial chunk at {{0, 0, 0}}");
+  Log::debug(Log::indent() + 1, "Chunk entity ID: {}", static_cast<entt::id_type>(chunk));
   auto& chunk_pos = world_map.get_component<ChunkPos>(chunk);
-  Log::info(2, "Chunk position component: {{{}, {}, {}}}",
+  Log::debug(Log::indent() + 2, "Chunk position component: {{{}, {}, {}}}",
     chunk_pos.x, chunk_pos.y, chunk_pos.z);
 
   auto chunk_negative = world_map.create_chunk(-4, -4, -4);
@@ -212,10 +235,10 @@ SDL_AppResult GameWorld::test_world_map_operations()
   {
     return Log::error("Failed to create chunk at {{-4, -4, -4}}");
   }
-  Log::info("Created chunk at {{-4, -4, -4}}");
-  Log::info(1, "Chunk entity ID: {}", static_cast<entt::id_type>(chunk_negative));
+  Log::debug("Created chunk at {{-4, -4, -4}}");
+  Log::debug(Log::indent() + 1, "Chunk entity ID: {}", static_cast<entt::id_type>(chunk_negative));
   auto& chunk_negative_pos = world_map.get_component<ChunkPos>(chunk_negative);
-  Log::info(2, "Chunk position component: {{{}, {}, {}}}",
+  Log::debug(Log::indent() + 2, "Chunk position component: {{{}, {}, {}}}",
     chunk_negative_pos.x, chunk_negative_pos.y, chunk_negative_pos.z);
 
   // global coords, so should be in chunk (-4, -4, -4)
@@ -224,23 +247,23 @@ SDL_AppResult GameWorld::test_world_map_operations()
   Sint64 y = (ChunkData::SIZE * -3) - 10;
   Sint64 z = (ChunkData::SIZE * -3) - 15;
   BlockID block = world_map.get_block(x, y, z);
-  Log::info(1, "get_block({}, {}, {}) = {}", x, y, z, block);
+  Log::debug(Log::indent() + 1, "get_block({}, {}, {}) = {}", x, y, z, block);
 
   // ---------------------- let's test all operations!!! -----------------------
 
   // ------ create_chunk ------
   auto chunk_test1 = world_map.create_chunk(1, 2, 3);
-  Log::info("Attempted to create chunk at {{1, 2, 3}}: {}",
+  Log::debug("Attempted to create chunk at {{1, 2, 3}}: {}",
     chunk_test1 == entt::null ? "Failed!" : "Succeeded");
   // Check failure case: creating a chunk that already exists
   auto chunk_test2 = world_map.create_chunk(1, 2, 3);
   // should return a null entity here, let's confirm:
-  Log::info(1, "Attempted to create duplicate chunk at {{1, 2, 3}}: {}",
+  Log::debug(Log::indent() + 1, "Attempted to create duplicate chunk at {{1, 2, 3}}: {}",
     chunk_test2 == entt::null ? "got null entity as expected"
                               : "UNEXPECTED: got a valid entity!");
   // Let's make one more:
   auto chunk_test3 = world_map.create_chunk(-1, -2, -3);
-  Log::info(1, "Attempted to create chunk at {{-1, -2, -3}}: {}",
+  Log::debug(Log::indent() + 1, "Attempted to create chunk at {{-1, -2, -3}}: {}",
     (chunk_test3 == entt::null ? "Failed!" : "Succeeded"));
   // We should have a chunk at {1, 2, 3}, origin at (16, 32, 48) in global coords
   // (origin is bottom-left-near corner)
@@ -249,49 +272,49 @@ SDL_AppResult GameWorld::test_world_map_operations()
 
   // ------ get_chunk ------
   auto chunk_entity = world_map.get_chunk(1, 2, 3);
-  Log::info(1, "Retrieved chunk: {}",
+  Log::debug(Log::indent() + 1, "Retrieved chunk: {}",
     chunk_entity == entt::null ? "Failed!" : "Succeeded");
 
   // ------ delete_chunk ------
   bool delete_result = world_map.delete_chunk(-1, -2, -3);
-  Log::info(1, "Deleted chunk at {{-1, -2, -3}}: {}", delete_result ? "success" : "failure");
+  Log::debug(Log::indent() + 1, "Deleted chunk at {{-1, -2, -3}}: {}", delete_result ? "success" : "failure");
   // confirm deletion by trying to get the chunk again
   auto deleted_chunk_entity = world_map.get_chunk(-1, -2, -3);
-  Log::info(1, "Attempted to get deleted chunk at {{-1, -2, -3}}: {}",
+  Log::debug(Log::indent() + 1, "Attempted to get deleted chunk at {{-1, -2, -3}}: {}",
     deleted_chunk_entity == entt::null ? "got null entity as expected"
                                        : "UNEXPECTED: got a valid entity!");
 
   // ------ get_block ------
   // Chunk-local coordinates
   auto block1 = world_map.get_block(ChunkPos{1, 2, 3}, LocalPos{0, 0, 0});
-  Log::info(1, "Got block1: {}", block1);
+  Log::debug(Log::indent() + 1, "Got block1: {}", block1);
   auto block2 = world_map.get_block(ChunkPos{1, 2, 3}, 15, 15, 15);
-  Log::info(1, "Got block2: {}", block2);
+  Log::debug(Log::indent() + 1, "Got block2: {}", block2);
   // Global coordinates
   auto block3 = world_map.get_block(GlobalPos{16, 32, 48}); // should be same as block1
-  Log::info(1, "Got block3: {}", block3);
+  Log::debug(Log::indent() + 1, "Got block3: {}", block3);
   auto block4 = world_map.get_block(31, 47, 63); // should be same as block2
-  Log::info(1, "Got block4: {}", block4);
+  Log::debug(Log::indent() + 1, "Got block4: {}", block4);
 
 
   // ------ set_block ------
   // Chunk-local coordinates
   auto block5 = world_map.set_block(ChunkPos{1, 2, 3}, LocalPos{0, 0, 0}, GROUND);
-  Log::info(1, "Set block5 to GROUND: {}", block5);
+  Log::debug(Log::indent() + 1, "Set block5 to GROUND: {}", block5);
   auto block6 = world_map.set_block(ChunkPos{1, 2, 3}, 15, 15, 15, BlockID{2});
-  Log::info(1, "Set block6 to 2: {}", block6);
+  Log::debug(Log::indent() + 1, "Set block6 to 2: {}", block6);
   // Global coordinates
   auto block7 = world_map.set_block(GlobalPos{16, 32, 48}, BlockID{3});
-  Log::info(1, "Set block7 to 3: {}", block7);
+  Log::debug(Log::indent() + 1, "Set block7 to 3: {}", block7);
   auto block8 = world_map.set_block(31, 47, 63, BlockID{4});
-  Log::info(1, "Set block8 to 4: {}", block8);
+  Log::debug(Log::indent() + 1, "Set block8 to 4: {}", block8);
   // after all this, GlobalPos(16, 32, 48) should be block ID 3
   // and GlobalPos(31, 47, 63) should be block ID 4
   // let's confirm:
   auto block9 = world_map.get_block(16, 32, 48);
-  Log::info(1, "Got block9 (should be 3): {}", block9);
+  Log::debug(Log::indent() + 1, "Got block9 (should be 3): {}", block9);
   auto block10 = world_map.get_block(31, 47, 63);
-  Log::info(1, "Got block10 (should be 4): {}", block10);
+  Log::debug(Log::indent() + 1, "Got block10 (should be 4): {}", block10);
 
   return SDL_APP_CONTINUE;
 }

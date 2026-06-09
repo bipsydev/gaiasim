@@ -15,6 +15,8 @@ using bipsy::sdl3_utils::Log;
 
 SDL_AppResult ScreenMain::init()
 {
+  LOG_FRAME_CLASS(ScreenMain);
+
   // Initialize GUI instance for this screen
   gui = new GUI();
 
@@ -41,6 +43,7 @@ SDL_AppResult ScreenMain::init()
 
 ScreenMain::~ScreenMain()
 {
+  LOG_FRAME_CLASS(ScreenMain);
   // Clean up GUI instance
   if (gui != nullptr)
   {
@@ -66,6 +69,7 @@ SDL_AppResult ScreenMain::event(SDL_Event *event)
     if (event->key.key == SDLK_N ||
         event->key.key == SDLK_ESCAPE)
     {
+      LOG_FRAME_CLASS(ScreenMain);
       Log::info("'{}' key pressed, switching back to test screen...",
         SDL_GetKeyName(event->key.key));
       game()->switch_screen(0); // Switch back to the first screen (ScreenTest)
@@ -74,12 +78,14 @@ SDL_AppResult ScreenMain::event(SDL_Event *event)
   }
   else if (not SDL_HasKeyboard() && event->type == SDL_EVENT_FINGER_DOWN)
   {
-    Log::info("Touch event #{} pressed at ({:.4f}, {:.4f}) "
+    LOG_FRAME_CLASS(ScreenMain);
+    Log::verbose("Touch event #{} pressed at ({:.4f}, {:.4f}) "
       "with pressure {:.4f} and type {}",
       static_cast<long long>(event->tfinger.fingerID),
       event->tfinger.x, event->tfinger.y,
       event->tfinger.pressure,
       static_cast<int>(event->tfinger.type));
+    Log::info("Touch event received, switching back to test screen...");
     game()->switch_screen(0); // Switch back to the first screen (ScreenTest)
     return SDL_APP_CONTINUE;
   }
@@ -103,6 +109,8 @@ SDL_AppResult ScreenMain::event(SDL_Event *event)
 
 SDL_AppResult ScreenMain::update()
 {
+  LOG_FRAME_CLASS(ScreenMain);
+
   SDL_AppResult result;
 
   // update the game world
@@ -120,6 +128,8 @@ SDL_AppResult ScreenMain::update()
 
 SDL_AppResult ScreenMain::render(SDL_Renderer *renderer)
 {
+  LOG_FRAME_CLASS(ScreenMain);
+
   SDL_AppResult result;
   // Render the GUI for this screen (includes rendering of game world texture)
   if ( (result = gui->render(renderer, world)) )
