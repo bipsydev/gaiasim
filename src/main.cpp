@@ -155,6 +155,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
  */
 SDL_AppResult SDL_AppIterate(void *appstate)
 {
+  Log::info("========== SDL_AppIterate: Iterating new frame ==========");
   GetGame;
   return game->iterate();
 }
@@ -176,8 +177,13 @@ SDL_AppResult SDL_AppIterate(void *appstate)
  */
 void SDL_AppQuit(void *appstate, SDL_AppResult result)
 {
+  Log::info("========== SDL_AppQuit: Cleaning up with result {} ==========",
+            (result == SDL_APP_SUCCESS) ? "SDL_APP_SUCCESS (successful termination)" :
+            (result == SDL_APP_FAILURE) ? "SDL_APP_FAILURE (termination with error)" :
+            (result == SDL_APP_CONTINUE) ? "SDL_APP_CONTINUE (ERROR STATE?)" : "unknown result");
   // Deallocate game state
   GetGame;
   delete game;
+  Log::info("========== SDL_AppQuit: Goodbye! ==========");
 }
 
