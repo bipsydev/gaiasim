@@ -94,7 +94,15 @@ private:
   InitRequest m_inits_complete; // This tracks which initialization steps have been completed
 
 
-public: 
+public:
+
+  /******************************
+   * STATIC METHOD DECLARATIONS *
+   ******************************/
+
+  static SDL_AppResult new_game(void *&appstate,
+                                InitRequest initializations = ALL);
+
 
   /***********************
    * METHOD DECLARATIONS *

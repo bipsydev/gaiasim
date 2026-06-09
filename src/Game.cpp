@@ -18,6 +18,32 @@ namespace bipsy::gaiasim
 using namespace bipsy::sdl3_utils; // Log, GAME_CLEAR_COLOR_DEFAULT
 
 
+// Factory Method
+SDL_AppResult Game::new_game(void *&appstate, InitRequest initializations)
+{
+  Log::increase_indent();
+  Log::trace("Entered Game::new_game factory method with initializations = {}", initializations);
+
+  // Construct a game object and get it's pointer address
+  Game *game = new Game(Game::InitRequest::NONE);
+  // Assign the address to the appstate in-param
+  //*appstate = game;
+  appstate = game;
+  // initialize game state up to the requested init phase, and return result
+  SDL_AppResult result = game->init(initializations);
+
+  // log and return
+  Log::trace("Game::new_game factory method completed {} returning {}",
+             (result == SDL_APP_CONTINUE) ? "successfully," :
+             (result == SDL_APP_SUCCESS) ? "with a \"successful\" termination request? weird..." :
+             (result == SDL_APP_FAILURE) ? "with failure," : "with unknown result!",
+             result);
+  Log::decrease_indent();
+  return result; // return result from initialization request
+}
+
+
+// Constructor
 Game::Game(InitRequest initializations)
 : m_screens{},
   m_active_screen_index{0},

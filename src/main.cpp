@@ -93,13 +93,10 @@ void init_logging();
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv)
 {
   init_logging();
-  Log::info("------ AppInit: Initializing ------");
-  // Initialize Game (starts SDL systems and loads initial game state)
-  Game *game = new Game();
-  *appstate = game;
-  Log::info("------ AppInit: Initialization complete ------");
-
-  return game->init();
+  Log::info("========== SDL_AppInit: Initializing ==========");
+  SDL_AppResult result = Game::new_game(*appstate);
+  Log::info("========== SDL_AppInit: Initialization complete ==========");
+  return result;
 }
 
 void init_logging()
@@ -108,10 +105,11 @@ void init_logging()
 #ifndef NDEBUG
   SDL_SetLogPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_TRACE);
 #endif
-
-  Log::info("Logging initialized with priority {} for APPLICATION category.",
+  // log a message of our set priority
+  Log::log(SDL_GetLogPriority(SDL_LOG_CATEGORY_APPLICATION),
+    "Logging initialized with priority {} for APPLICATION category.",
     Log::get_log_priority_name(SDL_GetLogPriority(SDL_LOG_CATEGORY_APPLICATION))
-      .c_str());
+  );
 }
 
 
