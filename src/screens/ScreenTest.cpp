@@ -1,8 +1,11 @@
 #include "screens/ScreenTest.hpp"
 
+
 #include "Game.hpp" // log_info
 #include "screens/ScreenMain.hpp"
 #include "SDL3_utils.hpp"
+
+#include "SDL3/SDL.h"// IWYU pragma: keep SDL_AppResult, SDL_Surface, SDL_Event...
 
 #include <cstdlib>  // rand
 #include <format>   // std::format

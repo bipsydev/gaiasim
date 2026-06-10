@@ -1,8 +1,10 @@
 #include "GameWorld.hpp"
 
+
 #include "Game.hpp"
 #include "SDL3_utils.hpp"
 
+#include "SDL3/SDL.h" // IWYU pragma: keep SDL_AppResult, SDL_Renderer, SDL_Event...
 #include "SDL3_ttf/SDL_ttf.h"
 
 #include <algorithm> // std::min, std::max

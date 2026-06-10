@@ -1,9 +1,10 @@
 #include "Game.hpp"
 
+
 #include "screens/ScreenTest.hpp"
 #include "SDL3_utils.hpp"
 
-#include "SDL3/SDL.h"
+#include "SDL3/SDL.h" // IWYU pragma: keep SDL_AppResult, SDL_Init, SDL_CreateWindow...
 #include "SDL3_mixer/SDL_mixer.h"
 #include "SDL3_ttf/SDL_ttf.h"
 

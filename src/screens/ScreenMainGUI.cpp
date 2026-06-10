@@ -1,9 +1,10 @@
 #include "screens/ScreenMainGUI.hpp"
 
-// full definition of the class we forward declared
-#include "GameWorld.hpp"
 
+#include "GameWorld.hpp"  // Implementation from our forward declaration
 #include "SDL3_utils.hpp"
+
+#include "SDL3/SDL.h"// IWYU pragma: keep SDL_DestroyTexture, SDL_Renderer...
 
 
 namespace bipsy::gaiasim::gui

@@ -1,6 +1,8 @@
 #include "Screen.hpp"
 
-#include "Game.hpp" // for `game()` getter, to complete the `Game` type
+
+#include "Game.hpp" // Implementation from our forward declaration
+
 
 namespace bipsy::gaiasim
 {

@@ -4,10 +4,9 @@
 
 
 #include "Screen.hpp"
-
 #include "Game.hpp"
 
-#include "SDL3/SDL.h"
+#include "SDL3/SDL.h" // IWYU pragma: keep SDL_Vertex, SDL_Texture...
 
 #include <string>
 

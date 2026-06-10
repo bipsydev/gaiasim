@@ -8,7 +8,7 @@
 #include "Game.hpp"
 #include "GameWorld.hpp"
 
-#include "SDL3/SDL.h"
+#include "SDL3/SDL.h" // IWYU pragma: keep SDL_AppResult
 
 #include <string>
 

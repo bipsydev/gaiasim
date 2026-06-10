@@ -21,7 +21,7 @@
 
 #include "SDL3_utils.hpp"
 
-#include "SDL3/SDL.h"
+#include "SDL3/SDL.h" // IWYU pragma: keep SDL_Color, SDL_AppResult
 
 #include <string>
 

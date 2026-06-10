@@ -4,7 +4,7 @@
 
 #include "tab.hpp"
 
-#include "SDL3/SDL.h"
+#include "SDL3/SDL.h" // IWYU pragma: keep SDL_Color, SDL_LogMessage...
 
 #include <format>   // std::format, std::format_string
 #include <string>   // std::string

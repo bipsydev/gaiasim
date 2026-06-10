@@ -2,14 +2,11 @@
 #ifndef BIPSY_GAIASIM_SCREEN_MAIN_GUI_HPP
 #define BIPSY_GAIASIM_SCREEN_MAIN_GUI_HPP
 
-#include "SDL3_utils.hpp"
 #include "Game.hpp"
 
-#include "SDL3/SDL.h"
-#include "SDL3_ttf/SDL_ttf.h"
+#include "SDL3/SDL.h" // IWYU pragma: keep SDL_FRect, SDL_Color, SDL_Texture...
 
 #include <string>
-#include <algorithm> // std::max, std::min
 
 
 namespace bipsy::gaiasim

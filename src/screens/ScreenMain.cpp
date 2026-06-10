@@ -1,10 +1,11 @@
 #include "screens/ScreenMain.hpp"
 
+
 #include "screens/ScreenMainGUI.hpp"
 #include "GameWorld.hpp"
 #include "SDL3_utils.hpp"
 
-#include "SDL3/SDL.h"
+#include "SDL3/SDL.h"// IWYU pragma: keep SDL_AppResult, SDL_Event, SDLK_N...
 
 
 namespace bipsy::gaiasim

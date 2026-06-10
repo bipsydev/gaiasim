@@ -6,7 +6,7 @@
 #include "SDL3_utils.hpp"
 #include "Screen.hpp"
 
-#include "SDL3/SDL.h"
+#include "SDL3/SDL.h" // IWYU pragma: keep Uint8, SDL_Window, SDL_Renderer...
 #include "SDL3_ttf/SDL_ttf.h"
 
 #include <cassert>
