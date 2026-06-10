@@ -53,3 +53,7 @@
 # These can be copied from external_libs/SDL/android-project
 /android-project/app/src/main/java/org/libsdl/
 /android-project/app/jni/
+
+# Ignore clangd configuration and cache
+.clangd
+/.cache/
