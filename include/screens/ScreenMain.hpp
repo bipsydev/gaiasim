@@ -38,16 +38,36 @@
 namespace bipsy::gaiasim
 {
 
+/**
+ * @brief The main game screen, displayed during gameplay.
+ *
+ */
 class ScreenMain : public Screen
 {
+
+  /// Alias for the GUI system
   using GUI = gui::ScreenMainGUI;
+
+  /**
+   * @brief Holds GUI panels and logic for rendering game world within it.
+   */
   GUI * m_gui;
 
-  // The game world data & it's rendering data.
+  /**
+   * @brief The game world state data & it's rendering logic.
+   */
   GameWorld * m_world;
 
 
 public:
+  /**
+   * @brief Basic construction of a ScreenMain.
+   *
+   * Gives the parent class our name ("ScreenMain") and background color (black)
+
+   * @param game A pointer to the parent `Game` instance that owns/controls
+                 this Screen, passed into `Screen` to hold for later.
+   */
   ScreenMain(Game * game)
   : Screen(game, "ScreenMain", {0, 0, 0, 255}), m_gui{nullptr}, m_world{nullptr}
   {}
@@ -56,12 +76,42 @@ public:
   ScreenMain(const ScreenMain &)              = delete;
   ScreenMain & operator =(const ScreenMain &) = delete;
 
+  /**
+   * @brief Frees up the GUI system and the Game World systems.
+   */
   virtual ~ScreenMain();
 
+  /**
+   * @brief Allocates the GUI system and Game World systems.
+   * 
+   * @return SDL_AppResult SDL_APP_CONTINUE if successful, or
+                           SDL_APP_FAILURE if allocation/world generation fails.
+   */
   SDL_AppResult init() override;
 
+  /**
+   * @brief Screen-switching on N key press, and pass through events to members.
+   * 
+   * Passes through events to the GUI system and then to the Game World.
+   * 
+   * @param[in] event the input event that we're reacting to.
+   * @return SDL_AppResult 
+   */
   SDL_AppResult event(SDL_Event * event) override;
+
+  /**
+   * @brief Update the game world, and then the GUI system.
+   * 
+   * @return SDL_AppResult 
+   */
   SDL_AppResult update() override;
+
+  /**
+   * @brief Render the GUI by giving it the game world to render its viewport.
+   * 
+   * @param[in] renderer The input renderer we should use to render things to.
+   * @return SDL_AppResult 
+   */
   SDL_AppResult render(SDL_Renderer * renderer) override;
 
 
