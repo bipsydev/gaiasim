@@ -44,22 +44,22 @@ namespace bipsy::gaiasim
 class Screen
 {
   // Parent Game instance that owns this Screen.
-  Game * game_ptr;
+  Game * m_game_ptr;
   // Name of the screen, for display purposes.
-  std::string name_str;
+  std::string m_name_str;
 
   // Clear color for this screen
-  SDL_Color clear_color;
+  SDL_Color m_clear_color;
 
 public:
 
   Screen(Game * game, const std::string &name, SDL_Color color = sdl3_utils::GAME_CLEAR_COLOR_DEFAULT)
-  : game_ptr(game), name_str(name), clear_color(color)
+  : m_game_ptr(game), m_name_str(name), m_clear_color(color)
   {
     LOG_FRAME_CLASS(Screen);
     bipsy::sdl3_utils::Log::verbose(
       "Constructed screen \"{}\" with bg clear color RGBA({}, {}, {}, {})",
-      name_str, clear_color.r, clear_color.g, clear_color.b, clear_color.a);
+      m_name_str, m_clear_color.r, m_clear_color.g, m_clear_color.b, m_clear_color.a);
   };
 
   // Prevent copying (for now) because of pointer data members
@@ -67,14 +67,14 @@ public:
   Screen(const Screen &) = delete;
   Screen &operator=(const Screen &) = delete;
 
-  virtual ~Screen()  { game_ptr = nullptr; };
+  virtual ~Screen()  { m_game_ptr = nullptr; };
 
 
   constexpr Game * const game() const
-  { return game_ptr; }
+  { return m_game_ptr; }
 
   constexpr const std::string &name() const
-  { return name_str; }
+  { return m_name_str; }
 
   /**
    * @brief Initialize local Screen data and state.
