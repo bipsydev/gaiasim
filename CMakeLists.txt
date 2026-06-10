@@ -138,6 +138,7 @@ set(SDLIMAGE_AVIF OFF)	# disable formats we don't use to make the build faster a
 set(SDLIMAGE_BMP OFF)
 set(SDLIMAGE_JPEG OFF)
 set(SDLIMAGE_WEBP OFF)
+set(SDLIMAGE_TIF OFF)   # This fixes an issue about CMake warning about libdeflate not able to be used because zlib is not found. TODO maybe fix this later? if we ever need .TIF support
 add_subdirectory(external_libs/SDL_image EXCLUDE_FROM_ALL)
 
 
