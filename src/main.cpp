@@ -2,7 +2,10 @@
  * @file main.cpp
  * @author bipsydev (bipsydev@gmail.com)
  * @brief Main entry point for SDL3 application
- * @version 0.1
+ *
+ * Just routes all SDL3 entrypoints into `Game`, also inits logging.
+ *
+ * @version a_0.0.1-pre
  * @date 2026-05-06
  *
  * @copyright Copyright (c) 2026
