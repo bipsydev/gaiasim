@@ -1,3 +1,25 @@
+/**
+ * @file Game.cpp
+ * @author bipsydev (bipsydev@gmail.com)
+ * @brief Implementation for `Game` initialization & other lifecycle events.
+ *
+ * Delegates lifecycle events to the unpaused Screens.
+ * Uses a staged initialization phase system with an enum to
+ * ensure libraries are initialized, library objects are created,
+ * and the initial game state is set, in order.
+ *
+ * @version a_0.0.1-pre
+ * @date 2026-05-10
+ *
+ * @copyright Copyright (c) 2026
+ *
+ * @section License
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ **/
 #include "Game.hpp"
 
 

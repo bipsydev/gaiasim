@@ -1,3 +1,23 @@
+/**
+ * @file ScreenMainGUI.cpp
+ * @author bipsydev (bipsydev@gmail.com)
+ * @brief Implementation for `ScreenMainGUI` lifecycle and panel events.
+ *
+ * Currently manually manages the 3 Panels and call `GameWorld::render`
+ * within the game world viewport panel.
+ *
+ * @version a_0.0.1-pre
+ * @date 2026-05-26
+ *
+ * @copyright Copyright (c) 2026
+ *
+ * @section License
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ **/
 #include "screens/ScreenMainGUI.hpp"
 
 

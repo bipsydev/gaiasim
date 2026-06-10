@@ -6,6 +6,9 @@
  * This gives `GameWorld::render` a 2D bounds to draw their final
  * texture buffer to, that is drawn to the screen within the
  * GUI system during `ScreenMainGUI::render`.
+ * Interally, we use a set of `Panel`s to align the GUI into a gridbox of sorts,
+ * then dynamically stretch them to the screen size.
+ * Currently just rect primitives with a texture rendered from GameWorld.
  *
  * @version a_0.0.1-pre
  * @date 2026-05-23

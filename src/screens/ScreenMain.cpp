@@ -1,3 +1,23 @@
+/**
+ * @file ScreenMain.cpp
+ * @author bipsydev (bipsydev@gmail.com)
+ * @brief Implementation for `ScreenMain` lifecycle events.
+ * 
+ * Essentially just delegates GUI logic to `ScreenMainGUI` and
+ * the actual game logic to `GameWorld`.
+ *
+ * @version a_0.0.1-pre
+ * @date 2026-05-23
+ *
+ * @copyright Copyright (c) 2026
+ *
+ * @section License
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ **/
 #include "screens/ScreenMain.hpp"
 
 

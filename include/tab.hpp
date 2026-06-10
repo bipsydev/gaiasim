@@ -1,3 +1,20 @@
+/**
+ * @file tab.hpp
+ * @author bipsydev (bipsydev@gmail.com)
+ * @brief Basic # of tabs -> string generation based on desired tab width.
+ *
+ * @version a_0.0.1-pre
+ * @date 2026-02-12
+ *
+ * @copyright Copyright (c) 2026
+ *
+ * @section License
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ **/
 #pragma once
 #ifndef BIPSY_CPPUTILS_TAB_HPP
 #define BIPSY_CPPUTILS_TAB_HPP

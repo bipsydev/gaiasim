@@ -1,3 +1,38 @@
+/**
+ * @file SDL3_utils.hpp
+ * @author bipsydev (bipsydev@gmail.com)
+ * @brief A few utilities for SDL, primarily logging.
+ *
+ * This defines a suggested default clear color for the game.
+ * It also provides an `asset_dir("asset_name.png")` function for
+ * retrieving the paths of assets file names in a system-independent manner.
+ * It also defines an `std::formatter` overload for `SDL_AppResult` for
+ * use within format arguments in `std::format`.
+ * 
+ * The primary utlity this header contains is the `Log` singleton static class.
+ * This provides a static class method API for logging messages of any
+ * priority level, using C++20's std::format specification instead of SDL's
+ * old C-style printf format specification.
+ * 
+ * It also contains an automatic logger indentation mechanism using
+ * frame stack tracing. Indentation can be modified manually using
+ * `Log::increase_indent()` and `Log::decrease_indent()`, but it can also be
+ * automatically managed using RAII with automatic trace logging for a
+ * frame call stack by using the `LOG_FRAME()` and `LOG_FRAME_CLASS(ClassName)`
+ * macros.
+ *
+ * @version a_0.0.1-pre
+ * @date 2026-05-17
+ *
+ * @copyright Copyright (c) 2026
+ *
+ * @section License
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ **/
 #pragma once
 #ifndef BIPSY_SDL3_UTILS_HPP
 #define BIPSY_SDL3_UTILS_HPP

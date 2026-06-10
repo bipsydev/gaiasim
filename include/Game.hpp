@@ -1,3 +1,29 @@
+/**
+ * @file Game.hpp
+ * @author bipsydev (bipsydev@gmail.com)
+ * @brief Adapter class for SDL3's main callbacks that manages `Screen`s
+ *
+ * This class encapsulates game data and provides functions to call
+ * at each of SDL3's main callback entrypoints.
+ * This is used as the `appstate` pointer for the entrypoint system
+ * to hold global game state for the duration of the program's execution.
+ * This class also manages a list of `Screen`s, which are game state screens
+ * that may be either the active displayed screen, or running/paused.
+ * Each Screen also implements functions for each SDL3 callback entrypoint,
+ * but one or many Screens may be running each frame.
+ *
+ * @version a_0.0.1-pre
+ * @date 2026-05-10
+ *
+ * @copyright Copyright (c) 2026
+ *
+ * @section License
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ **/
 #pragma once
 #ifndef BIPSY_GAIASIM_GAME_HPP
 #define BIPSY_GAIASIM_GAME_HPP
