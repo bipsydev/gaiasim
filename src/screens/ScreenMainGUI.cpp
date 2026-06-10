@@ -6,10 +6,13 @@
 
 #include "SDL3/SDL.h"  // IWYU pragma: keep SDL_DestroyTexture, SDL_Renderer...
 
+
+using bipsy::sdl3_utils::Log;
+
+
 namespace bipsy::gaiasim::gui
 {
 
-using bipsy::sdl3_utils::Log;
 
 ScreenMainGUI::ScreenMainGUI()
 : m_main_panel({0.25, 0.25, 0.75, 0.75}, "Main", {0x00, 0x00, 0x00, 0xFF})
@@ -21,6 +24,7 @@ ScreenMainGUI::ScreenMainGUI()
 , m_window_height{0}
 {}
 
+
 ScreenMainGUI::~ScreenMainGUI()
 {
   // Clean up textures
@@ -31,6 +35,7 @@ ScreenMainGUI::~ScreenMainGUI()
   if (m_top_sidebar.m_title_texture != nullptr)
     SDL_DestroyTexture(m_top_sidebar.m_title_texture);
 }
+
 
 SDL_AppResult ScreenMainGUI::update_layout(Game * game)
 {
@@ -65,6 +70,7 @@ SDL_AppResult ScreenMainGUI::update_layout(Game * game)
   return SDL_APP_CONTINUE;
 }
 
+
 SDL_AppResult ScreenMainGUI::render(SDL_Renderer * renderer, GameWorld * world)
 {
   LOG_FRAME_CLASS(ScreenMainGUI);
@@ -80,6 +86,7 @@ SDL_AppResult ScreenMainGUI::render(SDL_Renderer * renderer, GameWorld * world)
   return SDL_APP_CONTINUE;
 }
 
+
 SDL_AppResult ScreenMainGUI::event(Game * game, SDL_Event * event)
 {
   // For now, we don't have any interactive elements in the GUI, so we just
@@ -87,6 +94,7 @@ SDL_AppResult ScreenMainGUI::event(Game * game, SDL_Event * event)
   // mouse clicks on buttons, etc.
   return SDL_APP_CONTINUE;
 }
+
 
 SDL_AppResult ScreenMainGUI::generate_textures(Game * game)
 {
@@ -121,6 +129,7 @@ SDL_AppResult ScreenMainGUI::generate_textures(Game * game)
 
   return SDL_APP_CONTINUE;
 }
+
 
 SDL_AppResult ScreenMainGUI::create_panel_title_texture(Game *  game,
                                                         Panel & panel)
@@ -166,6 +175,7 @@ SDL_AppResult ScreenMainGUI::create_panel_title_texture(Game *  game,
 
   return SDL_APP_CONTINUE;
 }
+
 
 SDL_AppResult ScreenMainGUI::render_panel(SDL_Renderer * renderer,
                                           Panel &        panel,
@@ -279,7 +289,6 @@ SDL_AppResult ScreenMainGUI::render_panel(SDL_Renderer * renderer,
 
   return SDL_APP_CONTINUE;
 }
-
 
 
 }  // namespace bipsy::gaiasim::gui

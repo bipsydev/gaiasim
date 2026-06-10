@@ -232,10 +232,10 @@ IntegerLiteralSeparator:
 
 KeepEmptyLines:
   AtEndOfFile: true
-  AtStartOfBlock: false
+  AtStartOfBlock: true
   AtStartOfFile: true
 
-MaxEmptyLinesToKeep: 3
+MaxEmptyLinesToKeep: 2
 
 LambdaBodyIndentation: Signature
 
@@ -265,7 +265,8 @@ ReflowComments: true
 # Remove braces when not necessary for single-line if/while/for blocks
 RemoveBracesLLVM: true
 
-RemoveEmptyLinesInUnwrappedLines: true
+# Don't remove empty lines
+RemoveEmptyLinesInUnwrappedLines: false
 
 RemoveParentheses: MultipleParentheses
 RemoveSemicolon: true
@@ -274,8 +275,8 @@ RequiresClausePosition: OwnLine
 
 RequiresExpressionIndentation: Keyword
 
-# Enforce empty lines between class & function definitions
-SeparateDefinitionBlocks: Always
+# Enforce 1 empty line between class & function definitions
+SeparateDefinitionBlocks: Leave
 
 
 

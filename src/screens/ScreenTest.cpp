@@ -10,10 +10,13 @@
 #include <cstdlib>  // rand
 #include <format>   // std::format
 
+
+using bipsy::sdl3_utils::Log;
+
+
 namespace bipsy::gaiasim
 {
 
-using bipsy::sdl3_utils::Log;
 
 SDL_AppResult ScreenTest::init()
 {
@@ -57,7 +60,6 @@ SDL_AppResult ScreenTest::init()
   m_polygon2[4].color    = {0, 0, 1.0, 1.0};    // blue
   m_polygon2[5].position = {600, 100};  // top-right vertex (same as vertex 2)
   m_polygon2[5].color    = {0, 1.0, 0, 1.0};  // green (same as vertex 2
-
 
   // Gradient rectangle (4 triangles, 3 vertices each)
   Log::verbose(Log::indent() + 1,
@@ -132,7 +134,6 @@ SDL_AppResult ScreenTest::init()
   for (int i = 0; i < GRADIENT_RECT_VERTEX_COUNT; i++)
     m_gradient_rect[i].position.y += 300;
 
-
   // Rainbow triangle vertex data
   Log::verbose(Log::indent() + 1,
                "Success! Initializing vertex data for m_rainbow_triangle...");
@@ -155,7 +156,6 @@ SDL_AppResult ScreenTest::init()
       {0.5f, 1.0f}
   };
 
-
   Log::verbose("Vertex data initialized successfully!");
 
   Log::verbose("Initializing texture for on-screen rendered text from font:");
@@ -167,9 +167,9 @@ SDL_AppResult ScreenTest::init()
     return result;
   }
 
-
   return SDL_APP_CONTINUE;
 }
+
 
 SDL_AppResult ScreenTest::init_text_texture()
 {
@@ -245,6 +245,7 @@ SDL_AppResult ScreenTest::init_text_texture()
   return SDL_APP_CONTINUE;
 }
 
+
 ScreenTest::~ScreenTest()
 {
   LOG_FRAME_CLASS(ScreenTest);
@@ -261,6 +262,7 @@ ScreenTest::~ScreenTest()
     Log::warn("m_text_texture was not initialized, no need to destroy");
   }
 }
+
 
 SDL_AppResult ScreenTest::event(SDL_Event * event)
 {
@@ -307,6 +309,7 @@ SDL_AppResult ScreenTest::event(SDL_Event * event)
   return SDL_APP_CONTINUE;
 }
 
+
 SDL_AppResult ScreenTest::update()
 {
   LOG_FRAME_CLASS(ScreenTest);
@@ -334,6 +337,7 @@ SDL_AppResult ScreenTest::update()
 
   return SDL_APP_CONTINUE;
 }
+
 
 SDL_AppResult ScreenTest::render(SDL_Renderer * renderer)
 {
@@ -430,7 +434,9 @@ SDL_AppResult ScreenTest::render(SDL_Renderer * renderer)
   return SDL_APP_CONTINUE;
 }
 
+
 SDL_AppResult ScreenTest::post_render_update() { return SDL_APP_CONTINUE; }
+
 
 SDL_AppResult ScreenTest::show()
 {
@@ -438,7 +444,9 @@ SDL_AppResult ScreenTest::show()
   return SDL_APP_CONTINUE;
 }
 
+
 SDL_AppResult ScreenTest::hide() { return SDL_APP_CONTINUE; }
+
 
 SDL_AppResult ScreenTest::switch_to_main_screen()
 {
@@ -455,5 +463,6 @@ SDL_AppResult ScreenTest::switch_to_main_screen()
   else
     return Log::error("Failed to switch to main screen: {}", SDL_GetError());
 }
+
 
 }  // namespace bipsy::gaiasim

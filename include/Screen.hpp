@@ -15,16 +15,17 @@
  * (at your option) any later version.
  *
  */
-
 #pragma once
 #ifndef BIPSY_GAIASIM_SCREEN_HPP
 #define BIPSY_GAIASIM_SCREEN_HPP
+
 
 #include "SDL3_utils.hpp"
 
 #include "SDL3/SDL.h"  // IWYU pragma: keep SDL_Color, SDL_AppResult
 
 #include <string>
+
 
 namespace bipsy::gaiasim
 {

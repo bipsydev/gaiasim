@@ -2,6 +2,7 @@
 #ifndef BIPSY_SDL3_UTILS_HPP
 #define BIPSY_SDL3_UTILS_HPP
 
+
 #include "tab.hpp"
 
 #include "SDL3/SDL.h"   // IWYU pragma: keep SDL_Color, SDL_LogMessage...
@@ -10,6 +11,7 @@
 #include <string>       // std::string
 #include <string_view>  // std::string_view
 #include <utility>      // std::forward
+
 
 namespace bipsy::sdl3_utils
 {

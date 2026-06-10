@@ -3,8 +3,10 @@
 
 #include "Game.hpp"  // Implementation from our forward declaration
 
+
 namespace bipsy::gaiasim
 {
+
 
 SDL_AppResult Screen::show()
 {
@@ -12,5 +14,6 @@ SDL_AppResult Screen::show()
   game()->set_clear_color(m_clear_color);
   return SDL_APP_CONTINUE;
 }
+
 
 }  // namespace bipsy::gaiasim

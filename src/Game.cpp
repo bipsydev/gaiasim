@@ -12,10 +12,13 @@
 #include <string>
 #include <format>
 
+
+using namespace bipsy::sdl3_utils;  // Log, GAME_CLEAR_COLOR_DEFAULT
+
+
 namespace bipsy::gaiasim
 {
 
-using namespace bipsy::sdl3_utils;  // Log, GAME_CLEAR_COLOR_DEFAULT
 
 // Factory Method
 SDL_AppResult Game::new_game(void *& appstate, InitRequest initializations)
@@ -48,6 +51,7 @@ SDL_AppResult Game::new_game(void *& appstate, InitRequest initializations)
   return result;  // return result from initialization request
 }
 
+
 // Constructor
 Game::Game(InitRequest initializations)
 : m_screens{}
@@ -75,6 +79,7 @@ Game::Game(InitRequest initializations)
     Log::verbose("No initializations requested, skipping initialization");
   }
 }
+
 
 SDL_AppResult Game::init(InitRequest initializations)
 {
@@ -139,6 +144,7 @@ SDL_AppResult Game::init(InitRequest initializations)
   return SDL_APP_CONTINUE;
 }
 
+
 SDL_AppResult Game::init_libraries()
 {
   LOG_FRAME_CLASS(Game);
@@ -168,6 +174,7 @@ SDL_AppResult Game::init_libraries()
   m_inits_complete = LIBRARIES;
   return SDL_APP_CONTINUE;  // indicate that we want to continue app execution
 }
+
 
 SDL_AppResult Game::init_system_objects()
 {
@@ -254,6 +261,7 @@ SDL_AppResult Game::init_system_objects()
   return SDL_APP_CONTINUE;
 }
 
+
 SDL_AppResult Game::init_game_state()
 {
   LOG_FRAME_CLASS(Game);
@@ -290,6 +298,7 @@ SDL_AppResult Game::init_game_state()
   m_inits_complete = GAME_STATE;
   return SDL_APP_CONTINUE;
 }
+
 
 Game::~Game()
 {
@@ -357,6 +366,7 @@ Game::~Game()
   Log::info("`Game` object deinitialized successfully!");
 }
 
+
 SDL_AppResult Game::event(SDL_Event * event)
 {
   // catch the QUIT event (game requesting successful termination)
@@ -373,6 +383,7 @@ SDL_AppResult Game::event(SDL_Event * event)
   }
 }
 
+
 SDL_AppResult Game::iterate()
 {
   // Split `iterate` into update/render functions for organization
@@ -383,6 +394,7 @@ SDL_AppResult Game::iterate()
 
   return SDL_APP_CONTINUE;
 }
+
 
 SDL_AppResult Game::update()
 {
@@ -425,6 +437,7 @@ SDL_AppResult Game::update()
   return active_screen()->update();
 }
 
+
 SDL_AppResult Game::render()
 {
   LOG_FRAME_CLASS(Game);
@@ -448,6 +461,7 @@ SDL_AppResult Game::render()
   return SDL_APP_CONTINUE;
 }
 
+
 SDL_AppResult Game::post_render_update()
 {
   LOG_FRAME_CLASS(Game);
@@ -459,5 +473,6 @@ SDL_AppResult Game::post_render_update()
 
   return result;
 }
+
 
 }  // namespace bipsy::gaiasim

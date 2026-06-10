@@ -9,14 +9,18 @@
 
 #include <algorithm>  // std::min, std::max
 
+
+using bipsy::sdl3_utils::Log;
+
+
 namespace bipsy::gaiasim
 {
 
-using bipsy::sdl3_utils::Log;
 
 GameWorld::GameWorld(Game * game)
 : m_game{game}, m_world_map{}, m_map_texture{nullptr}
 {}
+
 
 SDL_AppResult GameWorld::init()
 {
@@ -29,6 +33,7 @@ SDL_AppResult GameWorld::init()
   return generate_world_map();
 }
 
+
 GameWorld::~GameWorld()
 {
   // Clean up game world resources here
@@ -40,6 +45,7 @@ GameWorld::~GameWorld()
     m_map_texture = nullptr;
   }
 }
+
 
 SDL_AppResult GameWorld::event(SDL_Event * event)
 {
@@ -99,6 +105,7 @@ SDL_AppResult GameWorld::event(SDL_Event * event)
   return SDL_APP_CONTINUE;
 }
 
+
 SDL_AppResult GameWorld::update()
 {
   // Update game world state here (e.g. move NPCs, check for collisions, etc.)
@@ -106,6 +113,7 @@ SDL_AppResult GameWorld::update()
   // return CONTINUE.
   return SDL_APP_CONTINUE;
 }
+
 
 SDL_AppResult GameWorld::render(SDL_Renderer * renderer, SDL_FRect * bounds)
 {
@@ -184,6 +192,7 @@ SDL_AppResult GameWorld::render(SDL_Renderer * renderer, SDL_FRect * bounds)
   return SDL_APP_CONTINUE;
 }
 
+
 SDL_AppResult GameWorld::generate_map_texture()
 {
   LOG_FRAME_CLASS(GameWorld);
@@ -209,11 +218,13 @@ SDL_AppResult GameWorld::generate_map_texture()
   return SDL_APP_CONTINUE;
 }
 
+
 SDL_AppResult GameWorld::generate_world_map()
 {
   // TODO replace with actual WorldMap generation
   return SDL_APP_CONTINUE;  // skip for now
 }
+
 
 SDL_AppResult GameWorld::test_world_map_operations()
 {

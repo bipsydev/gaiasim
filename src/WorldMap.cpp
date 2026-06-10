@@ -8,10 +8,13 @@
 
 #include <unordered_map>      // std::unordered_map
 
+
+using bipsy::sdl3_utils::Log;
+
+
 namespace bipsy::gaiasim
 {
 
-using bipsy::sdl3_utils::Log;
 
 WorldMap::WorldMap()
 : m_chunk_registry{}, m_chunk_map{}
@@ -19,10 +22,12 @@ WorldMap::WorldMap()
   // Constructor implementation (if needed)
 }
 
+
 WorldMap::~WorldMap()
 {
   // Destructor implementation (if needed)
 }
+
 
 entt::entity WorldMap::create_chunk(const ChunkPos & pos)
 {
@@ -57,6 +62,7 @@ entt::entity WorldMap::create_chunk(const ChunkPos & pos)
   return chunk_entity;
 }
 
+
 bool WorldMap::delete_chunk(const ChunkPos & pos)
 {
   // Get the chunk entity if it exists
@@ -78,6 +84,7 @@ bool WorldMap::delete_chunk(const ChunkPos & pos)
 
   return true;  // Indicate successful deletion
 }
+
 
 bool WorldMap::delete_chunk(entt::entity chunk_entity)
 {
@@ -102,6 +109,7 @@ bool WorldMap::delete_chunk(entt::entity chunk_entity)
   return delete_chunk(*chunk_pos);
 }
 
+
 entt::entity WorldMap::get_chunk(const ChunkPos & pos) const
 {
   // Check if the chunk exists at this position
@@ -119,6 +127,7 @@ entt::entity WorldMap::get_chunk(const ChunkPos & pos) const
   entt::entity chunk_entity = it->second;
   return chunk_entity;
 }
+
 
 BlockID WorldMap::get_block(const ChunkPos & chunk_pos,
                             const LocalPos & local_pos) const
@@ -174,6 +183,7 @@ BlockID WorldMap::get_block(const ChunkPos & chunk_pos,
   return block;
 }
 
+
 BlockID WorldMap::get_block(Sint64 global_x,
                             Sint64 global_y,
                             Sint64 global_z) const
@@ -182,6 +192,7 @@ BlockID WorldMap::get_block(Sint64 global_x,
           = convert_global_to_chunk_pos(global_x, global_y, global_z);
   return get_block(chunk_pos, local_pos);
 }
+
 
 bool WorldMap::set_block(const ChunkPos & chunk_pos,
                          const LocalPos & local_pos,
@@ -243,6 +254,7 @@ bool WorldMap::set_block(const ChunkPos & chunk_pos,
   return true;
 }
 
+
 bool WorldMap::set_block(Sint64  global_x,
                          Sint64  global_y,
                          Sint64  global_z,
@@ -252,6 +264,7 @@ bool WorldMap::set_block(Sint64  global_x,
           = convert_global_to_chunk_pos(global_x, global_y, global_z);
   return set_block(chunk_pos, local_pos, block_id);
 }
+
 
 std::tuple<ChunkPos, LocalPos> WorldMap::convert_global_to_chunk_pos(
         Sint64 global_x, Sint64 global_y, Sint64 global_z
@@ -293,6 +306,7 @@ std::tuple<ChunkPos, LocalPos> WorldMap::convert_global_to_chunk_pos(
   };
 }
 
+
 GlobalPos WorldMap::convert_chunk_to_global_pos(Sint64 chunk_x,
                                                 Sint64 chunk_y,
                                                 Sint64 chunk_z,
@@ -307,7 +321,6 @@ GlobalPos WorldMap::convert_chunk_to_global_pos(Sint64 chunk_x,
   );
   return GlobalPos{0, 0, 0};
 }
-
 
 
 }  // namespace bipsy::gaiasim

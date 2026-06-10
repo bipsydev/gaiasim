@@ -7,10 +7,13 @@
 
 #include "SDL3/SDL.h"  // IWYU pragma: keep SDL_AppResult, SDL_Event, SDLK_N...
 
+
+using bipsy::sdl3_utils::Log;
+
+
 namespace bipsy::gaiasim
 {
 
-using bipsy::sdl3_utils::Log;
 
 SDL_AppResult ScreenMain::init()
 {
@@ -38,6 +41,7 @@ SDL_AppResult ScreenMain::init()
   return SDL_APP_CONTINUE;
 }
 
+
 ScreenMain::~ScreenMain()
 {
   LOG_FRAME_CLASS(ScreenMain);
@@ -55,6 +59,7 @@ ScreenMain::~ScreenMain()
     m_world = nullptr;
   }
 }
+
 
 SDL_AppResult ScreenMain::event(SDL_Event * event)
 {
@@ -85,7 +90,6 @@ SDL_AppResult ScreenMain::event(SDL_Event * event)
     return SDL_APP_CONTINUE;
   }
 
-
   // handle GUI events first
   // TODO system to remove events from further processing (marked as "handled")
   SDL_AppResult result;
@@ -97,6 +101,7 @@ SDL_AppResult ScreenMain::event(SDL_Event * event)
 
   return SDL_APP_CONTINUE;
 }
+
 
 SDL_AppResult ScreenMain::update()
 {
@@ -113,6 +118,7 @@ SDL_AppResult ScreenMain::update()
   return SDL_APP_CONTINUE;
 }
 
+
 SDL_AppResult ScreenMain::render(SDL_Renderer * renderer)
 {
   LOG_FRAME_CLASS(ScreenMain);
@@ -123,7 +129,6 @@ SDL_AppResult ScreenMain::render(SDL_Renderer * renderer)
 
   return SDL_APP_CONTINUE;
 }
-
 
 
 }  // namespace bipsy::gaiasim

@@ -15,8 +15,10 @@
 #include <tuple>              // std::tuple
 #include <concepts>           // std::integral
 
+
 namespace bipsy::gaiasim
 {
+
 
 // Use 64-bit unsigned integers for block IDs
 // using BlockID = Uint64;
@@ -27,6 +29,7 @@ enum BlockID : Uint64
   // ... more types here ...
   INVALID = std::numeric_limits<Uint64>::max()
 };
+
 
 // Abstract base class for all 3D position types
 // ensure CoordType is an integer type using concepts (for hashing and indexing)
@@ -47,12 +50,15 @@ struct Position3D
   virtual ~Position3D() = 0;
 };  // struct Position3D
 
+
 // define template implementation for pure virtual destructor
 template <std::integral CoordType>
 Position3D<CoordType>::~Position3D()
 {}
 
+
 // ------------------------------ EnTT Components ------------------------------
+
 
 // A position in chunk-coordinates
 struct ChunkPos : public Position3D<Sint64>
@@ -77,6 +83,7 @@ struct ChunkPos : public Position3D<Sint64>
   };
 };
 
+
 // Voxel/block data for a chunk
 struct ChunkData
 {
@@ -86,6 +93,7 @@ struct ChunkData
   // 3D array of block IDs (flattened to 1D)
   std::array<BlockID, SIZE * SIZE * SIZE> blocks{};
 };
+
 
 // Hashmap for block entities (block metadata)
 // Uses flat 1D indexing for blocks within a local chunk (0 to SIZE^3 - 1)
@@ -101,6 +109,7 @@ struct BlockEntities
                 "Chunk size is too large for block entity map");
 };
 
+
 // Chunk-Local position within a chunk (0 to SIZE - 1 in each dimension)
 struct LocalPos : public Position3D<Uint8>
 {
@@ -109,6 +118,7 @@ struct LocalPos : public Position3D<Uint8>
   {}
 };
 
+
 // Global world position (positive or negative, theoretically unbounded)
 struct GlobalPos : public Position3D<Sint64>
 {
@@ -116,6 +126,7 @@ struct GlobalPos : public Position3D<Sint64>
   : Position3D{x, y, z}
   {}
 };
+
 
 // ------------------------------ WorldMap class -------------------------------
 
@@ -248,9 +259,12 @@ public:
                                        local_pos.z);
   }
 
+
 };  // class WorldMap
 
+
 }  // namespace bipsy::gaiasim
+
 
 // TODO: make a macro for this that takes the object and output types.
 //  since this is copy-pasted for InitRequest and SDL_AppResult as well
@@ -265,5 +279,6 @@ struct std::formatter<bipsy::gaiasim::BlockID, char>
                                                 ctx);
   }
 };
+
 
 #endif  // BIPSY_GAIASIM_WORLDMAP_HPP

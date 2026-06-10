@@ -2,11 +2,13 @@
 #ifndef BIPSY_GAIASIM_GAMEWORLD_HPP
 #define BIPSY_GAIASIM_GAMEWORLD_HPP
 
+
 #include "WorldMap.hpp"
 
 #include "SDL3/SDL.h"  // IWYU pragma: keep SDL_Texture, Uint8
 
 #include <string>
+
 
 namespace bipsy::gaiasim
 {

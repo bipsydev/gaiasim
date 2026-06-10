@@ -30,8 +30,10 @@
 
 #include <string>
 
+
 namespace bipsy::gaiasim
 {
+
 // forward declare GameWorld
 class GameWorld;
 

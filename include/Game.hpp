@@ -2,6 +2,7 @@
 #ifndef BIPSY_GAIASIM_GAME_HPP
 #define BIPSY_GAIASIM_GAME_HPP
 
+
 #include <cassert>
 #include <string>
 #include <vector>
@@ -10,6 +11,7 @@
 #include "SDL3_ttf/SDL_ttf.h"
 #include "SDL3_utils.hpp"
 #include "Screen.hpp"
+
 
 namespace bipsy::gaiasim
 {
