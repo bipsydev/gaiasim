@@ -21,76 +21,76 @@ SDL_AppResult ScreenTest::init()
   // --- Initialize vertex data ---
   Log::verbose("Initializing vertex data for polygons:");
   // Polygon 1
-  Log::verbose(Log::indent() + 1, "Initializing vertex data for polygon1...");
+  Log::verbose(Log::indent() + 1, "Initializing vertex data for m_polygon1...");
   // Triangle 1
-  polygon1[0].position   = {100, 100};         // top-left vertex
-  polygon1[0].color      = {1.0, 0, 0, 1.0};   // red
-  polygon1[1].position   = {300, 100};         // top-right vertex
-  polygon1[1].color      = {0, 1.0, 0, 1.0};   // green
-  polygon1[2].position   = {300, 300};         // bottom-right vertex
-  polygon1[2].color      = {0, 0, 1.0, 1.0};   // blue
+  m_polygon1[0].position   = {100, 100};         // top-left vertex
+  m_polygon1[0].color      = {1.0, 0, 0, 1.0};   // red
+  m_polygon1[1].position   = {300, 100};         // top-right vertex
+  m_polygon1[1].color      = {0, 1.0, 0, 1.0};   // green
+  m_polygon1[2].position   = {300, 300};         // bottom-right vertex
+  m_polygon1[2].color      = {0, 0, 1.0, 1.0};   // blue
   // Triangle 2 (shares top-left and bottom-right vertices with triangle 1)
-  polygon1[3].position   = {100, 100};         // top-left vertex (same as vertex 0)
-  polygon1[3].color      = {1.0, 0, 0, 1.0};   // red (same as vertex 0)
-  polygon1[4].position   = {100, 300};         // bottom-left vertex
-  polygon1[4].color      = {1.0, 1.0, 0, 1.0}; // yellow 
-  polygon1[5].position   = {300, 300};         // bottom-right vertex (same as vertex 2)
-  polygon1[5].color      = {0, 0, 1.0, 1.0};   // blue (same as vertex 2)
+  m_polygon1[3].position   = {100, 100};         // top-left vertex (same as vertex 0)
+  m_polygon1[3].color      = {1.0, 0, 0, 1.0};   // red (same as vertex 0)
+  m_polygon1[4].position   = {100, 300};         // bottom-left vertex
+  m_polygon1[4].color      = {1.0, 1.0, 0, 1.0}; // yellow 
+  m_polygon1[5].position   = {300, 300};         // bottom-right vertex (same as vertex 2)
+  m_polygon1[5].color      = {0, 0, 1.0, 1.0};   // blue (same as vertex 2)
 
   // Polygon 2
-  Log::verbose(Log::indent() + 1, "Success! Initializing vertex data for polygon2...");
+  Log::verbose(Log::indent() + 1, "Success! Initializing vertex data for m_polygon2...");
   // Triangle 1
-  polygon2[0].position   = {400, 100};         // top-left vertex
-  polygon2[0].color      = {1.0, 0, 0, 1.0};   // red
-  polygon2[1].position   = {400, 300};         // bottom-left vertex
-  polygon2[1].color      = {1.0, 1.0, 0, 1.0}; // yellow
-  polygon2[2].position   = {600, 100};         // top-right vertex
-  polygon2[2].color      = {0, 1.0, 0, 1.0};   // green
+  m_polygon2[0].position   = {400, 100};         // top-left vertex
+  m_polygon2[0].color      = {1.0, 0, 0, 1.0};   // red
+  m_polygon2[1].position   = {400, 300};         // bottom-left vertex
+  m_polygon2[1].color      = {1.0, 1.0, 0, 1.0}; // yellow
+  m_polygon2[2].position   = {600, 100};         // top-right vertex
+  m_polygon2[2].color      = {0, 1.0, 0, 1.0};   // green
 
   // Triangle 2
-  polygon2[3].position   = {400, 300};         // bottom-left vertex (same as vertex 1)
-  polygon2[3].color      = {1.0, 1.0, 0, 1.0}; // yellow (same as vertex 1)
-  polygon2[4].position   = {600, 300};         // bottom-right vertex
-  polygon2[4].color      = {0, 0, 1.0, 1.0};   // blue
-  polygon2[5].position   = {600, 100};         // top-right vertex (same as vertex 2)
-  polygon2[5].color      = {0, 1.0, 0, 1.0};   // green (same as vertex 2
+  m_polygon2[3].position   = {400, 300};         // bottom-left vertex (same as vertex 1)
+  m_polygon2[3].color      = {1.0, 1.0, 0, 1.0}; // yellow (same as vertex 1)
+  m_polygon2[4].position   = {600, 300};         // bottom-right vertex
+  m_polygon2[4].color      = {0, 0, 1.0, 1.0};   // blue
+  m_polygon2[5].position   = {600, 100};         // top-right vertex (same as vertex 2)
+  m_polygon2[5].color      = {0, 1.0, 0, 1.0};   // green (same as vertex 2
 
 
   // Gradient rectangle (4 triangles, 3 vertices each)
-  Log::verbose(Log::indent() + 1, "Success! Initializing vertex data for gradient_rect...");
+  Log::verbose(Log::indent() + 1, "Success! Initializing vertex data for m_gradient_rect...");
   // Triangle 1 (left side)
-  gradient_rect[0]  = {{100, 100}, {1.0f,0.0f,1.0f,1.0f}, {0.0f,0.0f}}; // top-left vertex (magenta)
-  gradient_rect[1]  = {{100, 300}, {1.0f,0.0f,0.0f,1.0f}, {0.0f,1.0f}}; // bottom-left vertex (red)
-  gradient_rect[2]  = {{200, 200}, {0.5f,0.5f,0.5f,1.0f}, {0.5f,0.5f}}; // center vertex (gray)
+  m_gradient_rect[0]  = {{100, 100}, {1.0f,0.0f,1.0f,1.0f}, {0.0f,0.0f}}; // top-left vertex (magenta)
+  m_gradient_rect[1]  = {{100, 300}, {1.0f,0.0f,0.0f,1.0f}, {0.0f,1.0f}}; // bottom-left vertex (red)
+  m_gradient_rect[2]  = {{200, 200}, {0.5f,0.5f,0.5f,1.0f}, {0.5f,0.5f}}; // center vertex (gray)
   // Triangle 2 (right side)
-  gradient_rect[3]  = {{300, 100}, {0.0f,1.0f,1.0f,1.0f}, {1.0f,0.0f}}; // top-right vertex (cyan)
-  gradient_rect[4]  = {{300, 300}, {0.0f,1.0f,0.0f,1.0f}, {1.0f,1.0f}}; // bottom-right vertex (green)
-  gradient_rect[5]  = {{200, 200}, {0.5f,0.5f,0.5f,1.0f}, {0.5f,0.5f}}; // center vertex (gray)
+  m_gradient_rect[3]  = {{300, 100}, {0.0f,1.0f,1.0f,1.0f}, {1.0f,0.0f}}; // top-right vertex (cyan)
+  m_gradient_rect[4]  = {{300, 300}, {0.0f,1.0f,0.0f,1.0f}, {1.0f,1.0f}}; // bottom-right vertex (green)
+  m_gradient_rect[5]  = {{200, 200}, {0.5f,0.5f,0.5f,1.0f}, {0.5f,0.5f}}; // center vertex (gray)
   // Triangle 3 (top side)
-  gradient_rect[6]  = {{100, 100}, {1.0f,0.0f,1.0f,1.0f}, {0.0f,0.0f}}; // top-left vertex (magenta)
-  gradient_rect[7]  = {{300, 100}, {0.0f,1.0f,1.0f,1.0f}, {1.0f,0.0f}}; // top-right vertex (cyan)
-  gradient_rect[8]  = {{200, 200}, {0.5f,0.5f,0.5f,1.0f}, {0.5f,0.5f}}; // center vertex (gray)
+  m_gradient_rect[6]  = {{100, 100}, {1.0f,0.0f,1.0f,1.0f}, {0.0f,0.0f}}; // top-left vertex (magenta)
+  m_gradient_rect[7]  = {{300, 100}, {0.0f,1.0f,1.0f,1.0f}, {1.0f,0.0f}}; // top-right vertex (cyan)
+  m_gradient_rect[8]  = {{200, 200}, {0.5f,0.5f,0.5f,1.0f}, {0.5f,0.5f}}; // center vertex (gray)
   // Triangle 4 (bottom side)
-  gradient_rect[9]  = {{100, 300}, {1.0f,0.0f,0.0f,1.0f}, {0.0f,1.0f}}; // bottom-left vertex (red)
-  gradient_rect[10] = {{300, 300}, {0.0f,1.0f,0.0f,1.0f}, {1.0f,1.0f}}; // bottom-right vertex (green)
-  gradient_rect[11] = {{200, 200}, {0.5f,0.5f,0.5f,1.0f}, {0.5f,0.5f}}; // center vertex (gray)
+  m_gradient_rect[9]  = {{100, 300}, {1.0f,0.0f,0.0f,1.0f}, {0.0f,1.0f}}; // bottom-left vertex (red)
+  m_gradient_rect[10] = {{300, 300}, {0.0f,1.0f,0.0f,1.0f}, {1.0f,1.0f}}; // bottom-right vertex (green)
+  m_gradient_rect[11] = {{200, 200}, {0.5f,0.5f,0.5f,1.0f}, {0.5f,0.5f}}; // center vertex (gray)
 
-  Log::verbose(Log::indent() + 1, "Moving gradient_rect down 300 px...");
-  // Move gradient_rect down 300 px
+  Log::verbose(Log::indent() + 1, "Moving m_gradient_rect down 300 px...");
+  // Move m_gradient_rect down 300 px
   for (int i = 0; i < GRADIENT_RECT_VERTEX_COUNT; i++)
   {
-    gradient_rect[i].position.y += 300;
+    m_gradient_rect[i].position.y += 300;
   }
 
 
   // Rainbow triangle vertex data
-  Log::verbose(Log::indent() + 1, "Success! Initializing vertex data for rainbow_triangle...");
+  Log::verbose(Log::indent() + 1, "Success! Initializing vertex data for m_rainbow_triangle...");
   // Top left vertex
-  rainbow_triangle[0] = {{700, 400}, {1.0f,0.0f,0.0f,1.0f}, {0.0f,0.0f}};
+  m_rainbow_triangle[0] = {{700, 400}, {1.0f,0.0f,0.0f,1.0f}, {0.0f,0.0f}};
   // Top right vertex
-  rainbow_triangle[1] = {{1100, 400}, {0.0f,1.0f,0.0f,1.0f}, {1.0f,0.0f}};
+  m_rainbow_triangle[1] = {{1100, 400}, {0.0f,1.0f,0.0f,1.0f}, {1.0f,0.0f}};
   // Bottom vertex
-  rainbow_triangle[2] = {{900, 800}, {0.0f,0.0f,1.0f,1.0f}, {0.5f,1.0f}};
+  m_rainbow_triangle[2] = {{900, 800}, {0.0f,0.0f,1.0f,1.0f}, {0.5f,1.0f}};
 
 
   Log::verbose("Vertex data initialized successfully!");
@@ -110,12 +110,12 @@ SDL_AppResult ScreenTest::init_text_texture()
 {
   LOG_FRAME_CLASS(ScreenTest);
   Log::verbose("{} texture for rendered text...",
-    (text_texture == nullptr? "Initializing" : "Updating"));
+    (m_text_texture == nullptr? "Initializing" : "Updating"));
   
   // Update text string first
   std::string new_text_str = (
       // Message box:
-      std::format("System: {}\n", system_str) +
+      std::format("System: {}\n", m_system_str) +
       // "FPS: " + std::to_string(game()->fps) + "\n" +
       std::format("Game Time: {:.2f} s\n", game()->time_ns() / 1000000000.0) +
       std::format("Delta Time: {:.4f} ms\n", game()->delta_time_ns() / 1000000.0) +
@@ -153,20 +153,20 @@ SDL_AppResult ScreenTest::init_text_texture()
   }
 
   // If previous texture exists, destroy it to free up GPU memory
-  if (text_texture != nullptr)
+  if (m_text_texture != nullptr)
   {
-    SDL_DestroyTexture(text_texture);
-    text_texture = nullptr;
+    SDL_DestroyTexture(m_text_texture);
+    m_text_texture = nullptr;
     Log::verbose(Log::indent() + 1, "Destroyed previous text texture");
   }
 
   // Create a texture from the surface
   // This uploads the image data to the GPU for efficient rendering.
-  text_texture = SDL_CreateTextureFromSurface(game()->renderer(), text_surface);
+  m_text_texture = SDL_CreateTextureFromSurface(game()->renderer(), text_surface);
   SDL_DestroySurface(text_surface); // We can free the surface after creating the texture
-  if (text_texture == nullptr)
+  if (m_text_texture == nullptr)
   {
-    return Log::error_init("text_texture");
+    return Log::error_init("m_text_texture");
   }
   else
   {
@@ -182,15 +182,15 @@ ScreenTest::~ScreenTest()
   LOG_FRAME_CLASS(ScreenTest);
 
   // Clean up text texture
-  if (text_texture != nullptr)
+  if (m_text_texture != nullptr)
   {
-    SDL_DestroyTexture(text_texture);
-    text_texture = nullptr;
+    SDL_DestroyTexture(m_text_texture);
+    m_text_texture = nullptr;
     Log::verbose("Destroyed text texture");
   }
   else
   {
-    Log::warn("text_texture was not initialized, no need to destroy");
+    Log::warn("m_text_texture was not initialized, no need to destroy");
   }
 }
 
@@ -237,14 +237,14 @@ SDL_AppResult ScreenTest::update()
 {
   LOG_FRAME_CLASS(ScreenTest);
 
-  // Update text_texture with new info
+  // Update m_text_texture with new info
   if (auto result = init_text_texture())
   {
     Log::critical("Error occurred while updating text texture, terminating...");
     return result;
   }
 
-  // Set rainbow_triangle colors to random values
+  // Set m_rainbow_triangle colors to random values
   //TODO seed rand?
 #define RAND_COLOR() \
 { \
@@ -252,11 +252,11 @@ SDL_AppResult ScreenTest::update()
   static_cast<float>(rand()) / RAND_MAX, \
   static_cast<float>(rand()) / RAND_MAX, 1.0f \
 }
-  rainbow_triangle[0].color = RAND_COLOR();
-  rainbow_triangle[1].color = RAND_COLOR();
-  rainbow_triangle[2].color = RAND_COLOR();
+  m_rainbow_triangle[0].color = RAND_COLOR();
+  m_rainbow_triangle[1].color = RAND_COLOR();
+  m_rainbow_triangle[2].color = RAND_COLOR();
 #undef RAND_COLOR
-  Log::verbose("Updated rainbow_triangle vertex colors to random values");
+  Log::verbose("Updated m_rainbow_triangle vertex colors to random values");
 
 
   return SDL_APP_CONTINUE;
@@ -266,50 +266,50 @@ SDL_AppResult ScreenTest::render(SDL_Renderer *renderer)
 {
   LOG_FRAME_CLASS(ScreenTest);
 
-  // render polygon1
+  // render m_polygon1
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   if (not SDL_RenderGeometry(renderer, NULL,
-    polygon1 ,VERTEX_COUNT, NULL, 0)
+    m_polygon1 ,VERTEX_COUNT, NULL, 0)
   )
   {
     return Log::critical(
-      "Failed to render geometry polygon1 with {} vertices: {}",
+      "Failed to render geometry m_polygon1 with {} vertices: {}",
       6, SDL_GetError());
   }
   Log::verbose("Polygon1 rendered");
 
-  // render polygon2
+  // render m_polygon2
   if (not SDL_RenderGeometry(renderer, NULL,
-    polygon2 ,VERTEX_COUNT, NULL, 0))
+    m_polygon2 ,VERTEX_COUNT, NULL, 0))
   {
     return Log::critical(
-      "Failed to render geometry polygon2 with {} vertices: {}",
+      "Failed to render geometry m_polygon2 with {} vertices: {}",
       6, SDL_GetError());
   }
   Log::verbose("Polygon2 rendered");
 
-  // render gradient_rect
+  // render m_gradient_rect
   if (not SDL_RenderGeometry(renderer, NULL,
-    gradient_rect ,GRADIENT_RECT_VERTEX_COUNT, NULL, 0))
+    m_gradient_rect ,GRADIENT_RECT_VERTEX_COUNT, NULL, 0))
   {
     return Log::critical(
-      "Failed to render geometry gradient_rect with {} vertices: {}",
+      "Failed to render geometry m_gradient_rect with {} vertices: {}",
       12, SDL_GetError());
   }
-  Log::verbose("gradient_rect rendered");
+  Log::verbose("m_gradient_rect rendered");
 
-  // render rainbow_triangle
+  // render m_rainbow_triangle
   if (not SDL_RenderGeometry(renderer, NULL,
-    rainbow_triangle ,3, NULL, 0))
+    m_rainbow_triangle ,3, NULL, 0))
   {
     return Log::critical(
-      "Failed to render geometry rainbow_triangle with {} vertices: {}",
+      "Failed to render geometry m_rainbow_triangle with {} vertices: {}",
       3, SDL_GetError());
   }
-  Log::verbose("rainbow_triangle rendered");
+  Log::verbose("m_rainbow_triangle rendered");
 
   // Lastly, render the text texture
-  if (text_texture != nullptr)
+  if (m_text_texture != nullptr)
   {
     // position to render text
     float x = 50.0f;
@@ -321,8 +321,8 @@ SDL_AppResult ScreenTest::render(SDL_Renderer *renderer)
     float y = 50.0f;
 #endif
     SDL_FRect text_rect = {x, y, 0.0f, 0.0f}; // We only set the x and y position here. The width and height will be determined by the texture
-    SDL_GetTextureSize(text_texture, &text_rect.w, &text_rect.h); // Get the width and height of the texture
-    if (not SDL_RenderTexture(renderer, text_texture, NULL, &text_rect)) // Render the texture to the screen at the specified position
+    SDL_GetTextureSize(m_text_texture, &text_rect.w, &text_rect.h); // Get the width and height of the texture
+    if (not SDL_RenderTexture(renderer, m_text_texture, NULL, &text_rect)) // Render the texture to the screen at the specified position
     {
       return Log::critical("Failed to render text texture: {}", SDL_GetError());
     }
