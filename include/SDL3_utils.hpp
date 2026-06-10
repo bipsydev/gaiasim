@@ -63,7 +63,7 @@ constexpr SDL_Color GAME_CLEAR_COLOR_DEFAULT = {0, 128, 255, 255};
  * but on other platforms, we return SDL's base path
  * plus the "assets/" subdirectory.
  *
- * @param asset_name
+ * @param asset_name The name of the asset file within the asset directory
  * @return constexpr std::string
  */
 inline constexpr std::string asset_dir(std::string asset_name)

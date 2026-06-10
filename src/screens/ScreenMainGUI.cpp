@@ -97,11 +97,11 @@ SDL_AppResult ScreenMainGUI::render(SDL_Renderer * renderer, GameWorld * world)
 
   SDL_AppResult result;
 
-  if (result = render_panel(renderer, m_left_sidebar)) return result;
+  if ((result = render_panel(renderer, m_left_sidebar))) return result;
 
-  if (result = render_panel(renderer, m_top_sidebar)) return result;
+  if ((result = render_panel(renderer, m_top_sidebar))) return result;
 
-  if (result = render_panel(renderer, m_main_panel, world)) return result;
+  if ((result = render_panel(renderer, m_main_panel, world))) return result;
 
   return SDL_APP_CONTINUE;
 }

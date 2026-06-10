@@ -45,7 +45,7 @@ SDL_AppResult GameWorld::init()
   SDL_AppResult result;
 
   // Generate the map texture based on the ASCII map
-  if (result = generate_map_texture()) return result;
+  if ((result = generate_map_texture())) return result;
 
   // generate the world map (chunks & blocks)
   return generate_world_map();
