@@ -18,20 +18,20 @@ SDL_AppResult ScreenMain::init()
   LOG_FRAME_CLASS(ScreenMain);
 
   // Initialize GUI instance for this screen
-  gui = new GUI();
+  m_gui = new GUI();
 
   // init the game world
-  world = new GameWorld(game());
+  m_world = new GameWorld(game());
 
   // attempt to generate the map texture based on the ASCII map
-  if (SDL_AppResult result = world->init())
+  if (SDL_AppResult result = m_world->init())
   {
     // if we failed, deallocate what we allocated earlier before returning
-    delete gui;
-    gui = nullptr;
+    delete m_gui;
+    m_gui = nullptr;
 
-    delete world;
-    world = nullptr;
+    delete m_world;
+    m_world = nullptr;
     
     return result;
   }
@@ -45,17 +45,17 @@ ScreenMain::~ScreenMain()
 {
   LOG_FRAME_CLASS(ScreenMain);
   // Clean up GUI instance
-  if (gui != nullptr)
+  if (m_gui != nullptr)
   {
-    delete gui;
-    gui = nullptr;
+    delete m_gui;
+    m_gui = nullptr;
   }
 
   // Clean up game world
-  if (world != nullptr)
+  if (m_world != nullptr)
   {
-    delete world;
-    world = nullptr;
+    delete m_world;
+    m_world = nullptr;
   }
 }
 
@@ -94,11 +94,11 @@ SDL_AppResult ScreenMain::event(SDL_Event *event)
   // handle GUI events first
   // TODO system to remove events from further processing (marked as "handled")
   SDL_AppResult result;
-  if ( (result = gui->event(game(), event)) )
+  if ( (result = m_gui->event(game(), event)) )
     return result;
   
   // handle game world events next
-  if ( (result = world->event(event)) )
+  if ( (result = m_world->event(event)) )
     return result;
 
 
@@ -114,11 +114,11 @@ SDL_AppResult ScreenMain::update()
   SDL_AppResult result;
 
   // update the game world
-  if ( (result = world->update()) )
+  if ( (result = m_world->update()) )
     return result;
 
   // update based on game's renderer
-  if ( (result = gui->update_layout(game())) )
+  if ( (result = m_gui->update_layout(game())) )
     return result;
 
   return SDL_APP_CONTINUE;
@@ -132,7 +132,7 @@ SDL_AppResult ScreenMain::render(SDL_Renderer *renderer)
 
   SDL_AppResult result;
   // Render the GUI for this screen (includes rendering of game world texture)
-  if ( (result = gui->render(renderer, world)) )
+  if ( (result = m_gui->render(renderer, m_world)) )
     return result;
 
   return SDL_APP_CONTINUE;

@@ -19,17 +19,17 @@ namespace bipsy::gaiasim
 class ScreenMain : public Screen
 {
   using GUI = gui::ScreenMainGUI;
-  GUI * gui;
+  GUI * m_gui;
   
   // The game world data & it's rendering data.
-  GameWorld *world;
+  GameWorld *m_world;
   
 
 public:
   ScreenMain(Game * game)
   : Screen(game, "ScreenMain", {0, 0, 0, 255}),
-    gui{nullptr},
-    world{nullptr}
+    m_gui{nullptr},
+    m_world{nullptr}
   { };
 
   // Prevent copying
