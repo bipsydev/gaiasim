@@ -4,24 +4,20 @@
 
 #include "Game.hpp"
 
-#include "SDL3/SDL.h" // IWYU pragma: keep SDL_FRect, SDL_Color, SDL_Texture...
+#include "SDL3/SDL.h"  // IWYU pragma: keep SDL_FRect, SDL_Color, SDL_Texture...
 
 #include <string>
-
 
 namespace bipsy::gaiasim
 {
 // forward declare GameWorld
 class GameWorld;
 
-
-
 namespace gui
 {
 
 class ScreenMainGUI
 {
-
   struct Panel
   {
     // values [0, 1]. This is the percentage of the width/height
@@ -35,15 +31,15 @@ class ScreenMainGUI
     SDL_Color m_color;
 
     // Texture for title text
-    SDL_Texture *m_title_texture = nullptr;
+    SDL_Texture * m_title_texture  = nullptr;
 
-    // Cached dimensions of the title texture when rendered with the larger font.
+    // Cached dimensions of the title texture when rendered with the larger
+    // font.
     SDL_FRect m_title_texture_size = {0, 0, 0, 0};
 
     // Flag for if small font should be used
-    bool m_use_small_font = false;
+    bool m_use_small_font          = false;
   };
-
 
   // The GUI panels
   Panel m_main_panel;
@@ -59,24 +55,24 @@ public:
   ScreenMainGUI();
   ~ScreenMainGUI();
 
-  SDL_AppResult update_layout(Game *game);
-  SDL_AppResult render(SDL_Renderer *renderer, GameWorld *world);
-  SDL_AppResult event(Game *game, SDL_Event *event);
+  SDL_AppResult update_layout(Game * game);
+  SDL_AppResult render(SDL_Renderer * renderer, GameWorld * world);
+  SDL_AppResult event(Game * game, SDL_Event * event);
 
 
 private:
+  SDL_AppResult generate_textures(Game * game);
 
-  SDL_AppResult generate_textures(Game *game);
+  SDL_AppResult create_panel_title_texture(Game * game, Panel & panel);
 
-  SDL_AppResult create_panel_title_texture(Game *game, Panel &panel);
+  SDL_AppResult render_panel(SDL_Renderer * renderer,
+                             Panel &        panel,
+                             GameWorld *    world = nullptr);
 
-  SDL_AppResult render_panel(SDL_Renderer *renderer, Panel &panel,
-                             GameWorld *world = nullptr);
+};  // class ScreenMainGUI
 
-}; // class ScreenMainGUI
+}  // namespace gui
 
-} // namespace bipsy::gaiasim::gui
+}  // namespace bipsy::gaiasim
 
-} // namespace bipsy::gaiasim
-
-#endif // BIPSY_GAIASIM_SCREEN_MAIN_GUI_HPP
+#endif  // BIPSY_GAIASIM_SCREEN_MAIN_GUI_HPP

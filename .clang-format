@@ -1,0 +1,318 @@
+# This format configuration is for C++
+Language: Cpp
+# Based on Google's style (used as defaults/template configuration)
+BasedOnStyle: Google
+
+# Pointer and Reference syntax alignment:
+# Align * and & to the middle, with spaces between type and variable names
+PointerAlignment: Middle
+ReferenceAlignment: Middle
+
+# This forces `const` on the left, but preserves things like `int *const x`
+QualifierAlignment: Left
+
+# `pubic`, `private`, and `protected`:
+# How much to indent/outdent access modifiers
+AccessModifierOffset: -2
+# this keeps it at the same level as the class name line
+
+# Whether or not to algin function parameters at the parenthesis location on a newline.
+AlignAfterOpenBracket: Align
+# This means we get extra indentation:
+# my_function_name(argument1,
+#                  argument2,
+#                  argument3);
+# Instead of normal 1-tab indentation with `DontAlign`:
+# my_function_name(argument1,
+#   argument2,
+#   argument3)
+# Another option is `AlwaysBreak`, which simply line-breaks once at open parenthesis to fit arguments if they don't fit, like:
+# my_function_name(
+#   argument1, argument2, argument3);
+
+AlignArrayOfStructures: Left
+
+
+# Should we align consecutive assignment lines?
+AlignConsecutiveAssignments: AcrossEmptyLinesAndComments
+# This means extra space before `=`, like this:
+# int aaaaa = 12;
+# int b     = 23;
+# int ccc   = 23;
+
+
+AlignConsecutiveBitFields: AcrossEmptyLinesAndComments
+
+
+# Should we align consecutive declarations?
+AlignConsecutiveDeclarations: AcrossEmptyLines
+# Sort of like the above, but with type names instead:
+# int         aaaaa = 12;
+# float       b = 23;
+# std::string ccc = 23;
+
+AlignConsecutiveMacros: AcrossEmptyLinesAndComments
+
+AlignConsecutiveShortCaseStatements:
+  Enabled: true
+  AcrossEmptyLines: true
+  AcrossComments: true
+  AlignCaseColons: false
+
+AlignEscapedNewlines: LeftWithLastLine
+
+# Should we align operands of expressions across multiple lines?
+AlignOperands: AlignAfterOperator
+# This gives us things like:
+# int aaa = bbbbbbb
+#         + ccccccc
+
+AlignTrailingComments:
+  Kind: Always
+  OverEmptyLines: 2
+
+# Allows this even if BinPackParameters is false
+AllowAllParametersOfDeclarationOnNextLine: true
+
+AllowBreakBeforeNoexceptSpecifier: OnlyWithParen
+
+# Allow things like `if (a) { return; }` on a single line
+AllowShortBlocksOnASingleLine: Always
+
+AllowShortCaseExpressionOnASingleLine: true
+
+# this applies to concepts, when specifying requirements
+AllowShortCompoundRequirementOnASingleLine: true
+
+AllowShortEnumsOnASingleLine: false
+
+# Allows things like `if (a) return;` on a single line
+AllowShortIfStatementsOnASingleLine: WithoutElse
+
+# Allow things like `int f() { return 0: }` on a single line
+AllowShortFunctionsOnASingleLine: All
+# This only allows it for inline methods within a class
+
+AllowShortLambdasOnASingleLine: All
+
+# in switch statements, compress to a single line if case block is single statement
+AllowShortCaseLabelsOnASingleLine: true
+
+# things like `while(true) continue;`
+AllowShortLoopsOnASingleLine: true
+
+AllowShortNamespacesOnASingleLine: false
+
+AlwaysBreakAfterDefinitionReturnType: None
+
+AlwaysBreakBeforeMultilineStrings: false
+
+AlwaysBreakTemplateDeclarations: true
+
+BinPackArguments: false
+
+BinPackParameters: false
+
+BitFieldColonSpacing: After
+
+# Define a custom style for brace line-breaking (don't follow Google's)
+BreakBeforeBraces: Custom
+# Here's the custom values: (true = newline before brace)
+BraceWrapping:
+  AfterCaseLabel: true
+  AfterClass: true
+  AfterControlStatement: Always
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterStruct: true
+  AfterUnion: true
+  AfterExternBlock: true
+  BeforeCatch: true
+  BeforeElse: true
+  BeforeLambdaBody: false
+  BeforeWhile: true
+  IndentBraces: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: true
+
+BracedInitializerIndentWidth: 4
+
+BreakAfterAttributes: Always
+
+BreakAfterReturnType: ExceptShortType
+
+# `All` will break before the operator instead of after (`None`)
+BreakBeforeBinaryOperators: All
+
+# these are all only if the line exceeds the widht limit (80)
+BreakBeforeCloseBracketBracedList: true
+BreakBeforeCloseBracketFunction: true
+BreakBeforeCloseBracketIf: true
+BreakBeforeCloseBracketLoop: true
+BreakBeforeCloseBracketSwitch: true
+
+BreakBeforeConceptDeclarations: Always
+
+# Ternary operator before or after line break?
+BreakBeforeTernaryOperators: false
+# This keeps the question mark at the end of the line
+
+# Break before or after comma in constructor's initializer list?
+BreakConstructorInitializers: BeforeComma
+# This aligns them with the colon on the first line!
+
+BreakInheritanceList: BeforeComma
+
+# Allow breaking of longer string literals
+BreakStringLiterals: true
+
+BreakTemplateDeclarations: Yes
+
+# Line-width limit
+ColumnLimit: 80
+
+# Protect "IWYU pragma" comments from being split
+# This is a regex
+CommentPragmas: '^ IWYU pragma'
+
+CompactNamespaces: false
+
+# If the initializer list doesn't fit on one line, it must be one-per-line.
+#ConstructorInitializerAllOnOneLineOrOnePerLine: false
+# depracated, see PackConstructorInitializers
+
+#TODO test if this works with the comma alignment:
+ConstructorInitializerIndentWidth: 0
+
+# 4x the normal indent for line continuations that don't auto-align with another rule
+ContinuationIndentWidth: 8
+
+# This treats brace-init-lists as a single statement with line-continuation and no padding, instead of vice-versa:
+Cpp11BracedListStyle: AlignFirstComment
+# basically, format brace initializer lists as more like a function call
+
+# DO NOT use the common alignment of & and * within the file, use our style instead!
+DerivePointerAlignment: false
+
+EmptyLineAfterAccessModifier: Never
+EmptyLineBeforeAccessModifier: Always
+
+# Leave trailing commas alone, don't enforce either way
+EnumTrailingComma: Leave
+
+# Enforce a comment at the end of namespace blocks with the namespace name
+FixNamespaceComments: true
+
+IndentAccessModifiers: false
+
+# Don't indent case blocks
+IndentCaseBlocks: false
+# Don't indent case labels in switch statements
+IndentCaseLabels: false
+
+IndentPPDirectives: None
+
+IndentRequiresClause: true
+
+#IndentWidth: 2  # No need to specify since it's part of Google's style
+
+IndentWrappedFunctionNames: false
+
+InsertBraces: false
+InsertNewlineAtEOF: true
+InsertTrailingCommas: None
+
+# Add separators in long constants to group digits together for readability
+IntegerLiteralSeparator:
+  Binary: 4
+  Decimal: 3
+  Hex: 4
+
+KeepEmptyLines:
+  AtEndOfFile: true
+  AtStartOfBlock: false
+  AtStartOfFile: true
+
+MaxEmptyLinesToKeep: 3
+
+LambdaBodyIndentation: Signature
+
+NamespaceIndentation: None
+
+PackConstructorInitializers: NextLineOnly
+
+# This is the "Formatting Penalty" clang-formatter understands that they incur when breaking before the first parameter of a function call name
+# A higher penalty means they will avoid this action more for stricter formatting.
+# A values of 10000 is the maximum penalty, meaning they will try at all costs to avoid this.
+#PenaltyBreakBeforeFirstCallParameter: 10000
+
+#PenaltyBreakComment: 1000
+
+# The first << (output stream operator)
+#PenaltyBreakFirstLessLess: 5000
+
+#PenaltyBreakString: 1000
+
+PenaltyExcessCharacter: 100000
+
+#PenaltyReturnTypeOnItsOwnLine: 10000
+
+# Allow the breaking of comments that are very long
+ReflowComments: true
+
+# Remove braces when not necessary for single-line if/while/for blocks
+RemoveBracesLLVM: true
+
+RemoveEmptyLinesInUnwrappedLines: true
+
+RemoveParentheses: MultipleParentheses
+RemoveSemicolon: true
+
+RequiresClausePosition: OwnLine
+
+RequiresExpressionIndentation: Keyword
+
+# Enforce empty lines between class & function definitions
+SeparateDefinitionBlocks: Always
+
+
+
+# DO NOT sort includes alphabetically, they should be based on source
+SortIncludes: false
+
+SpaceAfterCStyleCast: false
+SpaceAfterOperatorKeyword: true
+SpaceAfterTemplateKeyword: true
+SpaceAroundPointerQualifiers: Both
+
+SpaceBeforeAssignmentOperators: true
+
+# ONLY put a space before parenthesis if they are after a control flow statement like for, if, while, etc
+SpaceBeforeParens: ControlStatements
+
+SpaceInEmptyParentheses: false
+
+# The minimum number of spaces after the end of the statement that a line comment is allowed
+SpacesBeforeTrailingComments: 2
+
+SpacesInAngles: false
+
+# this enforces ( int )not_int for C-casts
+SpacesInCStyleCastParentheses: true
+
+SpacesInParentheses: false
+
+SpacesInSquareBrackets: false
+
+# I think this uses either c++11 or higher formatting ?? idk
+# https://releases.llvm.org/22.1.0/tools/clang/docs/ClangFormatStyleOptions.html
+# I see Cpp03 and Cpp11 as the only real options besides Auto
+# but idk if there's a newer one supported here ? or what this even does?
+Standard: Cpp11
+
+# no tabs, ever
+UseTab: Never
+
+

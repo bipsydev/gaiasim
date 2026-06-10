@@ -4,13 +4,12 @@
 
 #include "tab.hpp"
 
-#include "SDL3/SDL.h" // IWYU pragma: keep SDL_Color, SDL_LogMessage...
+#include "SDL3/SDL.h"   // IWYU pragma: keep SDL_Color, SDL_LogMessage...
 
-#include <format>   // std::format, std::format_string
-#include <string>   // std::string
-#include <string_view> // std::string_view
-#include <utility>  // std::forward
-
+#include <format>       // std::format, std::format_string
+#include <string>       // std::string
+#include <string_view>  // std::string_view
+#include <utility>      // std::forward
 
 namespace bipsy::sdl3_utils
 {
@@ -22,134 +21,133 @@ constexpr SDL_Color GAME_CLEAR_COLOR_DEFAULT = {0, 128, 255, 255};
 
 /**
  * @brief Returns the full path to an asset file, given its name.
- * 
+ *
  * On Android, assets are accessed relative to the APK's asset directory,
  * but on other platforms, we return SDL's base path
  * plus the "assets/" subdirectory.
- * 
- * @param asset_name 
- * @return constexpr std::string 
+ *
+ * @param asset_name
+ * @return constexpr std::string
  */
 inline constexpr std::string asset_dir(std::string asset_name)
 {
   // get the asset directory
   return
 #if not __ANDROID__
-  std::string(SDL_GetBasePath()) + "assets/" + asset_name;
+          std::string(SDL_GetBasePath()) + "assets/" + asset_name;
 #else
-  asset_name; // On Android, we can just use the asset name directly
-#endif // __ANDROID__
+          asset_name;  // On Android, we can just use the asset name directly
+#endif  // __ANDROID__
 }
-
 
 /**
  * @brief Singleton class for SDL logging utilities.
- * 
+ *
  * Uses the Meyers Singleton pattern.
- * 
+ *
  */
 class Log
 {
   /**
    * @brief Global flag to enable or disable info logging.
-   * 
+   *
    */
   static inline bool log_info_enabled = true;
 
   /**
    * @brief The current indentation level for logging messages.
-   * 
+   *
    * Default indentation width is 2 spaces, but TODO: can be configured
    */
   size_t m_indent;
 
 public:
-
-/***************************
- * INNER CLASS DECLARATION *
- ***************************/
-
-/**
- * @brief Increases indentation when constructed and decreases when destructed.
- *
- * Used to manage the indentation level for a block of messages.
- * The constructor increases the indentation level and the destructor
- * decreases the indentation level.
- * This allows us to use RAII to automatically an indentation within
- * a function call stack frame.
- *
- */
-class LogFrame
-{
-  // the function name for this frame
-  std::string_view m_fn_name;
-  // optional class name for this frame
-  std::string_view m_class_name;
-  // save the amount we indent/dedent by
-  size_t m_ind_amt;
-public:
-  /**
-   * @brief Increase indentation by a given amount, or 1 by default.
-   */
-  explicit LogFrame(std::string_view fn_name,
-                    std::string_view class_name = "",
-                    size_t indent_amount = 1)
-  : m_fn_name{fn_name},
-    m_class_name{class_name},
-    m_ind_amt{indent_amount}
-  {
-    // this is formatted with a tab size of 2 in mind, can change later
-    static_assert(bipsy::tab_impl::tab_size == 2);
-
-    // print class name if given, or just function name
-    if (m_class_name.length() > 0)
-      Log::trace("+ Entered {}::{}", m_class_name, m_fn_name);
-    else
-      Log::trace("+ Entered {}", m_fn_name);
-
-    // increase indentation level after printing to show + deeper in line
-    Log::increase_indent(m_ind_amt);
-  }
+  /***************************
+   * INNER CLASS DECLARATION *
+   ***************************/
 
   /**
-   * @brief Decrease indentation by the same amount we incraeased by.
+   * @brief Increases indentation when constructed and decreases when
+   * destructed.
+   *
+   * Used to manage the indentation level for a block of messages.
+   * The constructor increases the indentation level and the destructor
+   * decreases the indentation level.
+   * This allows us to use RAII to automatically an indentation within
+   * a function call stack frame.
+   *
    */
-  ~LogFrame()
+  class LogFrame
   {
-    // decrease indentation level first to show - deeper in line
-    Log::decrease_indent(m_ind_amt);
+    // the function name for this frame
+    std::string_view m_fn_name;
+    // optional class name for this frame
+    std::string_view m_class_name;
+    // save the amount we indent/dedent by
+    size_t m_ind_amt;
 
-    // print class name if given, or just function name
-    if (m_class_name.length() > 0)
-      Log::trace("- Exiting {}::{}", m_class_name, m_fn_name);
-    else
-      Log::trace("- Exiting {}", m_fn_name);
-  }
+  public:
+    /**
+     * @brief Increase indentation by a given amount, or 1 by default.
+     */
+    explicit LogFrame(std::string_view fn_name,
+                      std::string_view class_name    = "",
+                      size_t           indent_amount = 1)
+    : m_fn_name{fn_name}, m_class_name{class_name}, m_ind_amt{indent_amount}
+    {
+      // this is formatted with a tab size of 2 in mind, can change later
+      static_assert(bipsy::tab_impl::tab_size == 2);
 
-  // Prevent copying
-  LogFrame(const LogFrame&) = delete;
-  LogFrame& operator=(const LogFrame&) = delete;
+      // print class name if given, or just function name
+      if (m_class_name.length() > 0)
+        Log::trace("+ Entered {}::{}", m_class_name, m_fn_name);
+      else
+        Log::trace("+ Entered {}", m_fn_name);
 
-}; // class LogFrame
+      // increase indentation level after printing to show + deeper in line
+      Log::increase_indent(m_ind_amt);
+    }
 
+    /**
+     * @brief Decrease indentation by the same amount we incraeased by.
+     */
+    ~LogFrame()
+    {
+      // decrease indentation level first to show - deeper in line
+      Log::decrease_indent(m_ind_amt);
+
+      // print class name if given, or just function name
+      if (m_class_name.length() > 0)
+        Log::trace("- Exiting {}::{}", m_class_name, m_fn_name);
+      else
+        Log::trace("- Exiting {}", m_fn_name);
+    }
+
+    // Prevent copying
+    LogFrame(const LogFrame &)              = delete;
+    LogFrame & operator =(const LogFrame &) = delete;
+
+  };  // class LogFrame
 
 // helper macros for concatenation of line number
 #define BIPSY_LOG_FRAME_CONCAT_IMPL(a, b) a##b
-#define BIPSY_LOG_FRAME_CONCAT(a, b) BIPSY_LOG_FRAME_CONCAT_IMPL(a, b)
+#define BIPSY_LOG_FRAME_CONCAT(a, b)      BIPSY_LOG_FRAME_CONCAT_IMPL(a, b)
 // Another convenience macro to create a log frame for a class member method
-#define LOG_FRAME_CLASS(Class) \
-  ::bipsy::sdl3_utils::Log::LogFrame BIPSY_LOG_FRAME_CONCAT(_log_frame_, __LINE__)(__func__, #Class)
+#define LOG_FRAME_CLASS(Class)                                           \
+  ::bipsy::sdl3_utils::Log::LogFrame BIPSY_LOG_FRAME_CONCAT(_log_frame_, \
+                                                            __LINE__)(   \
+          __func__, #Class                                               \
+  )
 // Convenience macro to create a log frame for a function
 // uses ##__LINE__ to append line number to the variable name,
 // and __func__ to feed in the function name as a string.
 #define LOG_FRAME() LOG_FRAME_CLASS()
 
-
   /***********************
    * METHOD DECLARATIONS *
    ***********************/
 
-  static Log& instance()
+  static Log & instance()
   {
     // Guaranteed to be instantiated only once on first use
     static Log instance;
@@ -159,36 +157,35 @@ public:
   }
 
   // Prevent copying and assignment (singleton)
-  Log(const Log&) = delete;
-  Log& operator=(const Log&) = delete;
-
+  Log(const Log &)              = delete;
+  Log & operator =(const Log &) = delete;
 
   // ---- Indentation control functions ----
 
   /**
    * @brief Get a reference to the singleton's indentation level.
-   * 
+   *
    * @return size_t& reference
    */
-  static size_t& indent()  { return instance().m_indent; }
+  static size_t & indent() { return instance().m_indent; }
 
   /**
    * @brief Get the indentation level.
-   * 
+   *
    * @return size_t value
    */
-  static size_t get_indent()  { return instance().m_indent; }
+  static size_t get_indent() { return instance().m_indent; }
 
   /**
    * @brief Set the indentation level.
-   * 
+   *
    * @param indent size_t
    */
-  static void set_indent(size_t indent)  { instance().m_indent = indent; }
+  static void set_indent(size_t indent) { instance().m_indent = indent; }
 
   /**
    * @brief Increase the indentation level by a certain amount, or 1 by default.
-   * 
+   *
    * @param amount Default is 1
    */
   static void increase_indent(size_t amount = 1)
@@ -196,32 +193,30 @@ public:
 
   /**
    * @brief Decrease the indentation level by a certain amount, or 1 by default.
-   * 
+   *
    * @param amount Default is 1
    */
   static void decrease_indent(size_t amount = 1)
   {
     instance().m_indent = (instance().m_indent >= amount) ?
-        instance().m_indent - amount :
-        0;
+                                  instance().m_indent - amount :
+                                  0;
   }
 
   /**
    * @brief Reset the indentation level to 0.
    */
-  static void reset_indent()  { instance().m_indent = 0; }
-
-
+  static void reset_indent() { instance().m_indent = 0; }
 
   /**
    * @brief Helper function to log an SDL error message for a specific
    *        subsystem initialization failure.
-   * 
+   *
    * @param subsystem The name of the subsystem that failed to initialize.
-   * 
+   *
    * @return SDL_AppResult SDL_APP_FAILURE for convenience.
    */
-  //template <typename... Args>
+  // template <typename... Args>
   static inline SDL_AppResult error_init(std::string subsystem)
   {
     error("Failed to initialize {}: {}", subsystem, SDL_GetError());
@@ -234,234 +229,241 @@ public:
   static inline constexpr void info_enable(bool enable = true)
   { log_info_enabled = enable; }
 
-  static inline constexpr void info_disable()
-  { info_enable(false); }
-
+  static inline constexpr void info_disable() { info_enable(false); }
 
   /**
    * @brief Log a message of given priority, with optional indentation level.
-   * 
+   *
    * @tparam Args Variadic template parameters for the format arguments.
    * @param indent Number of indentation levels to apply.
-   *               Omit this to call the overload that uses the global indentation level.
+   *               Omit this to call the overload that uses the global
+   * indentation level.
    * @param message A std::format-style format string for the log message.
    * @param args Format arguments for the log message.
    */
   template <typename... Args>
-  static inline void log(SDL_LogPriority priority, size_t indent,
-                         std::format_string<Args...> message, Args&&... args)
+  static inline void log(SDL_LogPriority             priority,
+                         size_t                      indent,
+                         std::format_string<Args...> message,
+                         Args &&... args)
   {
-    SDL_LogIndent(indent, priority,
+    SDL_LogIndent(indent,
+                  priority,
                   std::format(message, std::forward<Args>(args)...));
   }
 
   template <typename... Args>
-  static inline void log(SDL_LogPriority priority,
-                         std::format_string<Args...> message, Args&&... args)
-  {
-    log(priority, instance().indent(), message, std::forward<Args>(args)...);
-  }
-
+  static inline void log(SDL_LogPriority             priority,
+                         std::format_string<Args...> message,
+                         Args &&... args)
+  { log(priority, instance().indent(), message, std::forward<Args>(args)...); }
 
   /**
    * @brief Log a TRACE-level message, with optional indentation level.
-   * 
+   *
    * @tparam Args Variadic template parameters for the format arguments.
    * @param indent Number of indentation levels to apply.
-   *               Omit this to call the overload that uses the global indentation level.
+   *               Omit this to call the overload that uses the global
+   * indentation level.
    * @param message A std::format-style format string for the log message.
    * @param args Format arguments for the log message.
    */
   template <typename... Args>
-  static inline void trace(size_t indent,
+  static inline void trace(size_t                      indent,
                            std::format_string<Args...> message,
-                           Args&&... args)
+                           Args &&... args)
   {
-    SDL_LogIndent(indent, SDL_LogPriority::SDL_LOG_PRIORITY_TRACE,
+    SDL_LogIndent(indent,
+                  SDL_LogPriority::SDL_LOG_PRIORITY_TRACE,
                   std::format(message, std::forward<Args>(args)...));
   }
 
   template <typename... Args>
-  static inline void trace(std::format_string<Args...> message, Args&&... args)
-  {
-    trace(instance().indent(), message, std::forward<Args>(args)...);
-  }
+  static inline void trace(std::format_string<Args...> message, Args &&... args)
+  { trace(instance().indent(), message, std::forward<Args>(args)...); }
 
   /**
    * @brief Log a VERBOSE-level message, with optional indentation level.
-   * 
+   *
    * @tparam Args Variadic template parameters for the format arguments.
    * @param indent Number of indentation levels to apply.
-   *               Omit this to call the overload that uses the global indentation level.
+   *               Omit this to call the overload that uses the global
+   * indentation level.
    * @param message A std::format-style format string for the log message.
    * @param args Format arguments for the log message.
-   * 
+   *
    * @warning see `trace` function's @@warning
    */
   template <typename... Args>
-  static inline void verbose(size_t indent,
+  static inline void verbose(size_t                      indent,
                              std::format_string<Args...> message,
-                             Args&&... args)
+                             Args &&... args)
   {
-    SDL_LogIndent(indent, SDL_LogPriority::SDL_LOG_PRIORITY_VERBOSE,
+    SDL_LogIndent(indent,
+                  SDL_LogPriority::SDL_LOG_PRIORITY_VERBOSE,
                   std::format(message, std::forward<Args>(args)...));
   }
 
   template <typename... Args>
-  static inline void verbose(std::format_string<Args...> message, Args&&... args)
-  {
-    verbose(instance().indent(), message, std::forward<Args>(args)...);
-  }
+  static inline void verbose(std::format_string<Args...> message,
+                             Args &&... args)
+  { verbose(instance().indent(), message, std::forward<Args>(args)...); }
 
   /**
    * @brief Log a DEBUG-level message, with optional indentation level.
-   * 
+   *
    * @tparam Args Variadic template parameters for the format arguments.
    * @param indent Number of indentation levels to apply.
-   *               Omit this to call the overload that uses the global indentation level.
+   *               Omit this to call the overload that uses the global
+   * indentation level.
    * @param message A std::format-style format string for the log message.
    * @param args Format arguments for the log message.
-   * 
+   *
    * @warning see `trace` function's @@warning
    */
   template <typename... Args>
-  static inline void debug(size_t indent,
+  static inline void debug(size_t                      indent,
                            std::format_string<Args...> message,
-                           Args&&... args)
+                           Args &&... args)
   {
-    SDL_LogIndent(indent, SDL_LogPriority::SDL_LOG_PRIORITY_DEBUG,
+    SDL_LogIndent(indent,
+                  SDL_LogPriority::SDL_LOG_PRIORITY_DEBUG,
                   std::format(message, std::forward<Args>(args)...));
   }
 
   template <typename... Args>
-  static inline void debug(std::format_string<Args...> message, Args&&... args)
-  {
-    debug(instance().indent(), message, std::forward<Args>(args)...);
-  }
+  static inline void debug(std::format_string<Args...> message, Args &&... args)
+  { debug(instance().indent(), message, std::forward<Args>(args)...); }
 
   /**
    * @brief Log an INFO-level message, with optional indentation level.
-   * 
+   *
    * @tparam Args Variadic template parameters for the format arguments.
    * @param indent Number of indentation levels to apply.
-   *               Omit this to call the overload that uses the global indentation level.
+   *               Omit this to call the overload that uses the global
+   * indentation level.
    * @param message A std::format-style format string for the log message.
    * @param args Format arguments for the log message.
-   * 
+   *
    * @warning see `trace` function's @@warning
    */
   template <typename... Args>
-  static inline void info(size_t indent,
+  static inline void info(size_t                      indent,
                           std::format_string<Args...> message,
-                          Args&&... args)
+                          Args &&... args)
   {
     if (log_info_enabled)
     {
-      SDL_LogIndent(indent, SDL_LogPriority::SDL_LOG_PRIORITY_INFO,
+      SDL_LogIndent(indent,
+                    SDL_LogPriority::SDL_LOG_PRIORITY_INFO,
                     std::format(message, std::forward<Args>(args)...));
     }
   }
 
   template <typename... Args>
-  static inline void info(std::format_string<Args...> message, Args&&... args)
-  {
-    info(instance().indent(), message, std::forward<Args>(args)...);
-  }
+  static inline void info(std::format_string<Args...> message, Args &&... args)
+  { info(instance().indent(), message, std::forward<Args>(args)...); }
 
   /**
    * @brief Log a WARN-level message, with optional indentation level.
-   * 
+   *
    * @tparam Args Variadic template parameters for the format arguments.
    * @param indent Number of indentation levels to apply.
-   *               Omit this to call the overload that uses the global indentation level.
+   *               Omit this to call the overload that uses the global
+   * indentation level.
    * @param message A std::format-style format string for the log message.
    * @param args Format arguments for the log message.
-   * 
+   *
    * @return SDL_AppResult `SDL_APP_FAILURE` for convenience in error handling.
-   * 
+   *
    * @warning see `trace` function's @@warning
    */
   template <typename... Args>
-  static inline SDL_AppResult warn(size_t indent,
+  static inline SDL_AppResult warn(size_t                      indent,
                                    std::format_string<Args...> message,
-                                   Args&&... args)
+                                   Args &&... args)
   {
-    SDL_LogIndent(indent, SDL_LogPriority::SDL_LOG_PRIORITY_WARN,
+    SDL_LogIndent(indent,
+                  SDL_LogPriority::SDL_LOG_PRIORITY_WARN,
                   std::format(message, std::forward<Args>(args)...));
     return SDL_APP_FAILURE;
   }
 
   template <typename... Args>
-  static inline SDL_AppResult warn(std::format_string<Args...> message, Args&&... args)
-  {
-    return warn(instance().indent(), message, std::forward<Args>(args)...);
-  }
+  static inline SDL_AppResult warn(std::format_string<Args...> message,
+                                   Args &&... args)
+  { return warn(instance().indent(), message, std::forward<Args>(args)...); }
 
   /**
    * @brief Log a ERROR-level message, with optional indentation level.
-   * 
+   *
    * @tparam Args Variadic template parameters for the format arguments.
    * @param indent Number of indentation levels to apply.
-   *               Omit this to call the overload that uses the global indentation level.
+   *               Omit this to call the overload that uses the global
+   * indentation level.
    * @param message A std::format-style format string for the log message.
    * @param args Format arguments for the log message.
-   * 
+   *
    * @return SDL_AppResult `SDL_APP_FAILURE` for convenience in error handling.
-   * 
+   *
    * @warning see `trace` function's @@warning
    */
   template <typename... Args>
-  static inline SDL_AppResult error(size_t indent,
+  static inline SDL_AppResult error(size_t                      indent,
                                     std::format_string<Args...> message,
-                                    Args&&... args)
+                                    Args &&... args)
   {
-    SDL_LogIndent(indent, SDL_LogPriority::SDL_LOG_PRIORITY_ERROR,
+    SDL_LogIndent(indent,
+                  SDL_LogPriority::SDL_LOG_PRIORITY_ERROR,
                   std::format(message, std::forward<Args>(args)...));
     return SDL_APP_FAILURE;
   }
 
   template <typename... Args>
-  static inline SDL_AppResult error(std::format_string<Args...> message, Args&&... args)
-  {
-    return error(instance().indent(), message, std::forward<Args>(args)...);
-  }
+  static inline SDL_AppResult error(std::format_string<Args...> message,
+                                    Args &&... args)
+  { return error(instance().indent(), message, std::forward<Args>(args)...); }
 
   /**
    * @brief Log a CRITICAL-level message, with optional indentation level.
-   * 
+   *
    * @tparam Args Variadic template parameters for the format arguments.
    * @param indent Number of indentation levels to apply.
-   *               Omit this to call the overload that uses the global indentation level.
+   *               Omit this to call the overload that uses the global
+   * indentation level.
    * @param message A std::format-style format string for the log message.
    * @param args Format arguments for the log message.
-   * 
+   *
    * @return SDL_AppResult `SDL_APP_FAILURE` for convenience in error handling.
-   * 
+   *
    * @warning see `trace` function's @@warning
    */
   template <typename... Args>
-  static inline SDL_AppResult critical(size_t indent,
+  static inline SDL_AppResult critical(size_t                      indent,
                                        std::format_string<Args...> message,
-                                       Args&&... args)
+                                       Args &&... args)
   {
-    SDL_LogIndent(indent, SDL_LogPriority::SDL_LOG_PRIORITY_CRITICAL,
+    SDL_LogIndent(indent,
+                  SDL_LogPriority::SDL_LOG_PRIORITY_CRITICAL,
                   std::format(message, std::forward<Args>(args)...));
     return SDL_APP_FAILURE;
   }
 
   template <typename... Args>
-  static inline SDL_AppResult critical(std::format_string<Args...> message, Args&&... args)
+  static inline SDL_AppResult critical(std::format_string<Args...> message,
+                                       Args &&... args)
   {
     return critical(instance().indent(), message, std::forward<Args>(args)...);
   }
 
-
-  static inline constexpr std::string get_log_priority_name(SDL_LogPriority priority)
+  static inline constexpr std::string get_log_priority_name(
+          SDL_LogPriority priority
+  )
   {
     switch (priority)
     {
-  #define CASE(PRIORITY) \
-      case SDL_LOG_PRIORITY_ ##PRIORITY: return #PRIORITY;
+#define CASE(PRIORITY)                                \
+  case SDL_LOG_PRIORITY_##PRIORITY: return #PRIORITY;
       CASE(TRACE)
       CASE(VERBOSE)
       CASE(DEBUG)
@@ -471,57 +473,51 @@ public:
       CASE(CRITICAL)
       CASE(INVALID)
       CASE(COUNT)
-  #undef CASE
-      default: return "UNKNOWN";
+#undef CASE
+    default: return "UNKNOWN";
     }
   }
 
 
 private:
   // Prevent instantiation from outside the class
-  Log(): m_indent{0}  { }
+  Log()
+  : m_indent{0}
+  {}
 
   /**
    * @brief Logs an SDL info message with specified indentation level.
-   * 
+   *
    * Uses std::format to produce a final message and logs it as plain text,
    * with indentation applied using the `tab` function from `tab.hpp`.
-   * 
+   *
    * @param indent The number of indentation levels to apply, two spaces each.
    *               `indent * 2 == space_count`.
    * @param priority The SDL_LogPriority level for the message
    *                 (e.g. SDL_LOG_PRIORITY_INFO).
    * @param message The final message text to log.
    */
-  static inline void SDL_LogIndent(size_t indent, SDL_LogPriority priority,
+  static inline void SDL_LogIndent(size_t           indent,
+                                   SDL_LogPriority  priority,
                                    std::string_view message)
   {
     const std::string indented = bipsy::tab(indent) + std::string(message);
 
-    SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION,
-                  priority,
-                  "%s",
-                  indented.c_str());
+    SDL_LogMessage(
+            SDL_LOG_CATEGORY_APPLICATION, priority, "%s", indented.c_str()
+    );
   }
-
 };
 
 
-} // namespace bipsy::sdl3_utils
-
-
+}  // namespace bipsy::sdl3_utils
 
 template <>
-struct std::formatter<SDL_AppResult, char>
-    : std::formatter<int, char>
+struct std::formatter<SDL_AppResult, char> : std::formatter<int, char>
 {
-  auto format(SDL_AppResult result,
-              std::format_context& ctx) const
-  {
-    return std::formatter<int, char>::format(
-      static_cast<int>(result), ctx);
-  }
+  auto format(SDL_AppResult result, std::format_context & ctx) const
+  { return std::formatter<int, char>::format(static_cast<int>(result), ctx); }
 };
 
 
-#endif // BIPSY_SDL3_UTILS_HPP
+#endif  // BIPSY_SDL3_UTILS_HPP

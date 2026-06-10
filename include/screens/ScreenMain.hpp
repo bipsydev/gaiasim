@@ -8,10 +8,9 @@
 #include "Game.hpp"
 #include "GameWorld.hpp"
 
-#include "SDL3/SDL.h" // IWYU pragma: keep SDL_AppResult
+#include "SDL3/SDL.h"  // IWYU pragma: keep SDL_AppResult
 
 #include <string>
-
 
 namespace bipsy::gaiasim
 {
@@ -20,31 +19,29 @@ class ScreenMain : public Screen
 {
   using GUI = gui::ScreenMainGUI;
   GUI * m_gui;
-  
+
   // The game world data & it's rendering data.
-  GameWorld *m_world;
-  
+  GameWorld * m_world;
+
 
 public:
   ScreenMain(Game * game)
-  : Screen(game, "ScreenMain", {0, 0, 0, 255}),
-    m_gui{nullptr},
-    m_world{nullptr}
-  { };
+  : Screen(game, "ScreenMain", {0, 0, 0, 255}), m_gui{nullptr}, m_world{nullptr}
+  {}
 
   // Prevent copying
-  ScreenMain(const ScreenMain &) = delete;
-  ScreenMain &operator=(const ScreenMain &) = delete;
+  ScreenMain(const ScreenMain &)              = delete;
+  ScreenMain & operator =(const ScreenMain &) = delete;
 
   virtual ~ScreenMain();
 
   SDL_AppResult init() override;
 
-  SDL_AppResult event(SDL_Event *event) override;
+  SDL_AppResult event(SDL_Event * event) override;
   SDL_AppResult update() override;
-  SDL_AppResult render(SDL_Renderer *renderer) override;
+  SDL_AppResult render(SDL_Renderer * renderer) override;
 };
 
-} // namespace bipsy::gaiasim
+}  // namespace bipsy::gaiasim
 
-#endif // BIPSY_GAIASIM_SCREEN_MAIN_HPP
+#endif  // BIPSY_GAIASIM_SCREEN_MAIN_HPP

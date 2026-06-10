@@ -2,24 +2,21 @@
 #ifndef BIPSY_GAIASIM_GAME_HPP
 #define BIPSY_GAIASIM_GAME_HPP
 
-
-#include "SDL3_utils.hpp"
-#include "Screen.hpp"
-
-#include "SDL3/SDL.h" // IWYU pragma: keep Uint8, SDL_Window, SDL_Renderer...
-#include "SDL3_ttf/SDL_ttf.h"
-
 #include <cassert>
 #include <string>
 #include <vector>
 
+#include "SDL3/SDL.h"  // IWYU pragma: keep Uint8, SDL_Window, SDL_Renderer...
+#include "SDL3_ttf/SDL_ttf.h"
+#include "SDL3_utils.hpp"
+#include "Screen.hpp"
 
 namespace bipsy::gaiasim
 {
 
 /**
  * @brief Local application running state structure.
- * 
+ *
  * Contains pointers to SDL objects for window, renderer, etc along with
  * other local application running state information. This object is
  * initialized once in SDL_AppInit and then passed around in the rest of the
@@ -27,7 +24,6 @@ namespace bipsy::gaiasim
  */
 class Game
 {
-
   /****************
    * DATA MEMBERS *
    ****************/
@@ -39,70 +35,65 @@ class Game
   Uint8 m_active_screen_index;
 
   // -- SDL objects --
-  SDL_Window   *m_window;   // Window object
-  SDL_Renderer *m_renderer; // Rendering context to window
+  SDL_Window *   m_window;       // Window object
+  SDL_Renderer * m_renderer;     // Rendering context to window
 
-  SDL_Color m_clear_color;  // Clear/bg color for the renderer
+  SDL_Color      m_clear_color;  // Clear/bg color for the renderer
 
-  TTF_Font *m_font;       // Global font
-  TTF_Font *m_font_small; // Smaller font
-  TTF_Font *m_font_large; // Larger font
+  TTF_Font *     m_font;         // Global font
+  TTF_Font *     m_font_small;   // Smaller font
+  TTF_Font *     m_font_large;   // Larger font
   // Alias for larger font, for HiDPI displays
-  TTF_Font *&m_font_hidpi = m_font_large; 
+  TTF_Font *& m_font_hidpi = m_font_large;
 
   // -- Time-related variables --
-  int m_frame;          // Frame count
-  Uint64 m_time_ns;     // Time (nanoseconds) since SDL initialization
-                      // (updated at the beginning of each frame)
-  Uint64 m_delta_time_ns;   // Time (ns) taken to render the previous frame
-
-
+  int    m_frame;          // Frame count
+  Uint64 m_time_ns;        // Time (nanoseconds) since SDL initialization
+                           // (updated at the beginning of each frame)
+  Uint64 m_delta_time_ns;  // Time (ns) taken to render the previous frame
 
 public:
-
   /**
    * @brief Flags for requesting/indicating certain initialization steps.
-   * 
+   *
    * Each consecutive flag requires previous steps to also be initialized.
    * The order is as follows:
-   * 
+   *
    *        LIBRARIES -> SYSTEM_OBJECTS -> GAME_STATE
-   * 
+   *
    * So for example, if you request GAME_STATE initialization, it will
    * also initialize SYSTEM_OBJECTS and LIBRARIES in order before
    * initializing GAME_STATE.
-   * 
+   *
    * LIBRARIES:      SDL, it's subsystems, and any other external libraries.
-   * 
+   *
    * SYSTEM_OBJECTS: Global SDL/system objects like window, renderer, etc
    *                 that are allocated for the entire duration
    *                 of the `Game`'s lifetime.
-   * 
+   *
    * GAME_STATE:     The initial game state, which includes loading assets and
    *                 starting an initial beginning scene.
    */
   enum InitRequest : Uint8
   {
-    NONE            = 0U,
-    LIBRARIES       = 1U,
-    SYSTEM_OBJECTS  = 2U,
-    GAME_STATE      = 3U,
-    ALL             = 3U, // Same as GAME_STATE
+    NONE           = 0U,
+    LIBRARIES      = 1U,
+    SYSTEM_OBJECTS = 2U,
+    GAME_STATE     = 3U,
+    ALL            = 3U,  // Same as GAME_STATE
   };
 
 private:
-  InitRequest m_inits_complete; // This tracks which initialization steps have been completed
-
+  InitRequest m_inits_complete;  // This tracks which initialization steps have
+                                 // been completed
 
 public:
-
   /******************************
    * STATIC METHOD DECLARATIONS *
    ******************************/
 
-  static SDL_AppResult new_game(void *&appstate,
+  static SDL_AppResult new_game(void *&     appstate,
                                 InitRequest initializations = ALL);
-
 
   /***********************
    * METHOD DECLARATIONS *
@@ -110,32 +101,31 @@ public:
 
   /**
    * @brief Construct a new Game object.
-   * 
+   *
    * This also calls every `init_*` function in order by default.
-   * 
+   *
    * @param initializations Flags for requesting certain initialization
    *                        steps in the constructor.
-   * 
+   *
    */
   Game(InitRequest initializations = ALL);
 
   // Delete copy constructor to prevent copying (may implement later if needed)
-  Game(const Game &) = delete;
+  Game(const Game &)                          = delete;
   // Delete copy assignment operator to prevent copying (may implement later)
-  Game &operator=(const Game &) = delete;
+  Game &             operator =(const Game &) = delete;
 
-  SDL_AppResult init(InitRequest initializations = ALL);
+  SDL_AppResult      init(InitRequest initializations = ALL);
 
-  SDL_AppResult init_libraries();
-  SDL_AppResult init_system_objects();
-  SDL_AppResult init_game_state();
+  SDL_AppResult      init_libraries();
+  SDL_AppResult      init_system_objects();
+  SDL_AppResult      init_game_state();
 
-  SDL_AppResult event(SDL_Event *event);
-  SDL_AppResult iterate();
-  SDL_AppResult update();
-  SDL_AppResult render();
-  SDL_AppResult post_render_update();
-
+  SDL_AppResult      event(SDL_Event * event);
+  SDL_AppResult      iterate();
+  SDL_AppResult      update();
+  SDL_AppResult      render();
+  SDL_AppResult      post_render_update();
 
   constexpr Screen * active_screen() const
   {
@@ -145,67 +135,64 @@ public:
     return m_screens[m_active_screen_index];
   }
 
-  // --- Getters for data members ---
+// --- Getters for data members ---
 
-  /** 
-   * @brief Helper macro to generate getters for data members
-   * @details Each GETTER generates two functions:
-   *          - one named 'name()' that returns `m_name`
-   *          - and another named 'get_name()' that does the same thing.
-   */
-  #define GETTER(type, name) \
-    type name() const { return m_##name; } \
-    type get_##name() const { return m_##name; }
-  
-  #define GETTER_CODE(type, name, code) \
-    type name() const { code } \
-    type get_##name() const { code }
+/**
+ * @brief Helper macro to generate getters for data members
+ * @details Each GETTER generates two functions:
+ *          - one named 'name()' that returns `m_name`
+ *          - and another named 'get_name()' that does the same thing.
+ */
+#define GETTER(type, name)                     \
+  type name() const { return m_##name; }       \
+  type get_##name() const { return m_##name; }
 
-  #define SETTER(type, name) \
-    void set_##name(type value) { m_##name = value; }
+#define GETTER_CODE(type, name, code)                       \
+  type name() const {code} type get_##name() const { code }
 
-  
+#define SETTER(type, name)                          \
+  void set_##name(type value) { m_##name = value; }
+
   // Getters for time-related variables and FPS
   GETTER(Uint64, time_ns)
   GETTER(Uint64, delta_time_ns)
 
-  GETTER_CODE(double, fps,
-  {
-    // Avoid division by zero, return 0 FPS if delta_time_ns is 0
-    if (m_delta_time_ns == 0)
-    {
-      return 0.0;
-    }
-    return 1e9 / static_cast<double>(m_delta_time_ns);
-  })
+  GETTER_CODE(double,
+              fps,  //
+              {
+                // Avoid division by zero, return 0 FPS if delta_time_ns is 0
+                if (m_delta_time_ns == 0) return 0.0;
+                return 1e9 / static_cast<double>(m_delta_time_ns);
+              })
 
   GETTER(std::vector<Screen *>, screens)
 
   // Getters for SDL objects
-  GETTER(SDL_Window *const, window)
-  GETTER(SDL_Renderer *const, renderer)
-  GETTER(TTF_Font *const, font)
-  GETTER(TTF_Font *const, font_small)
-  GETTER(TTF_Font *const, font_large)
-  GETTER(TTF_Font *const, font_hidpi)
+  GETTER(SDL_Window * const, window)
+  GETTER(SDL_Renderer * const, renderer)
+  GETTER(TTF_Font * const, font)
+  GETTER(TTF_Font * const, font_small)
+  GETTER(TTF_Font * const, font_large)
+  GETTER(TTF_Font * const, font_hidpi)
 
   GETTER(SDL_Color, clear_color)
   SETTER(SDL_Color, clear_color)
 
-
-  template<typename ScreenType, typename... Args>
-  SDL_AppResult add_screen(Args&&... args)
+  template <typename ScreenType, typename... Args>
+  SDL_AppResult add_screen(Args &&... args)
   {
     using bipsy::sdl3_utils::Log;
 
     // Create a new screen instance with the provided arguments
-    Screen *new_screen = new ScreenType(this, std::forward<Args>(args)...);
+    Screen * new_screen = new ScreenType(this, std::forward<Args>(args)...);
 
     // Initialize the new screen and check for errors
     if (SDL_AppResult result = new_screen->init())
     {
-      Log::error("Error occurred while initializing new screen, terminating...");
-      delete new_screen; // Clean up allocated memory on failure
+      Log::error(
+              "Error occurred while initializing new screen, terminating..."
+      );
+      delete new_screen;  // Clean up allocated memory on failure
       return result;
     }
 
@@ -232,37 +219,33 @@ public:
 
     // change active index
     m_active_screen_index = screen_index;
-    
+
     // change window title to reflect active screen
-    SDL_SetWindowTitle(m_window, ("gaiasim - " + active_screen()->name()).c_str());
+    SDL_SetWindowTitle(m_window,
+                       ("gaiasim - " + active_screen()->name()).c_str());
     // call show() method code (sets clear color, etc)
     active_screen()->show();
-    
+
     Log::info("Switched to screen: {}", active_screen()->name());
     return true;
   }
 
-
   ~Game();
 
-}; // class Game
+};  // class Game
 
-} // namespace bipsy::gaiasim
-
-
+}  // namespace bipsy::gaiasim
 
 template <>
 struct std::formatter<bipsy::gaiasim::Game::InitRequest, char>
-    : std::formatter<Uint8, char>
+: std::formatter<Uint8, char>
 {
   auto format(bipsy::gaiasim::Game::InitRequest init_request,
-              std::format_context& ctx) const
+              std::format_context &             ctx) const
   {
-    return std::formatter<Uint8, char>::format(
-      static_cast<Uint8>(init_request), ctx);
+    return std::formatter<Uint8, char>::format(static_cast<Uint8>(init_request),
+                                               ctx);
   }
 };
 
-
-
-#endif // BIPSY_GAIASIM_GAME_HPP
+#endif  // BIPSY_GAIASIM_GAME_HPP

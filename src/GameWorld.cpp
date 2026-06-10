@@ -4,33 +4,26 @@
 #include "Game.hpp"
 #include "SDL3_utils.hpp"
 
-#include "SDL3/SDL.h" // IWYU pragma: keep SDL_AppResult, SDL_Renderer, SDL_Event...
+#include "SDL3/SDL.h"  // IWYU pragma: keep SDL_AppResult, SDL_Renderer, SDL_Event...
 #include "SDL3_ttf/SDL_ttf.h"
 
-#include <algorithm> // std::min, std::max
-
+#include <algorithm>  // std::min, std::max
 
 namespace bipsy::gaiasim
 {
 
 using bipsy::sdl3_utils::Log;
 
-
-GameWorld::GameWorld(Game *game)
-: m_game{game},
-  m_world_map{},
-  m_map_texture{nullptr}
-{ }
+GameWorld::GameWorld(Game * game)
+: m_game{game}, m_world_map{}, m_map_texture{nullptr}
+{}
 
 SDL_AppResult GameWorld::init()
 {
   SDL_AppResult result;
 
   // Generate the map texture based on the ASCII map
-  if (result = generate_map_texture())
-  {
-    return result;
-  }
+  if (result = generate_map_texture()) return result;
 
   // generate the world map (chunks & blocks)
   return generate_world_map();
@@ -48,46 +41,46 @@ GameWorld::~GameWorld()
   }
 }
 
-SDL_AppResult GameWorld::event(SDL_Event *event)
+SDL_AppResult GameWorld::event(SDL_Event * event)
 {
   // respond to arrow keys/WASD
   if (event->type == SDL_EVENT_KEY_DOWN)
   {
     // reset the flag that tracks whether the player moved this frame
-    m_moved = false;
+    m_moved     = false;
     // `render` will set this back to false when the flag is handled
-    
+
     Uint8 new_x = m_player_x;
     Uint8 new_y = m_player_y;
 
-#define NEW_POS(func, arg1, arg2) \
+#define NEW_POS(func, arg1, arg2)                   \
   static_cast<Uint8>(std::func<Sint16>(arg1, arg2))
 
-    // set `moved` flag to true to indicate that movement should occur in `update` and `render`
+    // set `moved` flag to true to indicate that movement should occur in
+    // `update` and `render`
     switch (event->key.key)
     {
     case SDLK_UP:
     case SDLK_W:
       m_moved = true;
-      new_y = NEW_POS(max, m_player_y - 1, 0);
+      new_y   = NEW_POS(max, m_player_y - 1, 0);
       break;
     case SDLK_DOWN:
     case SDLK_S:
       m_moved = true;
-      new_y = NEW_POS(min, m_player_y + 1, m_map_height - 1);
+      new_y   = NEW_POS(min, m_player_y + 1, m_map_height - 1);
       break;
     case SDLK_LEFT:
     case SDLK_A:
       m_moved = true;
-      new_x = NEW_POS(max, m_player_x - 1, 0);
+      new_x   = NEW_POS(max, m_player_x - 1, 0);
       break;
     case SDLK_RIGHT:
     case SDLK_D:
       m_moved = true;
-      new_x = NEW_POS(min, m_player_x + 1, m_map_width - 1);
+      new_x   = NEW_POS(min, m_player_x + 1, m_map_width - 1);
       break;
-    default:
-      break; // ignore other keys
+    default: break;  // ignore other keys
     }
 
 #undef NEW_POS
@@ -98,8 +91,8 @@ SDL_AppResult GameWorld::event(SDL_Event *event)
       Log::info("Player moved to ({}, {})", new_x, new_y);
       m_player_x_old = m_player_x;
       m_player_y_old = m_player_y;
-      m_player_x = new_x;
-      m_player_y = new_y;
+      m_player_x     = new_x;
+      m_player_y     = new_y;
     }
   }
 
@@ -109,30 +102,30 @@ SDL_AppResult GameWorld::event(SDL_Event *event)
 SDL_AppResult GameWorld::update()
 {
   // Update game world state here (e.g. move NPCs, check for collisions, etc.)
-  // For now, we don't have any dynamic elements in the game world, so we just return CONTINUE.
+  // For now, we don't have any dynamic elements in the game world, so we just
+  // return CONTINUE.
   return SDL_APP_CONTINUE;
 }
 
-SDL_AppResult GameWorld::render(SDL_Renderer *renderer, SDL_FRect *bounds)
+SDL_AppResult GameWorld::render(SDL_Renderer * renderer, SDL_FRect * bounds)
 {
   LOG_FRAME_CLASS(GameWorld);
 
   if (m_moved)
   {
-    //TODO this assumes that the player character always exists and is unique,
-    // change this to verify first before moving! but this will all get replaced at some point anyway
-    // first, replace map location from '@' to '.':
+    // TODO this assumes that the player character always exists and is unique,
+    //  change this to verify first before moving! but this will all get
+    //  replaced at some point anyway first, replace map location from '@' to
+    //  '.':
     m_map_str.replace(m_map_str.find(m_player_char), 1, ".");
     // then, replace new map location with '@':
     // calculate string index from coordinates
-    int str_i = (m_player_y * (m_map_width + 1)) + m_player_x; // +1 for newline character at end of each row
+    int str_i = (m_player_y * (m_map_width + 1))
+              + m_player_x;  // +1 for newline character at end of each row
     m_map_str.replace(str_i, 1, std::string(1, m_player_char));
 
     // update the map texture
-    if (SDL_AppResult result = generate_map_texture())
-    {
-      return result;
-    }
+    if (SDL_AppResult result = generate_map_texture()) return result;
 
     // reset flag
     m_moved = false;
@@ -151,27 +144,36 @@ SDL_AppResult GameWorld::render(SDL_Renderer *renderer, SDL_FRect *bounds)
   // Attempt to render map_texture if we have one
   if (m_map_texture != nullptr)
   {
-    SDL_FRect map_rect = *bounds; // Render map to fill entire panel
-    SDL_GetTextureSize(m_map_texture, &map_rect.w, &map_rect.h); // Get the width and height of the texture
+    SDL_FRect map_rect = *bounds;     // Render map to fill entire panel
+    SDL_GetTextureSize(m_map_texture,
+                       &map_rect.w,
+                       &map_rect.h);  // Get the width and height of the texture
     if (map_rect.w > bounds->w || map_rect.h > bounds->h)
     {
-      // If the texture is larger than the panel, scale it down to fit while maintaining aspect ratio
-      float width_ratio = bounds->w / map_rect.w;
+      // If the texture is larger than the panel, scale it down to fit while
+      // maintaining aspect ratio
+      float width_ratio  = bounds->w / map_rect.w;
       float height_ratio = bounds->h / map_rect.h;
-      float scale = std::min(width_ratio, height_ratio);
+      float scale        = std::min(width_ratio, height_ratio);
       map_rect.w *= scale;
       map_rect.h *= scale;
     }
-    map_rect.x = bounds->x + (bounds->w/2.0f) - (map_rect.w/2.0f); // Center map horizontally in panel
-    map_rect.y = bounds->y + (bounds->h/2.0f) - (map_rect.h/2.0f); // Center map vertically in panel
+    map_rect.x = bounds->x + (bounds->w / 2.0f)
+               - (map_rect.w / 2.0f);  // Center map horizontally in panel
+    map_rect.y = bounds->y + (bounds->h / 2.0f)
+               - (map_rect.h / 2.0f);  // Center map vertically in panel
     if (not SDL_RenderTexture(renderer, m_map_texture, NULL, &map_rect))
     {
       return Log::error("Failed to render map texture: {}", SDL_GetError());
     }
     else
     {
-      Log::verbose("Map texture rendered at position ({}, {}) with size ({}, {})",
-        map_rect.x, map_rect.y, map_rect.w, map_rect.h);
+      Log::verbose("Map texture rendered at position ({}, {}) with size "
+                   "({}, {})",
+                   map_rect.x,
+                   map_rect.y,
+                   map_rect.w,
+                   map_rect.h);
     }
   }
   else
@@ -185,13 +187,12 @@ SDL_AppResult GameWorld::render(SDL_Renderer *renderer, SDL_FRect *bounds)
 SDL_AppResult GameWorld::generate_map_texture()
 {
   LOG_FRAME_CLASS(GameWorld);
-  
+
   // Generate surface from ASCII map in string
-  SDL_Surface *map_surface = TTF_RenderText_Blended_Wrapped(m_game->font(), m_map_str.c_str(), 0, {255, 255, 255, 255}, 0);
-  if(map_surface == nullptr)
-  {
-    return Log::error_init("map_surface");
-  }
+  SDL_Surface * map_surface = TTF_RenderText_Blended_Wrapped(
+          m_game->font(), m_map_str.c_str(), 0, {255, 255, 255, 255}, 0
+  );
+  if (map_surface == nullptr) return Log::error_init("map_surface");
   // destroy map_texture if it exists already
   if (m_map_texture != nullptr)
   {
@@ -202,10 +203,7 @@ SDL_AppResult GameWorld::generate_map_texture()
   // allocate the texture
   m_map_texture = SDL_CreateTextureFromSurface(m_game->renderer(), map_surface);
   SDL_DestroySurface(map_surface);
-  if(m_map_texture == nullptr)
-  {
-    return Log::error_init("map_texture");
-  }
+  if (m_map_texture == nullptr) return Log::error_init("map_texture");
   Log::verbose("Map texture successfully generated from ASCII map");
 
   return SDL_APP_CONTINUE;
@@ -213,8 +211,8 @@ SDL_AppResult GameWorld::generate_map_texture()
 
 SDL_AppResult GameWorld::generate_world_map()
 {
-  //TODO replace with actual WorldMap generation
-  return SDL_APP_CONTINUE; // skip for now
+  // TODO replace with actual WorldMap generation
+  return SDL_APP_CONTINUE;  // skip for now
 }
 
 SDL_AppResult GameWorld::test_world_map_operations()
@@ -223,31 +221,38 @@ SDL_AppResult GameWorld::test_world_map_operations()
 
   auto chunk = m_world_map.create_chunk(0, 0, 0);
   if (chunk == entt::null)
-  {
     return Log::error("Failed to create initial chunk at {{0, 0, 0}}");
-  }
   Log::debug("Created initial chunk at {{0, 0, 0}}");
-  Log::debug(Log::indent() + 1, "Chunk entity ID: {}", static_cast<entt::id_type>(chunk));
-  auto& chunk_pos = m_world_map.get_component<ChunkPos>(chunk);
-  Log::debug(Log::indent() + 2, "Chunk position component: {{{}, {}, {}}}",
-    chunk_pos.x, chunk_pos.y, chunk_pos.z);
+  Log::debug(Log::indent() + 1,
+             "Chunk entity ID: {}",
+             static_cast<entt::id_type>(chunk));
+  auto & chunk_pos = m_world_map.get_component<ChunkPos>(chunk);
+  Log::debug(Log::indent() + 2,
+             "Chunk position component: {{{}, {}, {}}}",
+             chunk_pos.x,
+             chunk_pos.y,
+             chunk_pos.z);
 
   auto chunk_negative = m_world_map.create_chunk(-4, -4, -4);
   if (chunk_negative == entt::null)
-  {
     return Log::error("Failed to create chunk at {{-4, -4, -4}}");
-  }
   Log::debug("Created chunk at {{-4, -4, -4}}");
-  Log::debug(Log::indent() + 1, "Chunk entity ID: {}", static_cast<entt::id_type>(chunk_negative));
-  auto& chunk_negative_pos = m_world_map.get_component<ChunkPos>(chunk_negative);
-  Log::debug(Log::indent() + 2, "Chunk position component: {{{}, {}, {}}}",
-    chunk_negative_pos.x, chunk_negative_pos.y, chunk_negative_pos.z);
+  Log::debug(Log::indent() + 1,
+             "Chunk entity ID: {}",
+             static_cast<entt::id_type>(chunk_negative));
+  auto & chunk_negative_pos
+          = m_world_map.get_component<ChunkPos>(chunk_negative);
+  Log::debug(Log::indent() + 2,
+             "Chunk position component: {{{}, {}, {}}}",
+             chunk_negative_pos.x,
+             chunk_negative_pos.y,
+             chunk_negative_pos.z);
 
   // global coords, so should be in chunk (-4, -4, -4)
   // and at local coords (11, 6, 1)
-  Sint64 x = (ChunkData::SIZE * -3) - 5;
-  Sint64 y = (ChunkData::SIZE * -3) - 10;
-  Sint64 z = (ChunkData::SIZE * -3) - 15;
+  Sint64  x     = (ChunkData::SIZE * -3) - 5;
+  Sint64  y     = (ChunkData::SIZE * -3) - 10;
+  Sint64  z     = (ChunkData::SIZE * -3) - 15;
   BlockID block = m_world_map.get_block(x, y, z);
   Log::debug(Log::indent() + 1, "get_block({}, {}, {}) = {}", x, y, z, block);
 
@@ -256,35 +261,41 @@ SDL_AppResult GameWorld::test_world_map_operations()
   // ------ create_chunk ------
   auto chunk_test1 = m_world_map.create_chunk(1, 2, 3);
   Log::debug("Attempted to create chunk at {{1, 2, 3}}: {}",
-    chunk_test1 == entt::null ? "Failed!" : "Succeeded");
+             chunk_test1 == entt::null ? "Failed!" : "Succeeded");
   // Check failure case: creating a chunk that already exists
   auto chunk_test2 = m_world_map.create_chunk(1, 2, 3);
   // should return a null entity here, let's confirm:
-  Log::debug(Log::indent() + 1, "Attempted to create duplicate chunk at {{1, 2, 3}}: {}",
-    chunk_test2 == entt::null ? "got null entity as expected"
-                              : "UNEXPECTED: got a valid entity!");
+  Log::debug(Log::indent() + 1,
+             "Attempted to create duplicate chunk at {{1, 2, 3}}: {}",
+             chunk_test2 == entt::null ? "got null entity as expected" :
+                                         "UNEXPECTED: got a valid entity!");
   // Let's make one more:
   auto chunk_test3 = m_world_map.create_chunk(-1, -2, -3);
-  Log::debug(Log::indent() + 1, "Attempted to create chunk at {{-1, -2, -3}}: {}",
-    (chunk_test3 == entt::null ? "Failed!" : "Succeeded"));
-  // We should have a chunk at {1, 2, 3}, origin at (16, 32, 48) in global coords
-  // (origin is bottom-left-near corner)
-  // this is currently default initialized to a 16x16x16 cube of air (block ID 0)
-  // let's confirm this:
+  Log::debug(Log::indent() + 1,
+             "Attempted to create chunk at {{-1, -2, -3}}: {}",
+             chunk_test3 == entt::null ? "Failed!" : "Succeeded");
+  // We should have a chunk at {1, 2, 3}, origin at (16, 32, 48) in global
+  // coords (origin is bottom-left-near corner) this is currently default
+  // initialized to a 16x16x16 cube of air (block ID 0) let's confirm this:
 
   // ------ get_chunk ------
   auto chunk_entity = m_world_map.get_chunk(1, 2, 3);
-  Log::debug(Log::indent() + 1, "Retrieved chunk: {}",
-    chunk_entity == entt::null ? "Failed!" : "Succeeded");
+  Log::debug(Log::indent() + 1,
+             "Retrieved chunk: {}",
+             chunk_entity == entt::null ? "Failed!" : "Succeeded");
 
   // ------ delete_chunk ------
   bool delete_result = m_world_map.delete_chunk(-1, -2, -3);
-  Log::debug(Log::indent() + 1, "Deleted chunk at {{-1, -2, -3}}: {}", delete_result ? "success" : "failure");
+  Log::debug(Log::indent() + 1,
+             "Deleted chunk at {{-1, -2, -3}}: {}",
+             delete_result ? "success" : "failure");
   // confirm deletion by trying to get the chunk again
   auto deleted_chunk_entity = m_world_map.get_chunk(-1, -2, -3);
-  Log::debug(Log::indent() + 1, "Attempted to get deleted chunk at {{-1, -2, -3}}: {}",
-    deleted_chunk_entity == entt::null ? "got null entity as expected"
-                                       : "UNEXPECTED: got a valid entity!");
+  Log::debug(Log::indent() + 1,
+             "Attempted to get deleted chunk at {{-1, -2, -3}}: {}",
+             deleted_chunk_entity == entt::null ?
+                     "got null entity as expected" :
+                     "UNEXPECTED: got a valid entity!");
 
   // ------ get_block ------
   // Chunk-local coordinates
@@ -293,17 +304,21 @@ SDL_AppResult GameWorld::test_world_map_operations()
   auto block2 = m_world_map.get_block(ChunkPos{1, 2, 3}, 15, 15, 15);
   Log::debug(Log::indent() + 1, "Got block2: {}", block2);
   // Global coordinates
-  auto block3 = m_world_map.get_block(GlobalPos{16, 32, 48}); // should be same as block1
+  auto block3 = m_world_map.get_block(
+          GlobalPos{16, 32, 48}
+  );                                                // should be same as block1
   Log::debug(Log::indent() + 1, "Got block3: {}", block3);
-  auto block4 = m_world_map.get_block(31, 47, 63); // should be same as block2
+  auto block4 = m_world_map.get_block(31, 47, 63);  // should be same as block2
   Log::debug(Log::indent() + 1, "Got block4: {}", block4);
 
 
   // ------ set_block ------
   // Chunk-local coordinates
-  auto block5 = m_world_map.set_block(ChunkPos{1, 2, 3}, LocalPos{0, 0, 0}, GROUND);
+  auto block5
+          = m_world_map.set_block(ChunkPos{1, 2, 3}, LocalPos{0, 0, 0}, GROUND);
   Log::debug(Log::indent() + 1, "Set block5 to GROUND: {}", block5);
-  auto block6 = m_world_map.set_block(ChunkPos{1, 2, 3}, 15, 15, 15, BlockID{2});
+  auto block6
+          = m_world_map.set_block(ChunkPos{1, 2, 3}, 15, 15, 15, BlockID{2});
   Log::debug(Log::indent() + 1, "Set block6 to 2: {}", block6);
   // Global coordinates
   auto block7 = m_world_map.set_block(GlobalPos{16, 32, 48}, BlockID{3});
@@ -322,4 +337,4 @@ SDL_AppResult GameWorld::test_world_map_operations()
 }
 
 
-} // namespace bipsy::gaiasim
+}  // namespace bipsy::gaiasim
