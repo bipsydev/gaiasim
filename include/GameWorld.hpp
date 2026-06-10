@@ -23,7 +23,7 @@ class GameWorld
 
   // for now, use an ASCII array to display a "map"
   // 20 x 10
-  std::string map = {
+  std::string m_map_str = {
     "####################\n"
     "#..................#\n"
     "#.@.#####..........#\n"
@@ -35,19 +35,19 @@ class GameWorld
     "#..................#\n"
     "####################"
   };
-  WorldMap world_map;
-  SDL_Texture *map_texture;
+  WorldMap m_world_map;
+  SDL_Texture *m_map_texture;
 
-  Uint8 map_width = 20;
-  Uint8 map_height = 10;
+  Uint8 m_map_width = 20;
+  Uint8 m_map_height = 10;
 
   // basic player state, TODO implement full player ECS class
-  Uint8 player_x = 2;
-  Uint8 player_y = 2;
-  Uint8 player_x_old = player_x;
-  Uint8 player_y_old = player_y;
-  bool moved = false;
-  char player_char = '@';
+  Uint8 m_player_x = 2;
+  Uint8 m_player_y = 2;
+  Uint8 m_player_x_old = m_player_x;
+  Uint8 m_player_y_old = m_player_y;
+  bool m_moved = false;
+  char m_player_char = '@';
   
 public:
   // needs to grab Game instance here
