@@ -41,11 +41,7 @@
 #include <concepts>  // std::derived_from
 
 
-namespace bipsy
-{
-
-
-namespace gaiasim
+namespace bipsy::gaiasim
 {
 
 
@@ -337,19 +333,7 @@ public:
 
 };  // class Game
 
-}  // namespace gaiasim
-
-// --- bipsy::to_string specialization, defined in bipsy namespace ---
-
-// InitRequest
-template <>
-std::string_view to_string<gaiasim::Game::InitRequest>(
-        gaiasim::Game::InitRequest result
-);
-// implementation in .cpp file
-
-
-}  // namespace bipsy
+}  // namespace bipsy::gaiasim
 
 
 // --- std::formatter specializations, defined in global namespace ---

@@ -29,11 +29,7 @@
 using bipsy::sdl3_utils::Log;
 
 
-namespace bipsy
-{
-
-
-namespace gaiasim
+namespace bipsy::gaiasim
 {
 
 
@@ -344,23 +340,4 @@ GlobalPos WorldMap::convert_chunk_to_global_pos(Sint64 chunk_x,
 }
 
 
-}  // namespace gaiasim
-
-
-template <>
-std::string_view to_string<gaiasim::BlockID>(gaiasim::BlockID block)
-{
-  using enum gaiasim::BlockID;
-
-  switch (block)
-  {
-  case AIR:     return "AIR";
-  case GROUND:  return "GROUND";
-  case INVALID: return "INVALID";
-  default:      return "<Unknown?>";
-  }
-
-}
-
-
-}  // namespace bipsy
+}  // namespace bipsy::gaiasim

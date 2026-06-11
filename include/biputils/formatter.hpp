@@ -16,9 +16,9 @@
 #define BIPSY_UTILS_STDCPP_FORMATTER_HPP
 
 
-#include "to_string.hpp"  // IWYU pragma: keep (uses bipsy::to_string to rely on enumeration to string conversion)
+#include "magic_enum/magic_enum.hpp"  // IWYU pragma: keep (it's in the macro)
 
-#include <format>         // IWYU pragma: keep (it's used in the macro)
+#include <format>                     // IWYU pragma: keep
 
 
 /**
@@ -57,7 +57,7 @@
     auto format(EnumType e, std::format_context & ctx) const         \
     {                                                                \
       return std::formatter<std::string_view>::format(               \
-              bipsy::to_string<EnumType>(e), ctx                     \
+              magic_enum::enum_name(e), ctx                          \
       );                                                             \
     }                                                                \
   };

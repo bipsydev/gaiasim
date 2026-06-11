@@ -39,11 +39,7 @@
 #include <concepts>                // std::integral
 
 
-namespace bipsy
-{
-
-
-namespace gaiasim
+namespace bipsy::gaiasim
 {
 
 // Use 64-bit unsigned integers for block IDs
@@ -289,18 +285,7 @@ public:
 };  // class WorldMap
 
 
-}  // namespace gaiasim
-
-
-// --- bipsy::to_string specialization, defined in bipsy namespace ---
-
-// BlockID
-template <>
-std::string_view to_string<gaiasim::BlockID>(gaiasim::BlockID block);
-// implementation in .cpp file
-
-
-}  // namespace bipsy
+}  // namespace bipsy::gaiasim
 
 
 // --- std::formatter specializations, defined in global namespace ---

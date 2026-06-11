@@ -39,11 +39,7 @@
 using namespace bipsy::sdl3_utils;  // Log, GAME_CLEAR_COLOR_DEFAULT
 
 
-namespace bipsy
-{
-
-
-namespace gaiasim
+namespace bipsy::gaiasim
 {
 
 
@@ -551,24 +547,4 @@ bool Game::switch_screen(Uint8 screen_index)
 }
 
 
-}  // namespace gaiasim
-
-
-using InitRequest = gaiasim::Game::InitRequest;
-template <>
-std::string_view to_string<InitRequest>(InitRequest result)
-{
-  using enum InitRequest;
-
-  switch (result)
-  {
-  case NONE:           return "NONE";
-  case LIBRARIES:      return "LIBRARIES";
-  case SYSTEM_OBJECTS: return "SYSTEM_OBJECTS";
-  case GAME_STATE:     return "GAME_STATE/ALL";
-  default:             return "<Unknown?>";
-  }
-}
-
-
-}  // namespace bipsy
+}  // namespace bipsy::gaiasim

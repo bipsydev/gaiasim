@@ -41,7 +41,6 @@
 
 #include "tab.hpp"
 #include "formatter.hpp"
-#include "to_string.hpp"
 
 #include "SDL3/SDL.h"   // IWYU pragma: keep SDL_Color, SDL_LogMessage...
 
@@ -50,11 +49,7 @@
 #include <utility>      // std::forward
 
 
-namespace bipsy
-{
-
-
-namespace sdl3_utils
+namespace bipsy::sdl3_utils
 {
 
 
@@ -554,18 +549,7 @@ private:
 };  // class Log
 
 
-}  // namespace sdl3_utils
-
-
-// --- bipsy::to_string specialization, defined in bipsy namespace ---
-
-// SDL_AppResult
-template <>
-std::string_view to_string<SDL_AppResult>(SDL_AppResult result);
-// implementation in .cpp file
-
-
-}  // namespace bipsy
+}  // namespace bipsy::sdl3_utils
 
 
 // --- std::formatter specialization, defined in global namespace ---
