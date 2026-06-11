@@ -20,13 +20,19 @@
 #define BIPSY_UTILS_STDCPP_TAB_HPP
 
 
+// #region Library Includes
+
 #include <cstddef>  // size_t
 #include <string>
+
+
+// #endregion
 
 
 namespace bipsy
 {
 
+// #region Implementation details for `tab` function
 
 namespace tab_impl
 {
@@ -34,6 +40,9 @@ inline constexpr char   tab_char = ' ';
 inline constexpr size_t tab_size = 2;  // Number of tab_chars per tab
 }  // namespace tab_impl
 
+
+// #endregion
+// #region Tab-generating functions
 
 inline std::string tab(const size_t n = 1) noexcept
 { return std::string(n * tab_impl::tab_size, tab_impl::tab_char); }
@@ -44,7 +53,10 @@ inline char * tab_c(const size_t n = 1) noexcept
   return tab_str.data();
 }
 
+
 }  // namespace bipsy
 
+
+// #endregion
 
 #endif  // BIPSY_UTILS_STDCPP_TAB_HPP

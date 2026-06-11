@@ -24,6 +24,8 @@
 #define BIPSY_GAIASIM_SCREEN_TEST_HPP
 
 
+// #region Library Includes
+
 #include "Screen.hpp"
 #include "Game.hpp"
 
@@ -31,6 +33,8 @@
 
 #include <string>
 
+
+// #endregion
 
 namespace bipsy::gaiasim
 {
@@ -43,8 +47,9 @@ namespace bipsy::gaiasim
  */
 class ScreenTest : public Screen
 {
+
+  // #region Private Members: Vertex data for primitive 2D shape rendering
   /*
-   * -- Vertex data for 2D shape rendering --
    * `SDL_RenderGeometry` uses an array of `SDL_Vertex` objects to specify
    * the vertices of the shape to be rendered.
    * It requires the vertex count to be in multiples of 3 as it renders
@@ -65,6 +70,9 @@ class ScreenTest : public Screen
   // Verticies for a rainbow, color-changing triangle
   SDL_Vertex m_rainbow_triangle[3];
 
+  // #endregion
+
+  // #region Members for text: texture and string
   // texture for holding rendered text
   SDL_Texture * m_text_texture = nullptr;
 
@@ -72,7 +80,9 @@ class ScreenTest : public Screen
                              // rendered in `m_text_texture`. We keep track of
                              // this so we can avoid regenerating the texture if
                              // the text hasn't changed.
+  // #endregion
 
+  // #region Other Private Members: string that holds system build target name
 /**
  * @brief C String that holds the system name.
  */
@@ -92,7 +102,12 @@ class ScreenTest : public Screen
 #endif
 #undef SYSTEM_STR
 
+// #endregion
+
 public:
+
+  // #region Constructors & Destructor
+
   ScreenTest(Game * game)
   : Screen(game, "ScreenTest")
   , m_polygon1{}
@@ -110,6 +125,10 @@ public:
 
   virtual ~ScreenTest();
 
+
+  // #endregion
+  // #region `Screen` Lifecycle Override Methods
+
   SDL_AppResult init() override;
 
   SDL_AppResult event(SDL_Event * event) override;
@@ -120,11 +139,21 @@ public:
   SDL_AppResult show() override;
   SDL_AppResult hide() override;
 
+
+  // #endregion
+
 private:
+
+  // #region Private Methods (textures, screen switching)
+
   SDL_AppResult init_text_texture();
   SDL_AppResult switch_to_main_screen();
-};
+
+  // #endregion
+
+}; // class ScreenTest
 
 }  // namespace bipsy::gaiasim
+
 
 #endif  // BIPSY_GAIASIM_SCREEN_TEST_HPP

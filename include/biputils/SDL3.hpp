@@ -34,10 +34,11 @@
  *
  **/
 #pragma once
-#include "SDL3/SDL_init.h"
 #ifndef BIPSY_UTILS_SDL3_HPP
 #define BIPSY_UTILS_SDL3_HPP
 
+
+// #region Library Includes
 
 #include "tab.hpp"
 #include "formatter.hpp"
@@ -49,14 +50,24 @@
 #include <utility>      // std::forward
 
 
+// #endregion
+
+
 namespace bipsy::sdl3_utils
 {
 
+
+// #region Constants (default color)
 
 /**
  * @brief A default clear color for the game (sky blue)
  */
 constexpr SDL_Color GAME_CLEAR_COLOR_DEFAULT = {0, 128, 255, 255};
+
+
+// #endregion
+// #region Functions (asset management)
+
 
 /**
  * @brief Returns the full path to an asset file, given its name.
@@ -79,6 +90,9 @@ inline constexpr std::string asset_dir(std::string asset_name)
 #endif  // __ANDROID__
 }
 
+
+// #endregion
+
 /**
  * @brief Singleton class for SDL logging utilities.
  *
@@ -87,11 +101,16 @@ inline constexpr std::string asset_dir(std::string asset_name)
  */
 class Log
 {
+
+  // #region Static Class Data Members
   /**
    * @brief Global flag to enable or disable info logging.
    *
    */
-  static inline bool log_info_enabled = true;
+  static inline bool m_log_info_enabled = true;
+
+  // #endregion
+  // #region Instance Data Members
 
   /**
    * @brief The current indentation level for logging messages.
@@ -100,10 +119,11 @@ class Log
    */
   size_t m_indent;
 
+  // #endregion
+
 public:
-  /***************************
-   * INNER CLASS DECLARATION *
-   ***************************/
+  // #region Inner Class Declaration (RAII logging implementation)
+  // needs to be public for the macro to work
 
   /**
    * @brief Increases indentation when constructed and decreases when
@@ -168,9 +188,14 @@ public:
 
   };  // class LogFrame
 
-// helper macros for concatenation of line number
+  // #endregion
+  // #region Macro Definitions (RAII logging public API)
+    // #region Macro Helpers
+  // helper macros for concatenation of line number
 #define BIPSY_LOG_FRAME_CONCAT_IMPL(a, b) a##b
 #define BIPSY_LOG_FRAME_CONCAT(a, b)      BIPSY_LOG_FRAME_CONCAT_IMPL(a, b)
+    // #endregion
+    // #region API Macros
 // Another convenience macro to create a log frame for a class member method
 #define LOG_FRAME_CLASS(Class)                                           \
   ::bipsy::sdl3_utils::Log::LogFrame BIPSY_LOG_FRAME_CONCAT(_log_frame_, \
@@ -181,10 +206,10 @@ public:
 // uses ##__LINE__ to append line number to the variable name,
 // and __func__ to feed in the function name as a string.
 #define LOG_FRAME() LOG_FRAME_CLASS()
-
-  /***********************
-   * METHOD DECLARATIONS *
-   ***********************/
+    // #endregion
+  // #endregion
+  // #region Method Declarations (public)
+    // #region Static Class Methods
 
   static Log & instance()
   {
@@ -195,11 +220,12 @@ public:
     return instance;
   }
 
-  // Prevent copying and assignment (singleton)
+    // #endregion
+    // #region Prevent copying and assignment (singleton)
   Log(const Log &)              = delete;
   Log & operator =(const Log &) = delete;
-
-  // ---- Indentation control functions ----
+    // #endregion
+    // #region Indentation Control Static Class Methods
 
   /**
    * @brief Get a reference to the singleton's indentation level.
@@ -247,28 +273,8 @@ public:
    */
   static void reset_indent() { instance().m_indent = 0; }
 
-  /**
-   * @brief Helper function to log an SDL error message for a specific
-   *        subsystem initialization failure.
-   *
-   * @param subsystem The name of the subsystem that failed to initialize.
-   *
-   * @return SDL_AppResult SDL_APP_FAILURE for convenience.
-   */
-  // template <typename... Args>
-  static inline SDL_AppResult error_init(std::string subsystem)
-  {
-    error("Failed to initialize {}: {}", subsystem, SDL_GetError());
-    return SDL_APP_FAILURE;
-  }
-
-  /**
-   * @brief Enables or disables info logging.
-   */
-  static inline constexpr void info_enable(bool enable = true)
-  { log_info_enabled = enable; }
-
-  static inline constexpr void info_disable() { info_enable(false); }
+    // #endregion
+    // #region Logging API: Template Logging Static Methods (trace/verbose/debug/info/warn/error/critical)
 
   /**
    * @brief Log a message of given priority, with optional indentation level.
@@ -391,7 +397,7 @@ public:
                           std::format_string<Args...> message,
                           Args &&... args)
   {
-    if (log_info_enabled)
+    if (m_log_info_enabled)
     {
       SDL_LogIndent(indent,
                     SDL_LogPriority::SDL_LOG_PRIORITY_INFO,
@@ -495,6 +501,33 @@ public:
     return critical(instance().indent(), message, std::forward<Args>(args)...);
   }
 
+    // #endregion
+    // #region Public Utilities for Logging API
+
+
+  /**
+   * @brief Helper function to log an SDL error message for a specific
+   *        subsystem initialization failure.
+   *
+   * @param subsystem The name of the subsystem that failed to initialize.
+   *
+   * @return SDL_AppResult SDL_APP_FAILURE for convenience.
+   */
+  // template <typename... Args>
+  static inline SDL_AppResult error_init(std::string subsystem)
+  {
+    error("Failed to initialize {}: {}", subsystem, SDL_GetError());
+    return SDL_APP_FAILURE;
+  }
+
+  /**
+   * @brief Enables or disables info logging.
+   */
+  static inline constexpr void info_enable(bool enable = true)
+  { m_log_info_enabled = enable; }
+
+  static inline constexpr void        info_disable() { info_enable(false); }
+
   static inline constexpr std::string get_log_priority_name(
           SDL_LogPriority priority
   )
@@ -518,7 +551,14 @@ public:
   }
 
 
+    // #endregion
+  // #endregion
+
+
 private:
+
+  // #region Private Implementation
+
   // Prevent instantiation from outside the class
   Log()
   : m_indent{0}
@@ -546,16 +586,22 @@ private:
             SDL_LOG_CATEGORY_APPLICATION, priority, "%s", indented.c_str()
     );
   }
+
+  // #endregion
+
+
 };  // class Log
 
 
 }  // namespace bipsy::sdl3_utils
 
 
-// --- std::formatter specialization, defined in global namespace ---
+// #region Formatting Compatibility: `std::formatter` Specialization
 
-// SDL_AppResult
+// must be defined in global namespace
 REGISTER_FORMATTER_ENUM(SDL_AppResult);
 
+
+// #endregion
 
 #endif  // BIPSY_UTILS_SDL3_HPP

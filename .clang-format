@@ -177,6 +177,9 @@ ColumnLimit: 80
 # This is a regex
 CommentPragmas: '^ IWYU pragma'
 
+# This protects region comment pragmas from being formatted
+OneLineFormatOffRegex: '#(region|endregion)'
+
 CompactNamespaces: false
 
 # If the initializer list doesn't fit on one line, it must be one-per-line.

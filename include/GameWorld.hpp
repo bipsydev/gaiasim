@@ -26,6 +26,8 @@
 #define BIPSY_GAIASIM_GAMEWORLD_HPP
 
 
+// #region Library Includes
+
 #include "WorldMap.hpp"
 
 #include "SDL3/SDL.h"  // IWYU pragma: keep SDL_Texture, Uint8
@@ -33,14 +35,23 @@
 #include <string>
 
 
+// #endregion
+
 namespace bipsy::gaiasim
 {
 
-// Forward declaration of Game class to avoid circular dependency
+// #region Forward Declarations
+
 class Game;
+
+// #endregion
+
 
 class GameWorld
 {
+
+  // #region Data Members
+
   // Reference to the Game that owns this GameWorld
   Game * m_game;
 
@@ -70,14 +81,23 @@ class GameWorld
   bool  m_moved              = false;
   char  m_player_char        = '@';
 
+  // #endregion
+
 public:
+  
+  // #region Constructors & Destructor
   // needs to grab Game instance here
   GameWorld(Game * game);
 
   // Prevent copying (for now) because of pointer data members
   // May implement later if the need arises
-  GameWorld(const GameWorld &)                = delete;
-  GameWorld &   operator =(const GameWorld &) = delete;
+  GameWorld(const GameWorld &)              = delete;
+  GameWorld & operator =(const GameWorld &) = delete;
+
+  ~GameWorld();
+
+  // #endregion
+  // #region Public Methods (Lifecycle)
 
   SDL_AppResult init();
 
@@ -85,13 +105,18 @@ public:
   SDL_AppResult update();
   SDL_AppResult render(SDL_Renderer * renderer, SDL_FRect * bounds = nullptr);
 
-  ~GameWorld();
 
+  // #endregion
 private:
+
+  // #region Private Implementation Methods
+
   SDL_AppResult generate_map_texture();
   SDL_AppResult generate_world_map();
 
   SDL_AppResult test_world_map_operations();
+
+  // #endregion
 
 };  // class GameWorld
 

@@ -19,52 +19,48 @@
  **/
 
 
-/*******************************************************************************
- *  LIBRARY INCLUDES                                                           *
- ******************************************************************************/
+// #region Library Includes
 
-// --- Project Headers ---
+// Project-specific Headers
 #include "Game.hpp"  // bipsy::gaiasim::Game class
 
-// -- My General Utility Headers ---
+// My General Utliity Headers
 #include "biputils/SDL3.hpp"
 
-// --- Library (SDL3) Headers ---
-// Tell SDL  to use its callback entrypoints instead of a `main` function:
+// Library (SDL3) Headers
+// Tell SDL to use its callback entrypoints instead of a `main` function:
 #define SDL_MAIN_USE_CALLBACKS
 #include "SDL3/SDL_main.h"
 #include "SDL3/SDL.h"  // IWYU pragma: keep
 
 
-/*******************************************************************************
- *  USING DECLARATIONS                                                         *
- ******************************************************************************/
+// #endregion
+// #region Using Declarations
 
 using bipsy::gaiasim::Game, bipsy::sdl3_utils::Log;
 
 
-/*******************************************************************************
- *  MACRO DEFINITIONS                                                          *
- ******************************************************************************/
+// #endregion
+// #region Macro Definitions
 
 // Helper macro to get typed `Game` object from a void* `appstate` pointer
 #define GetGame Game * game = static_cast<Game *>(appstate)
 
 
-/*******************************************************************************
- *  HELPER FUNCTION DEFINITIONS                                                *
- ******************************************************************************/
+// #endregion
+// #region Helper Function Declaration
 
 void init_logging();
 
-/*******************************************************************************
- *  SDL CALLBACK ENTRYPOINTS                                                   *
- *-----------------------------------------------------------------------------*
- * Instead of a `main` function, we've told SDL we want to use it's callback   *
- * system instead, so we define the following functions instead as application *
- * entrypoints. SDL calls these at the best time for each operating system,    *
- * so we don't need to write separate entrypoint logic for each.               *
- ******************************************************************************/
+
+// #endregion
+// #region SDL3 Callback Entrypoint Functions
+/*----------------------------------------------------------------------------*
+ * Instead of a `main` function, we've told SDL we want to use it's callback  *
+ * system instead, so we define the following functions instead as application*
+ * entrypoints. SDL calls these at the best time for each operating system,   *
+ * so we don't need to write separate entrypoint logic for each.              *
+ *----------------------------------------------------------------------------*/
 
 
 /**
@@ -96,19 +92,6 @@ SDL_AppResult SDL_AppInit(void ** appstate, int argc, char ** argv)
   return result;
 }
 
-void init_logging()
-{
-  // Set SDL log priority to debug for all categories
-#ifndef NDEBUG
-  SDL_SetLogPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_TRACE);
-#endif
-  // log a message of our set priority
-  Log::log(SDL_GetLogPriority(SDL_LOG_CATEGORY_APPLICATION),
-           "Logging initialized with priority {} for APPLICATION category.",
-           Log::get_log_priority_name(
-                   SDL_GetLogPriority(SDL_LOG_CATEGORY_APPLICATION)
-           ));
-}
 
 /**
  * @brief Entrypoint for SDL application event handling.
@@ -133,6 +116,7 @@ SDL_AppResult SDL_AppEvent(void * appstate, SDL_Event * event)
   return game->event(event);
 }
 
+
 /**
  * @brief Entrypoint for SDL application main loop/frame iteration.
  *
@@ -153,6 +137,7 @@ SDL_AppResult SDL_AppIterate(void * appstate)
   GetGame;
   return game->iterate();
 }
+
 
 /**
  * @brief Entrypoint for SDL application quit/termination.
@@ -181,3 +166,24 @@ void SDL_AppQuit(void * appstate, SDL_AppResult result)
   delete game;
   Log::info("========== SDL_AppQuit: Goodbye! ==========");
 }
+
+
+// #endregion
+// #region Helper Function Implementation
+
+void init_logging()
+{
+  // Set SDL log priority to debug for all categories
+#ifndef NDEBUG
+  SDL_SetLogPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_TRACE);
+#endif
+  // log a message of our set priority
+  Log::log(SDL_GetLogPriority(SDL_LOG_CATEGORY_APPLICATION),
+           "Logging initialized with priority {} for APPLICATION category.",
+           Log::get_log_priority_name(
+                   SDL_GetLogPriority(SDL_LOG_CATEGORY_APPLICATION)
+           ));
+}
+
+
+// #endregion

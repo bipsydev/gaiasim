@@ -19,6 +19,8 @@
 #include "GameWorld.hpp"
 
 
+// #region Library Includes
+
 #include "Game.hpp"
 #include "biputils/SDL3.hpp"
 
@@ -28,8 +30,13 @@
 #include <algorithm>  // std::min, std::max
 
 
+// #endregion
+// #region Using Types
+
 using bipsy::sdl3_utils::Log;
 
+
+// #endregion
 
 namespace bipsy::gaiasim
 {

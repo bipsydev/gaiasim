@@ -21,6 +21,8 @@
 #include "screens/ScreenMain.hpp"
 
 
+ // #region Library Includes
+
 #include "screens/ScreenMainGUI.hpp"
 #include "GameWorld.hpp"
 #include "biputils/SDL3.hpp"
@@ -28,8 +30,13 @@
 #include "SDL3/SDL.h"  // IWYU pragma: keep SDL_AppResult, SDL_Event, SDLK_N...
 
 
+// #endregion
+// #region Using Types
+
 using bipsy::sdl3_utils::Log;
 
+
+// #endregion
 
 namespace bipsy::gaiasim
 {

@@ -25,6 +25,8 @@
 #define BIPSY_GAIASIM_SCREEN_MAIN_HPP
 
 
+// #region Library Includes
+
 #include "Screen.hpp"
 #include "ScreenMainGUI.hpp"
 #include "Game.hpp"
@@ -33,6 +35,9 @@
 #include "SDL3/SDL.h"  // IWYU pragma: keep SDL_AppResult
 
 #include <string>
+
+
+// #endregion
 
 
 namespace bipsy::gaiasim
@@ -48,6 +53,9 @@ class ScreenMain : public Screen
   /// Alias for the GUI system
   using GUI = gui::ScreenMainGUI;
 
+
+  // #region Private Data Members
+
   /**
    * @brief Holds GUI panels and logic for rendering game world within it.
    */
@@ -59,7 +67,12 @@ class ScreenMain : public Screen
   GameWorld * m_world;
 
 
+  // #endregion
+
+
 public:
+
+  // #region Constructors & Destructor
   /**
    * @brief Basic construction of a ScreenMain.
    *
@@ -80,6 +93,10 @@ public:
    * @brief Frees up the GUI system and the Game World systems.
    */
   virtual ~ScreenMain();
+
+
+  // #endregion
+  // #region `Screen` Lifecycle Override Methods
 
   /**
    * @brief Allocates the GUI system and Game World systems.
@@ -114,6 +131,8 @@ public:
    */
   SDL_AppResult render(SDL_Renderer * renderer) override;
 
+
+  // #endregion
 
 };  // class ScreenMain
 

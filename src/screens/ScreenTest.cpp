@@ -21,6 +21,8 @@
 #include "screens/ScreenTest.hpp"
 
 
+// #region Library Includes
+
 #include "Game.hpp"  // log_info
 #include "screens/ScreenMain.hpp"
 #include "biputils/SDL3.hpp"
@@ -31,8 +33,13 @@
 #include <format>   // std::format
 
 
+// #endregion
+// #region Using Types
+
 using bipsy::sdl3_utils::Log;
 
+
+// #endregion
 
 namespace bipsy::gaiasim
 {
@@ -465,7 +472,11 @@ SDL_AppResult ScreenTest::show()
 }
 
 
-SDL_AppResult ScreenTest::hide() { return SDL_APP_CONTINUE; }
+SDL_AppResult ScreenTest::hide()
+{
+  Screen::hide();
+  return SDL_APP_CONTINUE;
+}
 
 
 SDL_AppResult ScreenTest::switch_to_main_screen()

@@ -18,6 +18,8 @@
 #include "WorldMap.hpp"
 
 
+// #region Library Includes
+
 #include "biputils/SDL3.hpp"  // log_error, etc.
 
 #include "entt/entt.hpp"      // entt::registry
@@ -26,12 +28,19 @@
 #include <unordered_map>      // std::unordered_map
 
 
+// #endregion
+// #region Using Types
+
 using bipsy::sdl3_utils::Log;
 
+
+// #endregion
 
 namespace bipsy::gaiasim
 {
 
+
+// #region Constructor & Destructor
 
 WorldMap::WorldMap()
 : m_chunk_registry{}, m_chunk_map{}
@@ -45,6 +54,9 @@ WorldMap::~WorldMap()
   // Destructor implementation (if needed)
 }
 
+
+// #endregion
+// #region Chunk Operations
 
 entt::entity WorldMap::create_chunk(const ChunkPos & pos)
 {
@@ -146,6 +158,8 @@ entt::entity WorldMap::get_chunk(const ChunkPos & pos) const
 }
 
 
+// #endregion
+// #region Block Operations
 BlockID WorldMap::get_block(const ChunkPos & chunk_pos,
                             const LocalPos & local_pos) const
 {
@@ -283,9 +297,12 @@ bool WorldMap::set_block(Sint64  global_x,
 }
 
 
+// #endregion
+// #region Coordinate Conversion Methods
+
 std::tuple<ChunkPos, LocalPos> WorldMap::convert_global_to_chunk_pos(
         Sint64 global_x, Sint64 global_y, Sint64 global_z
-) const
+)
 {
   // TODO replace with simpler calculations -- floor division instead
 
@@ -329,7 +346,7 @@ GlobalPos WorldMap::convert_chunk_to_global_pos(Sint64 chunk_x,
                                                 Sint64 chunk_z,
                                                 Uint8  local_x,
                                                 Uint8  local_y,
-                                                Uint8  local_z) const
+                                                Uint8  local_z)
 {
   // TODO implement
   Log::error(
@@ -339,5 +356,7 @@ GlobalPos WorldMap::convert_chunk_to_global_pos(Sint64 chunk_x,
   return GlobalPos{0, 0, 0};
 }
 
+
+// #endregion
 
 }  // namespace bipsy::gaiasim

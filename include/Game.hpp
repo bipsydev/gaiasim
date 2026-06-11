@@ -29,6 +29,8 @@
 #define BIPSY_GAIASIM_GAME_HPP
 
 
+// #region Library Includes
+
 #include "biputils/formatter.hpp"  // FORMATTER() specialization for std::format
 #include "biputils/SDL3.hpp"
 #include "Screen.hpp"
@@ -40,6 +42,8 @@
 #include <vector>
 #include <concepts>  // std::derived_from
 
+
+// #endregion
 
 namespace bipsy::gaiasim
 {
@@ -55,37 +59,9 @@ namespace bipsy::gaiasim
  */
 class Game
 {
-  /****************
-   * DATA MEMBERS *
-   ****************/
-
-  // -- Screen management --
-
-  /// List of all allocated screens (may or may not be active)
-  std::vector<Screen *> m_screens;
-
-  /// Index of the currently active screen in `screens`
-  Uint8 m_active_screen_index;
-
-  // -- SDL objects --
-  SDL_Window *   m_window;       // Window object
-  SDL_Renderer * m_renderer;     // Rendering context to window
-
-  SDL_Color      m_clear_color;  // Clear/bg color for the renderer
-
-  TTF_Font *     m_font;         // Global font
-  TTF_Font *     m_font_small;   // Smaller font
-  TTF_Font *     m_font_large;   // Larger font
-  // Alias for larger font, for HiDPI displays
-  TTF_Font *& m_font_hidpi = m_font_large;
-
-  // -- Time-related variables --
-  int    m_frame;          // Frame count
-  Uint64 m_time_ns;        // Time (nanoseconds) since SDL initialization
-                           // (updated at the beginning of each frame)
-  Uint64 m_delta_time_ns;  // Time (ns) taken to render the previous frame
-
 public:
+
+  // #region Inner Enumeration Definition
   /**
    * @brief Flags for requesting/indicating certain initialization steps.
    *
@@ -116,21 +92,57 @@ public:
     ALL            = 3U,  // Same as GAME_STATE
   };
 
+
+  // #endregion
+
 private:
-  InitRequest m_inits_complete;  // This tracks which initialization steps have
-                                 // been completed
+
+  // #region Private Data Members
+    // #region Screen management members
+
+  // List of all allocated screens (may or may not be active)
+  std::vector<Screen *> m_screens;
+
+  // Index of the currently active screen in `screens`
+  Uint8          m_active_screen_index;
+
+    // #endregion
+    // #region SDL & SDL_TTF members
+  SDL_Window *   m_window;       // Window object
+  SDL_Renderer * m_renderer;     // Rendering context to window
+
+  SDL_Color      m_clear_color;  // Clear/bg color for the renderer
+
+  TTF_Font *     m_font;         // Global font
+  TTF_Font *     m_font_small;   // Smaller font
+  TTF_Font *     m_font_large;   // Larger font
+  // Alias for larger font, for HiDPI displays
+  TTF_Font *& m_font_hidpi = m_font_large;
+
+    // #endregion
+    // #region Initialization & Time-related members
+  int         m_frame;     // Frame count
+  Uint64      m_time_ns;   // Time (nanoseconds) since SDL initialization
+                           // (updated at the beginning of each frame)
+  Uint64 m_delta_time_ns;  // Time (ns) taken to render the previous frame
+
+  // This tracks which initialization steps have been completed
+  InitRequest m_inits_complete;
+
+    // #endregion
+  // #endregion
+
 
 public:
-  /******************************
-   * STATIC METHOD DECLARATIONS *
-   ******************************/
+
+  // #region Static Method Declarations
 
   static SDL_AppResult new_game(void *&     appstate,
                                 InitRequest initializations = ALL);
 
-  /***********************
-   * METHOD DECLARATIONS *
-   ***********************/
+
+  // #endregion
+  // #region Constructors & Destructor
 
   /**
    * @brief Construct a new Game object.
@@ -148,6 +160,16 @@ public:
   // Delete copy assignment operator to prevent copying (may implement later)
   Game & operator =(const Game &) = delete;
 
+  /**
+   * @brief Deinitialize/free based on saved initializeation phase state.
+   */
+  ~Game();
+
+
+  // #endregion
+  // #region Pubic Method Declarations (`Game` API)
+
+    // #region Phased Initialization
   /**
    * @brief Request a specific initialization phase to complete to.
    *
@@ -186,6 +208,9 @@ public:
    */
   SDL_AppResult init_game_state();
 
+    // #endregion
+    // #region Lifecycle Events (hook into SDL3's main callbacks)
+
   /**
    * @brief React to an SDL event by feeding it to the active screen.
    *
@@ -202,6 +227,9 @@ public:
    * @return SDL_AppResult
    */
   SDL_AppResult iterate();
+
+    // #endregion
+    // #region Phased Update model (called automatically by `iterate`)
 
   /**
    * @brief Update game logic before rendering the frame, passing to Screen.
@@ -225,20 +253,9 @@ public:
   SDL_AppResult post_render_update();
 
 
-  /**
-   * @brief Getter for a pointer to the active Screen (displayed currently)
-   *
-   * @return constexpr Screen* The currently actively displayed screen.
-   */
-  constexpr Screen * active_screen() const
-  {
-    assert(!m_screens.empty() && "No screens available!");
-
-    // use index to return active Screen
-    return m_screens[m_active_screen_index];
-  }
-
-// --- Getters for data members ---
+    // #endregion
+    // #region Macros for Getters & Setters
+  // TODO split this out to a common header? it's not Game specific
 
 /**
  * @brief Helper macro to generate getters for data members
@@ -256,17 +273,17 @@ public:
 #define SETTER(type, name)                          \
   void set_##name(type value) { m_##name = value; }
 
+    // #endregion
+    // #region Getters for data members (using above macro)
   // Getters for time-related variables and FPS
   GETTER(Uint64, time_ns)
   GETTER(Uint64, delta_time_ns)
 
-  GETTER_CODE(double,
-              fps,  //
-              {
-                // Avoid division by zero, return 0 FPS if delta_time_ns is 0
-                if (m_delta_time_ns == 0) return 0.0;
-                return 1e9 / static_cast<double>(m_delta_time_ns);
-              })
+  GETTER_CODE(double, fps, {
+    // Avoid division by zero, return 0 FPS if delta_time_ns is 0
+    if (m_delta_time_ns == 0) return 0.0;
+    return 1e9 / static_cast<double>(m_delta_time_ns);
+  })
 
   GETTER(std::vector<Screen *>, screens)
 
@@ -280,6 +297,23 @@ public:
 
   GETTER(SDL_Color, clear_color)
   SETTER(SDL_Color, clear_color)
+    // #endregion
+
+
+  // #region Screen-related Methods
+
+  /**
+   * @brief Getter for a pointer to the active Screen (displayed currently)
+   *
+   * @return constexpr Screen* The currently actively displayed screen.
+   */
+  constexpr Screen * active_screen() const
+  {
+    assert(!m_screens.empty() && "No screens available!");
+
+    // use index to return active Screen
+    return m_screens[m_active_screen_index];
+  }
 
 
   /**
@@ -325,21 +359,22 @@ public:
    */
   bool switch_screen(Uint8 screen_index);
 
-  /**
-   * @brief Deinitialize/free based on saved initializeation phase state.
-   */
-  ~Game();
 
+    // #endregion
+
+  // #endregion
 
 };  // class Game
 
 }  // namespace bipsy::gaiasim
 
 
-// --- std::formatter specializations, defined in global namespace ---
+// #region Formatting Compatibility: `std::formatter` Specialization
 
-// InitRequest
+// must be defined in global namespace
 REGISTER_FORMATTER_ENUM(bipsy::gaiasim::Game::InitRequest);
 
+
+// #endregion
 
 #endif  // BIPSY_GAIASIM_GAME_HPP

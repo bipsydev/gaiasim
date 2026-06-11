@@ -27,6 +27,8 @@
 #define BIPSY_GAIASIM_SCREEN_MAIN_GUI_HPP
 
 
+// #region Library Includes
+
 #include "Game.hpp"
 
 #include "SDL3/SDL.h"  // IWYU pragma: keep SDL_FRect, SDL_Color, SDL_Texture...
@@ -34,12 +36,17 @@
 #include <string>
 
 
+// #endregion
+
 namespace bipsy::gaiasim
 {
 
 
-/// forward declaration of GameWorld
+// #region Forward Declarations
+
 class GameWorld;
+
+// #endregion
 
 
 namespace gui
@@ -55,6 +62,8 @@ namespace gui
  */
 class ScreenMainGUI
 {
+
+  // #region Inner Class `Panel` POD structure
 
   /**
    * @brief A data structure that holds a partition of the game screen.
@@ -104,6 +113,10 @@ class ScreenMainGUI
     bool m_use_small_font          = false;
   };
 
+  
+  // #endregion
+  // #region Private Data Members (`ScreenMainGUI`)
+
   /**
    * @brief The main game panel that renders the GameWorld's viewport.
    */
@@ -131,7 +144,12 @@ class ScreenMainGUI
   int m_window_height;
 
 
+  // #endregion
+
 public:
+
+  // #region Constructor & Destructor
+
   /**
    * @brief Constructs the GUI system for ScreenMain with panels.
    */
@@ -142,6 +160,10 @@ public:
    *
    */
   ~ScreenMainGUI();
+
+
+  // #endregion
+  // #region Public Methods
 
   /**
    * @brief Determine if window size changed and update panel layout.
@@ -173,7 +195,12 @@ public:
   SDL_AppResult event(Game * game, SDL_Event * event);
 
 
+  // #endregion
+
 private:
+
+  // #region Private Methods
+
   /**
    * @brief Generates titlebar textures for panels.
    *
@@ -202,6 +229,9 @@ private:
   SDL_AppResult render_panel(SDL_Renderer * renderer,
                              Panel &        panel,
                              GameWorld *    world = nullptr);
+
+
+  // #endregion
 
 };  // class ScreenMainGUI
 

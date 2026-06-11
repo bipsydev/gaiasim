@@ -23,6 +23,8 @@
 #include "Game.hpp"
 
 
+// #region Library Includes
+
 #include "biputils/SDL3.hpp"
 
 #include "screens/ScreenTest.hpp"
@@ -36,8 +38,13 @@
 #include <format>
 
 
+// #endregion
+// #region Using Types
+
 using namespace bipsy::sdl3_utils;  // Log, GAME_CLEAR_COLOR_DEFAULT
 
+
+// #endregion
 
 namespace bipsy::gaiasim
 {

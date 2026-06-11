@@ -9,7 +9,7 @@
  * Holds the screen's name, background clear color for rendering,
  * and a reference to the parent Game class that controls this Screen.
  *
- * @version 0.1
+ * @version a_0.0.1-pre
  * @date 2026-05-15
  *
  * @copyright Copyright (c) 2026
@@ -26,6 +26,8 @@
 #define BIPSY_GAIASIM_SCREEN_HPP
 
 
+// #region Library Includes
+
 #include "biputils/SDL3.hpp"
 
 #include "SDL3/SDL.h"  // IWYU pragma: keep SDL_Color, SDL_AppResult
@@ -33,11 +35,16 @@
 #include <string>
 
 
+// #endregion
+
 namespace bipsy::gaiasim
 {
 
-// Forward declaration of `Game` class to avoid circular dependency
+// #region Forward Declarations
+
 class Game;
+
+// #endregion
 
 /**
  * @brief Abstract base interface for a game screen.
@@ -50,6 +57,9 @@ class Game;
  */
 class Screen
 {
+
+  // #region Private Data Members
+
   // Parent Game instance that owns this Screen.
   Game * m_game_ptr;
   // Name of the screen, for display purposes.
@@ -58,7 +68,13 @@ class Screen
   // Clear color for this screen
   SDL_Color m_clear_color;
 
+
+  // #endregion
+
 public:
+
+  // #region Constructors and Destructor
+
   Screen(Game *              game,
          const std::string & name,
          SDL_Color           color = sdl3_utils::GAME_CLEAR_COLOR_DEFAULT)
@@ -83,10 +99,17 @@ public:
 
   virtual ~Screen() { m_game_ptr = nullptr; }
 
+
+  // #endregion
+  // #region Getters
+
   constexpr Game * const        game() const { return m_game_ptr; }
 
   constexpr const std::string & name() const { return m_name_str; }
 
+
+  // #endregion
+  // #region Virtual Functions: Abstract Lifecycle API for child classes
   /**
    * @brief Initialize local Screen data and state.
    *
@@ -114,6 +137,8 @@ public:
   virtual SDL_AppResult show();
 
   virtual SDL_AppResult hide() { return SDL_APP_CONTINUE; }
+
+  // #endregion
 
 };  // class Screen
 

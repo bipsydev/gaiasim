@@ -25,6 +25,8 @@
 #define BIPSY_GAIASIM_WORLDMAP_HPP
 
 
+// #region Library Includes
+
 #include "biputils/formatter.hpp"  // FORMATTER macro
 
 #include "entt/entt.hpp"           // entt::registry
@@ -39,8 +41,13 @@
 #include <concepts>                // std::integral
 
 
+// #endregion
+
 namespace bipsy::gaiasim
 {
+
+
+// #region BlockID Enumeration Definition
 
 // Use 64-bit unsigned integers for block IDs
 // using BlockID = Uint64;
@@ -52,6 +59,9 @@ enum BlockID : Uint64
   INVALID = std::numeric_limits<Uint64>::max()
 };
 
+
+// #endregion
+// #region Coordinate Abstraction: Positional 3D local & global coordinate systems
 
 // Abstract base class for all 3D position types
 // ensure CoordType is an integer type using concepts (for hashing and indexing)
@@ -69,20 +79,37 @@ struct Position3D
   bool operator ==(const Position3D & other) const
   { return x == other.x && y == other.y && z == other.z; }
 
-  virtual ~Position3D() = 0;
+  virtual ~Position3D() = 0;  // makes it an ABC
 };  // struct Position3D
-
-
-// define template implementation for pure virtual destructor
+// define template implementation for pure virtual destructor (even though = 0)
 template <std::integral CoordType>
 Position3D<CoordType>::~Position3D()
 {}
 
 
-// ------------------------------ EnTT Components ------------------------------
+// Global world position (positive or negative, theoretically unbounded)
+struct GlobalPos : public Position3D<Sint64>
+{
+  GlobalPos(Sint64 x = 0, Sint64 y = 0, Sint64 z = 0)
+  : Position3D{x, y, z}
+  {}
+};
 
 
-// A position in chunk-coordinates
+// Chunk-Local position within a chunk (0 to SIZE - 1 in each dimension)
+struct LocalPos : public Position3D<Uint8>
+{
+  LocalPos(Uint8 x = 0, Uint8 y = 0, Uint8 z = 0)
+  : Position3D{x, y, z}
+  {}
+};
+
+
+// #endregion
+// #region EnTT Components
+
+
+// A position in chunk-coordinates (also part of the coordinate system)
 struct ChunkPos : public Position3D<Sint64>
 {
   ChunkPos(Sint64 x = 0, Sint64 y = 0, Sint64 z = 0)
@@ -132,25 +159,7 @@ struct BlockEntities
 };
 
 
-// Chunk-Local position within a chunk (0 to SIZE - 1 in each dimension)
-struct LocalPos : public Position3D<Uint8>
-{
-  LocalPos(Uint8 x = 0, Uint8 y = 0, Uint8 z = 0)
-  : Position3D{x, y, z}
-  {}
-};
-
-
-// Global world position (positive or negative, theoretically unbounded)
-struct GlobalPos : public Position3D<Sint64>
-{
-  GlobalPos(Sint64 x = 0, Sint64 y = 0, Sint64 z = 0)
-  : Position3D{x, y, z}
-  {}
-};
-
-
-// ------------------------------ WorldMap class -------------------------------
+// #endregion
 
 
 /**
@@ -161,32 +170,48 @@ struct GlobalPos : public Position3D<Sint64>
  */
 class WorldMap
 {
-  // Holds Chunks as Entities
-  entt::registry m_chunk_registry;
+
+  // #region Using Types
 
   // pass hashing function for ChunkPos to unordered_map
   using ChunkMap = std::unordered_map<ChunkPos, entt::entity, ChunkPos::Hash>;
   using ChunkMapConstIterator = typename ChunkMap::const_iterator;
+
+
+  // #endregion
+  // #region Private Data Members
+
+  // Holds Chunks as Entities
+  entt::registry m_chunk_registry;
   // 3D integer coordinates -> chunk entity
   ChunkMap m_chunk_map;
 
 
+  // #endregion
+
 public:
-  // Constructor
+
+  // #region Constructor & Destructor
+
   WorldMap();
 
-  // Destructor
   ~WorldMap();
 
-  // registry getters
+
+  // #endregion
+  // #region ECS Registry & Component Getters
+
   entt::registry &       registry() { return m_chunk_registry; }
 
   const entt::registry & registry() const { return m_chunk_registry; }
 
-  // component getters
   template <typename Component>
   Component & get_component(entt::entity entity)
   { return m_chunk_registry.get<Component>(entity); }
+
+
+  // #endregion
+  // #region Chunk Operations
 
   // Chunk creation functions
   entt::entity create_chunk(const ChunkPos & pos);
@@ -209,6 +234,10 @@ public:
   entt::entity get_chunk(Sint64 x, Sint64 y, Sint64 z) const
   { return get_chunk(ChunkPos{x, y, z}); }
 
+
+  // #endregion
+
+  // #region Block Operations
   // Block retrieval functions
   BlockID get_block(const ChunkPos & chunk_pos,
                     const LocalPos & local_pos) const;
@@ -248,14 +277,17 @@ public:
                  BlockID block_id);
 
 
-  // Coordinate conversion functions: Global -> Chunk local
-  std::tuple<ChunkPos, LocalPos> convert_global_to_chunk_pos(
-          Sint64 global_x, Sint64 global_y, Sint64 global_z
-  ) const;
+  // #endregion
+  // #region Coordinate Conversion Methods
 
-  std::tuple<ChunkPos, LocalPos> convert_global_to_chunk_pos(
+  // Coordinate conversion functions: Global -> Chunk local
+  static std::tuple<ChunkPos, LocalPos> convert_global_to_chunk_pos(
+          Sint64 global_x, Sint64 global_y, Sint64 global_z
+  );
+
+  static std::tuple<ChunkPos, LocalPos> convert_global_to_chunk_pos(
           const GlobalPos & global_pos
-  ) const
+  )
   {
     return convert_global_to_chunk_pos(global_pos.x,
                                        global_pos.y,
@@ -263,15 +295,15 @@ public:
   }
 
   // Coordinate conversion functions: Chunk local -> Global
-  GlobalPos convert_chunk_to_global_pos(Sint64 chunk_x,
-                                        Sint64 chunk_y,
-                                        Sint64 chunk_z,
-                                        Uint8  local_x,
-                                        Uint8  local_y,
-                                        Uint8  local_z) const;
+  static GlobalPos convert_chunk_to_global_pos(Sint64 chunk_x,
+                                               Sint64 chunk_y,
+                                               Sint64 chunk_z,
+                                               Uint8  local_x,
+                                               Uint8  local_y,
+                                               Uint8  local_z);
 
-  GlobalPos convert_chunk_to_global_pos(const ChunkPos & chunk_pos,
-                                        const LocalPos & local_pos) const
+  static GlobalPos convert_chunk_to_global_pos(const ChunkPos & chunk_pos,
+                                               const LocalPos & local_pos)
   {
     return convert_chunk_to_global_pos(chunk_pos.x,
                                        chunk_pos.y,
@@ -282,16 +314,20 @@ public:
   }
 
 
+  // #endregion
+
 };  // class WorldMap
 
 
 }  // namespace bipsy::gaiasim
 
 
-// --- std::formatter specializations, defined in global namespace ---
+// #region Formatting Compatibility: `std::formatter` Specialization
 
-// BlockID
+// must be defined in global namespace
 REGISTER_FORMATTER_ENUM(bipsy::gaiasim::BlockID);
 
+
+// #endregion
 
 #endif  // BIPSY_GAIASIM_WORLDMAP_HPP

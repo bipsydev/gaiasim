@@ -21,14 +21,21 @@
 #include "screens/ScreenMainGUI.hpp"
 
 
+// #region Library Includes
+
 #include "GameWorld.hpp"  // Implementation from our forward declaration
 #include "biputils/SDL3.hpp"
 
 #include "SDL3/SDL.h"  // IWYU pragma: keep SDL_DestroyTexture, SDL_Renderer...
 
 
+// #endregion
+// #region Using Types
+
 using bipsy::sdl3_utils::Log;
 
+
+// #endregion
 
 namespace bipsy::gaiasim::gui
 {

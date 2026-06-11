@@ -18,8 +18,12 @@
 #include "Screen.hpp"
 
 
+// #region Library Includes
+
 #include "Game.hpp"  // Implementation from our forward declaration
 
+
+// #endregion
 
 namespace bipsy::gaiasim
 {
