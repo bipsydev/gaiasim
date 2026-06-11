@@ -24,15 +24,15 @@
  ******************************************************************************/
 
 // --- Project Headers ---
-#include "biputils/SDL3.hpp"
 #include "Game.hpp"  // bipsy::gaiasim::Game class
 
+// -- My General Utility Headers ---
+#include "biputils/SDL3.hpp"
 
 // --- Library (SDL3) Headers ---
 // Tell SDL  to use its callback entrypoints instead of a `main` function:
 #define SDL_MAIN_USE_CALLBACKS
 #include "SDL3/SDL_main.h"
-
 #include "SDL3/SDL.h"  // IWYU pragma: keep
 
 
