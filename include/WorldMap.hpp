@@ -291,7 +291,7 @@ public:
 // --- std::formatter specializations, defined in global namespace ---
 
 // BlockID
-FORMATTER_ENUM(bipsy::gaiasim::BlockID);
+REGISTER_FORMATTER_ENUM(bipsy::gaiasim::BlockID);
 
 
 #endif  // BIPSY_GAIASIM_WORLDMAP_HPP

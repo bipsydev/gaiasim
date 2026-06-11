@@ -555,7 +555,7 @@ private:
 // --- std::formatter specialization, defined in global namespace ---
 
 // SDL_AppResult
-FORMATTER_ENUM(SDL_AppResult);
+REGISTER_FORMATTER_ENUM(SDL_AppResult);
 
 
 #endif  // BIPSY_UTILS_SDL3_HPP

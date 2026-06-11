@@ -22,7 +22,7 @@
 
 
 /**
- * @brief Create an std::formatter specialization for the type and output.
+ * @brief Create an inherited std::formatter specialization for the type.
  *
  * Creates a formatter by inheriting the formatter of an output type.
  * The formatting input type is `static_cast`ed to the inherited output type.
@@ -31,11 +31,10 @@
  * @param CastType The output type name, `InputType` inherits its formatting.
  *
  * @warning This macro MUST be called in global scope, outside of any namespace!
- *          It's recommended to place `FORMATTER(InputType, CastType)` at the
- *          bottom of the header that the enumeration is declared in
- *          in global scope.
+ *          It's recommended to place `REGISTER_FORMATTER(InputType, CastType)`
+ *          at the bottom of the header that the type is declared in.
  */
-#define FORMATTER(InputType, CastType)                                    \
+#define REGISTER_FORMATTER(InputType, CastType)                           \
   template <>                                                             \
   struct std::formatter<InputType, char> : std::formatter<CastType, char> \
   {                                                                       \
@@ -56,10 +55,10 @@
  * @param EnumType the input enumeration type name to create a formatter for.
  *
  * @warning This macro MUST be called in global scope, outside of any namespace!
- *          It's recommended to place `FORMATTER_ENUM(EnumName)` at the bottom
- *          of the header that the enumeration is declared in, in global scope.
+ *          It's recommended to place `REGISTER_FORMATTER_ENUM(EnumName)`
+ *          at the bottom of the header that the enumeration is declared in.
  */
-#define FORMATTER_ENUM(EnumType)                                     \
+#define REGISTER_FORMATTER_ENUM(EnumType)                            \
   template <>                                                        \
   struct std::formatter<EnumType> : std::formatter<std::string_view> \
   {                                                                  \

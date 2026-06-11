@@ -339,7 +339,7 @@ public:
 // --- std::formatter specializations, defined in global namespace ---
 
 // InitRequest
-FORMATTER_ENUM(bipsy::gaiasim::Game::InitRequest);
+REGISTER_FORMATTER_ENUM(bipsy::gaiasim::Game::InitRequest);
 
 
 #endif  // BIPSY_GAIASIM_GAME_HPP
