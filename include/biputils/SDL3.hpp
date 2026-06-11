@@ -94,10 +94,24 @@ inline constexpr std::string asset_dir(std::string asset_name)
 // #endregion
 
 /**
- * @brief Singleton class for SDL logging utilities.
+ * @brief Singleton class for static SDL logging utilities.
  *
- * Uses the Meyers Singleton pattern.
+ * Provides a public logging API that uses format strings, the same way
+ * `std::format` would. This exposes static template methods for each of the SDL
+ * logging priority levels:
+ * `trace`, `verbose`, `debug`, `info`, `warn`, `error`, `critical`.
+ * ```
+ * Log::critical("Unrecoverable error! x = {}. Error {}", x, SDL_GetError());
+ * ```
  *
+ * Each with an overload that also takes an exact indentation to apply instead
+ * of the one the singleton saves in memory. This can also be used to
+ * offset indentation for a log message:
+ * ```
+ * Log::info(Log::indent() + 1, "This line is indented one more than normal!");
+ * ```
+ *
+ * @note Uses the Meyers Singleton pattern.
  */
 class Log
 {
@@ -126,14 +140,15 @@ public:
   // needs to be public for the macro to work
 
   /**
-   * @brief Increases indentation when constructed and decreases when
-   * destructed.
+   * @brief RAII-managed automatic indentor, using constructor & destructor.
    *
    * Used to manage the indentation level for a block of messages.
    * The constructor increases the indentation level and the destructor
    * decreases the indentation level.
    * This allows us to use RAII to automatically an indentation within
-   * a function call stack frame.
+   * a function call stack frame by using the automatic calling of the
+   * destructor to exit indentation, regardless of where
+   * we return from a function.
    *
    */
   class LogFrame
