@@ -4,7 +4,7 @@
  * @brief Holds logical game world and state information.
  *
  * This manages a `WorldMap` and runs entities in an ECS system via EnTT
- * to hold and manage the game world state. This contains methods that are 
+ * to hold and manage the game world state. This contains methods that are
  * relevant to initialization, reacting to SDL's events, updating game logic,
  * and how the final output frame buffer should be rendered after updating.
  * This class likely routes input events to entities that are listening to them.

@@ -39,7 +39,7 @@ namespace bipsy::gaiasim
  * @brief Test Screen, simply draws some gradient rectangles and test data.
  *
  * Used just to test rendering & the `Screen` switching system.
- * 
+ *
  */
 class ScreenTest : public Screen
 {

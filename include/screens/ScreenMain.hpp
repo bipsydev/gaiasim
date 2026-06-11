@@ -83,7 +83,7 @@ public:
 
   /**
    * @brief Allocates the GUI system and Game World systems.
-   * 
+   *
    * @return SDL_AppResult SDL_APP_CONTINUE if successful, or
                            SDL_APP_FAILURE if allocation/world generation fails.
    */
@@ -91,26 +91,26 @@ public:
 
   /**
    * @brief Screen-switching on N key press, and pass through events to members.
-   * 
+   *
    * Passes through events to the GUI system and then to the Game World.
-   * 
+   *
    * @param[in] event the input event that we're reacting to.
-   * @return SDL_AppResult 
+   * @return SDL_AppResult
    */
   SDL_AppResult event(SDL_Event * event) override;
 
   /**
    * @brief Update the game world, and then the GUI system.
-   * 
-   * @return SDL_AppResult 
+   *
+   * @return SDL_AppResult
    */
   SDL_AppResult update() override;
 
   /**
    * @brief Render the GUI by giving it the game world to render its viewport.
-   * 
+   *
    * @param[in] renderer The input renderer we should use to render things to.
-   * @return SDL_AppResult 
+   * @return SDL_AppResult
    */
   SDL_AppResult render(SDL_Renderer * renderer) override;
 

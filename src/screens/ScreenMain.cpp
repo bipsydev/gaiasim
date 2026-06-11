@@ -2,7 +2,7 @@
  * @file ScreenMain.cpp
  * @author bipsydev (bipsydev@gmail.com)
  * @brief Implementation for `ScreenMain` lifecycle events.
- * 
+ *
  * Essentially just delegates GUI logic to `ScreenMainGUI` and
  * the actual game logic to `GameWorld`.
  *

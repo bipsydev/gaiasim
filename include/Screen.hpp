@@ -3,12 +3,12 @@
  * @author bipsydev (bipsydev@gmail.com)
  * @brief Abstract base interface for a game "screen" (e.g. main menu, settings,
  *        gameplay, etc).
- * 
+ *
  * Essentially just contains the shared logic between child screens
  * and contains the base interface for containing a list of abstract Screens.
  * Holds the screen's name, background clear color for rendering,
  * and a reference to the parent Game class that controls this Screen.
- * 
+ *
  * @version 0.1
  * @date 2026-05-15
  *
