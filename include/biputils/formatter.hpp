@@ -27,37 +27,46 @@
  * Creates a formatter by inheriting the formatter of an output type.
  * The formatting input type is `static_cast`ed to the inherited output type.
  *
- * @param TypeName The input type name to create a formatter for.
- * @param OutputFormName The output type, TypeName inherits its formatting.
+ * @param InputType The input type name to create a formatter for.
+ * @param CastType The output type name, `InputType` inherits its formatting.
+ *
+ * @warning This macro MUST be called in global scope, outside of any namespace!
+ *          It's recommended to place `FORMATTER(InputType, CastType)` at the
+ *          bottom of the header that the enumeration is declared in
+ *          in global scope.
  */
-#define FORMATTER(TypeName, OutputFormName)                                    \
-  template <>                                                                  \
-  struct std::formatter<TypeName, char> : std::formatter<OutputFormName, char> \
-  {                                                                            \
-    auto format(TypeName init_request, std::format_context & ctx) const        \
-    {                                                                          \
-      return std::formatter<OutputFormName, char>::format(                     \
-              static_cast<OutputFormName>(init_request), ctx                   \
-      );                                                                       \
-    }                                                                          \
+#define FORMATTER(InputType, CastType)                                    \
+  template <>                                                             \
+  struct std::formatter<InputType, char> : std::formatter<CastType, char> \
+  {                                                                       \
+    auto format(InputType input, std::format_context & ctx) const         \
+    {                                                                     \
+      return std::formatter<CastType, char>::format(                      \
+              static_cast<CastType>(input), ctx                           \
+      );                                                                  \
+    }                                                                     \
   };
 
 
 /**
  * @brief Create an std::formatter specialization for an enumeration.
  *
- * @warning The enumeration MUST have a template specialization for
- *          `bipsy::to_string`!
+ * Uses magic_enum to get the name of the enum value for us.
  *
+ * @param EnumType the input enumeration type name to create a formatter for.
+ *
+ * @warning This macro MUST be called in global scope, outside of any namespace!
+ *          It's recommended to place `FORMATTER_ENUM(EnumName)` at the bottom
+ *          of the header that the enumeration is declared in, in global scope.
  */
 #define FORMATTER_ENUM(EnumType)                                     \
   template <>                                                        \
   struct std::formatter<EnumType> : std::formatter<std::string_view> \
   {                                                                  \
-    auto format(EnumType e, std::format_context & ctx) const         \
+    auto format(EnumType input, std::format_context & ctx) const     \
     {                                                                \
       return std::formatter<std::string_view>::format(               \
-              magic_enum::enum_name(e), ctx                          \
+              magic_enum::enum_name(input), ctx                      \
       );                                                             \
     }                                                                \
   };
