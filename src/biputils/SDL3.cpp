@@ -7,6 +7,6 @@
 namespace bipsy
 {
 
-//TODO: move longer functions into here from `SDL3.hpp`
+// TODO: move longer functions into here from `SDL3.hpp`
 
 }  // namespace bipsy
