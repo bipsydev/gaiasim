@@ -154,6 +154,10 @@ endif()
 add_subdirectory(external_libs/entt EXCLUDE_FROM_ALL)
 
 
+# Add magic_enum
+add_subdirectory(external_libs/magic_enum EXCLUDE_FROM_ALL)
+
+
 # Zlib's CMakeLists.txt renames zconf.h to zconf.h.included to prevent CMake from
 # regenerating it. However, this modifies the vendored source tree and shows as modified
 # in git. Restore the original filename after configuration to keep the submodule clean.
@@ -172,6 +176,8 @@ target_link_libraries(${EXECUTABLE_NAME} PRIVATE
     SDL3::SDL3
     # Also link to EnTT
     EnTT::EnTT
+    # Also link to magic_enum
+    magic_enum::magic_enum
 )
 
 
