@@ -13,3 +13,6 @@
 [submodule "external_libs/entt"]
 	path = external_libs/entt
 	url = https://github.com/skypjack/entt
+[submodule "external_libs/magic_enum"]
+	path = external_libs/magic_enum
+	url = https://github.com/Neargye/magic_enum
