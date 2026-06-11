@@ -23,8 +23,9 @@
 #include "Game.hpp"
 
 
+#include "biputils/SDL3.hpp"
+
 #include "screens/ScreenTest.hpp"
-#include "SDL3_utils.hpp"
 
 #include "SDL3/SDL.h"  // IWYU pragma: keep SDL_AppResult, SDL_Init, SDL_CreateWindow...
 #include "SDL3_mixer/SDL_mixer.h"
@@ -38,7 +39,11 @@
 using namespace bipsy::sdl3_utils;  // Log, GAME_CLEAR_COLOR_DEFAULT
 
 
-namespace bipsy::gaiasim
+namespace bipsy
+{
+
+
+namespace gaiasim
 {
 
 
@@ -46,7 +51,9 @@ namespace bipsy::gaiasim
 SDL_AppResult Game::new_game(void *& appstate, InitRequest initializations)
 {
   LOG_FRAME_CLASS(Game);
-  Log::verbose("Requested initializations = {}", initializations);
+  Log::verbose("Requested initializations up to phase {} ({} phases)",
+               initializations,
+               static_cast<Uint8>(initializations));
 
   Log::verbose("Constructing a Game instance without initializations first");
   Game * game = new Game(Game::InitRequest::NONE);
@@ -106,7 +113,17 @@ Game::Game(InitRequest initializations)
 SDL_AppResult Game::init(InitRequest initializations)
 {
   LOG_FRAME_CLASS(Game);
-  Log::verbose("Requested initializations = {}", initializations);
+  if (m_inits_complete > NONE)
+  {
+    Log::verbose(
+            "Already initialized to phase = {}, more initialization requested:",
+            m_inits_complete
+    );
+  }
+  Log::verbose("Requested initializations up to phase {} ({} phases)",
+               initializations,
+               static_cast<Sint16>(initializations)
+                       - static_cast<Sint16>(m_inits_complete));
 
   // ensure we have initializations to actually do
   assert(initializations <= Game::InitRequest::ALL);
@@ -114,7 +131,9 @@ SDL_AppResult Game::init(InitRequest initializations)
   // Perform requested initializations in order
   while (m_inits_complete < initializations)
   {
-    Log::verbose("Performing initialization step: {}", m_inits_complete + 1);
+    Log::verbose("Performing initialization phase #{}: {}",
+                 m_inits_complete + 1,
+                 static_cast<Game::InitRequest>(m_inits_complete + 1));
     // the `init_` functions will update `m_inits_complete` if successful,
     // or return an error result if failed, which will break the loop.
     switch (m_inits_complete)
@@ -497,4 +516,59 @@ SDL_AppResult Game::post_render_update()
 }
 
 
-}  // namespace bipsy::gaiasim
+bool Game::switch_screen(Uint8 screen_index)
+{
+  using bipsy::sdl3_utils::Log;
+
+  // check if index is valid
+  if (screen_index >= m_screens.size())
+  {
+    Log::error("Invalid screen index: {}", screen_index);
+    return false;
+  }
+
+  // check if index is same
+  if (screen_index == m_active_screen_index)
+  {
+    Log::warn("Attempting to switch to the same screen?");
+    return false;
+  }
+
+  // call hide() method of current active screen before switching
+  active_screen()->hide();
+
+  // change active index
+  m_active_screen_index = screen_index;
+
+  // change window title to reflect active screen
+  SDL_SetWindowTitle(m_window,
+                     ("gaiasim - " + active_screen()->name()).c_str());
+  // call show() method code (sets clear color, etc)
+  active_screen()->show();
+
+  Log::info("Switched to screen: {}", active_screen()->name());
+  return true;
+}
+
+
+}  // namespace gaiasim
+
+
+using InitRequest = gaiasim::Game::InitRequest;
+template <>
+std::string_view to_string<InitRequest>(InitRequest result)
+{
+  using enum InitRequest;
+
+  switch (result)
+  {
+  case NONE:           return "NONE";
+  case LIBRARIES:      return "LIBRARIES";
+  case SYSTEM_OBJECTS: return "SYSTEM_OBJECTS";
+  case GAME_STATE:     return "GAME_STATE/ALL";
+  default:             return "<Unknown?>";
+  }
+}
+
+
+}  // namespace bipsy

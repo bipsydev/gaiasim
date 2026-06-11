@@ -25,22 +25,26 @@
 #define BIPSY_GAIASIM_WORLDMAP_HPP
 
 
-#include "entt/entt.hpp"      // entt::registry
+#include "biputils/formatter.hpp"  // FORMATTER macro
 
-#include "SDL3/SDL_stdinc.h"  // Sint64 (named integer type)
+#include "entt/entt.hpp"           // entt::registry
 
-#include <array>              // std::array
-#include <format>             // std::formatter
-#include <unordered_map>      // std::unordered_map
-#include <limits>             // std::numeric_limits
-#include <functional>         // std::hash
-#include <tuple>              // std::tuple
-#include <concepts>           // std::integral
+#include "SDL3/SDL_stdinc.h"       // Sint64 (named integer type)
+
+#include <array>                   // std::array
+#include <unordered_map>           // std::unordered_map
+#include <limits>                  // std::numeric_limits
+#include <functional>              // std::hash
+#include <tuple>                   // std::tuple
+#include <concepts>                // std::integral
 
 
-namespace bipsy::gaiasim
+namespace bipsy
 {
 
+
+namespace gaiasim
+{
 
 // Use 64-bit unsigned integers for block IDs
 // using BlockID = Uint64;
@@ -285,22 +289,24 @@ public:
 };  // class WorldMap
 
 
-}  // namespace bipsy::gaiasim
+}  // namespace gaiasim
 
 
-// TODO: make a macro for this that takes the object and output types.
-//  since this is copy-pasted for InitRequest and SDL_AppResult as well
-//  format BlockID -> Uint64 output
+// --- bipsy::to_string specialization, defined in bipsy namespace ---
+
+// BlockID
 template <>
-struct std::formatter<bipsy::gaiasim::BlockID, char>
-: std::formatter<Uint64, char>
-{
-  auto format(bipsy::gaiasim::BlockID block_id, std::format_context & ctx) const
-  {
-    return std::formatter<Uint64, char>::format(static_cast<Uint64>(block_id),
-                                                ctx);
-  }
-};
+std::string_view to_string<gaiasim::BlockID>(gaiasim::BlockID block);
+// implementation in .cpp file
+
+
+}  // namespace bipsy
+
+
+// --- std::formatter specializations, defined in global namespace ---
+
+// BlockID
+FORMATTER_ENUM(bipsy::gaiasim::BlockID);
 
 
 #endif  // BIPSY_GAIASIM_WORLDMAP_HPP

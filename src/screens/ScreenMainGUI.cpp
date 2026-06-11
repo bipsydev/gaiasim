@@ -22,7 +22,7 @@
 
 
 #include "GameWorld.hpp"  // Implementation from our forward declaration
-#include "SDL3_utils.hpp"
+#include "biputils/SDL3.hpp"
 
 #include "SDL3/SDL.h"  // IWYU pragma: keep SDL_DestroyTexture, SDL_Renderer...
 

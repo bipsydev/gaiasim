@@ -26,7 +26,7 @@
 #define BIPSY_GAIASIM_SCREEN_HPP
 
 
-#include "SDL3_utils.hpp"
+#include "biputils/SDL3.hpp"
 
 #include "SDL3/SDL.h"  // IWYU pragma: keep SDL_Color, SDL_AppResult
 

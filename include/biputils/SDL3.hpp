@@ -8,12 +8,12 @@
  * retrieving the paths of assets file names in a system-independent manner.
  * It also defines an `std::formatter` overload for `SDL_AppResult` for
  * use within format arguments in `std::format`.
- * 
+ *
  * The primary utlity this header contains is the `Log` singleton static class.
  * This provides a static class method API for logging messages of any
  * priority level, using C++20's std::format specification instead of SDL's
  * old C-style printf format specification.
- * 
+ *
  * It also contains an automatic logger indentation mechanism using
  * frame stack tracing. Indentation can be modified manually using
  * `Log::increase_indent()` and `Log::decrease_indent()`, but it can also be
@@ -34,22 +34,29 @@
  *
  **/
 #pragma once
-#ifndef BIPSY_SDL3_UTILS_HPP
-#define BIPSY_SDL3_UTILS_HPP
+#include "SDL3/SDL_init.h"
+#ifndef BIPSY_UTILS_SDL3_HPP
+#define BIPSY_UTILS_SDL3_HPP
 
 
 #include "tab.hpp"
+#include "formatter.hpp"
+#include "to_string.hpp"
 
 #include "SDL3/SDL.h"   // IWYU pragma: keep SDL_Color, SDL_LogMessage...
 
-#include <format>       // std::format, std::format_string
 #include <string>       // std::string
 #include <string_view>  // std::string_view
 #include <utility>      // std::forward
 
 
-namespace bipsy::sdl3_utils
+namespace bipsy
 {
+
+
+namespace sdl3_utils
+{
+
 
 /**
  * @brief A default clear color for the game (sky blue)
@@ -544,17 +551,27 @@ private:
             SDL_LOG_CATEGORY_APPLICATION, priority, "%s", indented.c_str()
     );
   }
-};
+};  // class Log
 
 
-}  // namespace bipsy::sdl3_utils
+}  // namespace sdl3_utils
 
+
+// --- bipsy::to_string specialization, defined in bipsy namespace ---
+
+// SDL_AppResult
 template <>
-struct std::formatter<SDL_AppResult, char> : std::formatter<int, char>
-{
-  auto format(SDL_AppResult result, std::format_context & ctx) const
-  { return std::formatter<int, char>::format(static_cast<int>(result), ctx); }
-};
+std::string_view to_string<SDL_AppResult>(SDL_AppResult result);
+// implementation in .cpp file
 
 
-#endif  // BIPSY_SDL3_UTILS_HPP
+}  // namespace bipsy
+
+
+// --- std::formatter specialization, defined in global namespace ---
+
+// SDL_AppResult
+FORMATTER_ENUM(SDL_AppResult);
+
+
+#endif  // BIPSY_UTILS_SDL3_HPP

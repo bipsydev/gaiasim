@@ -164,10 +164,10 @@ public:
   SDL_AppResult render(SDL_Renderer * renderer, GameWorld * world);
 
   /**
-   * @brief React to an SDL event for the GUI.
+   * @brief React to an SDL event for the GUI (Does nothing currently)
    *
-   * @param game
-   * @param event
+   * @param game The encapsulating game instance.
+   * @param event The event we're reacting to.
    * @return SDL_AppResult
    */
   SDL_AppResult event(Game * game, SDL_Event * event);

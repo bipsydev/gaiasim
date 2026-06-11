@@ -24,7 +24,7 @@
  ******************************************************************************/
 
 // --- Project Headers ---
-#include "SDL3_utils.hpp"
+#include "biputils/SDL3.hpp"
 #include "Game.hpp"  // bipsy::gaiasim::Game class
 
 

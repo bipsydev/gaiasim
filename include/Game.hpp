@@ -29,18 +29,25 @@
 #define BIPSY_GAIASIM_GAME_HPP
 
 
-#include <cassert>
-#include <string>
-#include <vector>
+#include "biputils/formatter.hpp"  // FORMATTER() specialization for std::format
+#include "biputils/SDL3.hpp"
+#include "Screen.hpp"
 
 #include "SDL3/SDL.h"  // IWYU pragma: keep Uint8, SDL_Window, SDL_Renderer...
 #include "SDL3_ttf/SDL_ttf.h"
-#include "SDL3_utils.hpp"
-#include "Screen.hpp"
+
+#include <cassert>
+#include <vector>
+#include <concepts>  // std::derived_from
 
 
-namespace bipsy::gaiasim
+namespace bipsy
 {
+
+
+namespace gaiasim
+{
+
 
 /**
  * @brief Local application running state structure.
@@ -57,9 +64,11 @@ class Game
    ****************/
 
   // -- Screen management --
-  // List of all allocated screens (may or may not be active)
+
+  /// List of all allocated screens (may or may not be active)
   std::vector<Screen *> m_screens;
-  // Index of the currently active screen in `screens`
+
+  /// Index of the currently active screen in `screens`
   Uint8 m_active_screen_index;
 
   // -- SDL objects --
@@ -139,22 +148,92 @@ public:
   Game(InitRequest initializations = ALL);
 
   // Delete copy constructor to prevent copying (may implement later if needed)
-  Game(const Game &)                          = delete;
+  Game(const Game &)              = delete;
   // Delete copy assignment operator to prevent copying (may implement later)
-  Game &             operator =(const Game &) = delete;
+  Game & operator =(const Game &) = delete;
 
-  SDL_AppResult      init(InitRequest initializations = ALL);
+  /**
+   * @brief Request a specific initialization phase to complete to.
+   *
+   * @param initializations The initialization phase we're requesting to get to.
+   * @return SDL_AppResult
+   */
+  SDL_AppResult init(InitRequest initializations = ALL);
 
-  SDL_AppResult      init_libraries();
-  SDL_AppResult      init_system_objects();
-  SDL_AppResult      init_game_state();
 
-  SDL_AppResult      event(SDL_Event * event);
-  SDL_AppResult      iterate();
-  SDL_AppResult      update();
-  SDL_AppResult      render();
-  SDL_AppResult      post_render_update();
+  /**
+   * @brief Initialize external libraries (SDL and subsystems)
+   *
+   * Potentially other libraries later, if needed.
+   *
+   * @return SDL_AppResult
+   */
+  SDL_AppResult init_libraries();
 
+  /**
+   * @brief Initialize system/library objects and global assets.
+   *
+   * This is the window, renderer, and other SDL system objects and
+   * global fonts/textures.
+   *
+   * @return SDL_AppResult
+   */
+  SDL_AppResult init_system_objects();
+
+  /**
+   * @brief Initialize the game state by setting up the Screens and their data.
+   *
+   * Potentially should be re-callable from later to re-initialize the game
+   * state if we ever we want to reset the game.
+   *
+   * @return SDL_AppResult
+   */
+  SDL_AppResult init_game_state();
+
+  /**
+   * @brief React to an SDL event by feeding it to the active screen.
+   *
+   * @param[in] event the input event from the SDL event entrypoint to process.
+   * @return SDL_AppResult
+   */
+  SDL_AppResult event(SDL_Event * event);
+
+  /**
+   * @brief Splits SDL's frame iteration event into 3 organized phases.
+   *
+   * update -> render -> post_render_update
+   *
+   * @return SDL_AppResult
+   */
+  SDL_AppResult iterate();
+
+  /**
+   * @brief Update game logic before rendering the frame, passing to Screen.
+   *
+   * @return SDL_AppResult
+   */
+  SDL_AppResult update();
+
+  /**
+   * @brief Clears the game screen & sets up the renderer for the active Screen.
+   *
+   * @return SDL_AppResult
+   */
+  SDL_AppResult render();
+
+  /**
+   * @brief Update logic that is after rendering the frame, passed to Screen.
+   *
+   * @return SDL_AppResult
+   */
+  SDL_AppResult post_render_update();
+
+
+  /**
+   * @brief Getter for a pointer to the active Screen (displayed currently)
+   *
+   * @return constexpr Screen* The currently actively displayed screen.
+   */
   constexpr Screen * active_screen() const
   {
     assert(!m_screens.empty() && "No screens available!");
@@ -206,7 +285,17 @@ public:
   GETTER(SDL_Color, clear_color)
   SETTER(SDL_Color, clear_color)
 
-  template <typename ScreenType, typename... Args>
+
+  /**
+   * @brief Template function for adding a Screen of any subtype.
+   *
+   * @tparam ScreenType a type derived from `Screen`.
+   * @tparam Args Variadic parameter pack of arguments
+                  forwarded to the screen constructor.
+   * @param args Variadic arguments forwarded to the screen constructor.
+   * @return SDL_AppResult
+   */
+  template <std::derived_from<Screen> ScreenType, typename... Args>
   SDL_AppResult add_screen(Args &&... args)
   {
     using bipsy::sdl3_utils::Log;
@@ -231,49 +320,42 @@ public:
     return SDL_APP_CONTINUE;
   }
 
-  bool switch_screen(Uint8 screen_index)
-  {
-    using bipsy::sdl3_utils::Log;
+  /**
+   * @brief Switch the active screen to the given screen index integer.
+   *
+   * @param screen_index integer into the vector of screens.
+   * @return true if the switch
+   * @return false
+   */
+  bool switch_screen(Uint8 screen_index);
 
-    // check if index is valid
-    if (screen_index >= m_screens.size())
-    {
-      Log::error("Invalid screen index: {}", screen_index);
-      return false;
-    }
-
-    // call hide() method of current active screen before switching
-    active_screen()->hide();
-
-    // change active index
-    m_active_screen_index = screen_index;
-
-    // change window title to reflect active screen
-    SDL_SetWindowTitle(m_window,
-                       ("gaiasim - " + active_screen()->name()).c_str());
-    // call show() method code (sets clear color, etc)
-    active_screen()->show();
-
-    Log::info("Switched to screen: {}", active_screen()->name());
-    return true;
-  }
-
+  /**
+   * @brief Deinitialize/free based on saved initializeation phase state.
+   */
   ~Game();
+
 
 };  // class Game
 
-}  // namespace bipsy::gaiasim
+}  // namespace gaiasim
 
+// --- bipsy::to_string specialization, defined in bipsy namespace ---
+
+// InitRequest
 template <>
-struct std::formatter<bipsy::gaiasim::Game::InitRequest, char>
-: std::formatter<Uint8, char>
-{
-  auto format(bipsy::gaiasim::Game::InitRequest init_request,
-              std::format_context &             ctx) const
-  {
-    return std::formatter<Uint8, char>::format(static_cast<Uint8>(init_request),
-                                               ctx);
-  }
-};
+std::string_view to_string<gaiasim::Game::InitRequest>(
+        gaiasim::Game::InitRequest result
+);
+// implementation in .cpp file
+
+
+}  // namespace bipsy
+
+
+// --- std::formatter specializations, defined in global namespace ---
+
+// InitRequest
+FORMATTER_ENUM(bipsy::gaiasim::Game::InitRequest);
+
 
 #endif  // BIPSY_GAIASIM_GAME_HPP

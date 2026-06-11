@@ -16,8 +16,8 @@
  *
  **/
 #pragma once
-#ifndef BIPSY_CPPUTILS_TAB_HPP
-#define BIPSY_CPPUTILS_TAB_HPP
+#ifndef BIPSY_UTILS_STDCPP_TAB_HPP
+#define BIPSY_UTILS_STDCPP_TAB_HPP
 
 
 #include <cstddef>  // size_t
@@ -47,4 +47,4 @@ inline char * tab_c(const size_t n = 1) noexcept
 }  // namespace bipsy
 
 
-#endif  // BIPSY_CPPUTILS_TAB_HPP
+#endif  // BIPSY_UTILS_STDCPP_TAB_HPP

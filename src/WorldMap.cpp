@@ -18,7 +18,7 @@
 #include "WorldMap.hpp"
 
 
-#include "SDL3_utils.hpp"     // log_error, etc.
+#include "biputils/SDL3.hpp"  // log_error, etc.
 
 #include "entt/entt.hpp"      // entt::registry
 #include "SDL3/SDL_stdinc.h"  // Sint64 (named integer type)
@@ -29,7 +29,11 @@
 using bipsy::sdl3_utils::Log;
 
 
-namespace bipsy::gaiasim
+namespace bipsy
+{
+
+
+namespace gaiasim
 {
 
 
@@ -340,4 +344,23 @@ GlobalPos WorldMap::convert_chunk_to_global_pos(Sint64 chunk_x,
 }
 
 
-}  // namespace bipsy::gaiasim
+}  // namespace gaiasim
+
+
+template <>
+std::string_view to_string<gaiasim::BlockID>(gaiasim::BlockID block)
+{
+  using enum gaiasim::BlockID;
+
+  switch (block)
+  {
+  case AIR:     return "AIR";
+  case GROUND:  return "GROUND";
+  case INVALID: return "INVALID";
+  default:      return "<Unknown?>";
+  }
+
+}
+
+
+}  // namespace bipsy
