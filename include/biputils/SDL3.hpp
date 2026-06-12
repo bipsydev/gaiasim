@@ -45,6 +45,7 @@
 
 #include "SDL3/SDL.h"   // IWYU pragma: keep SDL_Color, SDL_LogMessage...
 
+#include <cstddef>      // size_t
 #include <string>       // std::string
 #include <string_view>  // std::string_view
 #include <utility>      // std::forward
@@ -591,14 +592,13 @@ private:
    *                 (e.g. SDL_LOG_PRIORITY_INFO).
    * @param message The final message text to log.
    */
-  static inline void SDL_LogIndent(size_t           indent,
-                                   SDL_LogPriority  priority,
-                                   std::string_view message)
+  static inline void SDL_LogIndent(const size_t    indent,
+                                   SDL_LogPriority priority,
+                                   std::string     message)
   {
-    const std::string indented = bipsy::tab(indent) + std::string(message);
-
+    message.insert(0, indent * tab_impl::tab_size, tab_impl::tab_char);
     SDL_LogMessage(
-            SDL_LOG_CATEGORY_APPLICATION, priority, "%s", indented.c_str()
+            SDL_LOG_CATEGORY_APPLICATION, priority, "%s", message.c_str()
     );
   }
 

@@ -24,6 +24,7 @@
 
 #include <cstddef>  // size_t
 #include <string>
+#include <cassert>
 
 
 // #endregion
@@ -36,21 +37,40 @@ namespace bipsy
 
 namespace tab_impl
 {
-inline constexpr char   tab_char = ' ';
-inline constexpr size_t tab_size = 2;  // Number of tab_chars per tab
+// The character to render as "spaces" for tabs
+inline constexpr char tab_char    = ' ';
+
+// Number of tab_chars per tab
+inline constexpr size_t tab_size  = 2;
+
+// The maximum depth (for compile-time tab generation)
+inline constexpr size_t max_depth = 64;
+
+// The pre-generated padding that can fit the max_depth
+inline const std::string padding(max_depth * tab_size, tab_char);
 }  // namespace tab_impl
 
 
 // #endregion
 // #region Tab-generating functions
 
-inline std::string tab(const size_t n = 1) noexcept
-{ return std::string(n * tab_impl::tab_size, tab_impl::tab_char); }
-
-inline char * tab_c(const size_t n = 1) noexcept
+/**
+ * @brief Generates `n` tabs at runtime, rendered as space characters.
+ *
+ * @param n The number of tabs to render as spaces,
+            based on `tab_impl::tab_size`.
+ * @return std::string The output rendered string of spaces.
+ */
+inline std::string_view tab(const size_t n = 1) noexcept
 {
-  static std::string tab_str = tab(n);
-  return tab_str.data();
+  assert(n < tab_impl::tab_size * tab_impl::max_depth);
+
+  // get a view of the padding
+  auto view = std::string_view(tab_impl::padding);
+  // return as much of it as we can
+  return (n * tab_impl::tab_size < tab_impl::padding.length()) ?
+                 view.substr(0, n * tab_impl::tab_size) :
+                 view;  // Just returns max if we asked for more than padding
 }
 
 
